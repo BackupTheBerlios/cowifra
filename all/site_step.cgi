@@ -11,10 +11,10 @@ use CGI;
 
 our %cookies;
 our $usemode;
-our $lang;									 # CWF language
-our $CGIO = new CGI;                                                             # initial cgi object
-our $userlevel;									 # screen user level
-our $URLADD = "";								 # used if no cookies available
+our $lang;									 		# CWF language
+our $CGIO = new CGI;                                # initial cgi object
+our $userlevel;									 	# screen user level
+our $URLADD = "";								 	# used if no cookies available
 our $SELFNAME;
 our $sessionid;		
 our %SESSION;
@@ -23,14 +23,14 @@ our $table_body;
 our $table_body2;	 							 
 our $table_body3;	 			
 
-my $debug_level = 1;								 # 0 = Keine Error oder Warnungen ausgeben / 1 = Direkt ausgeben
-our $nl;                                                                         # Zeilenumbruch
+my $debug_level = 1;								# 0 = Keine Error oder Warnungen ausgeben / 1 = Direkt ausgeben
+our $nl;                                            # Zeilenumbruch
 our $CWFO;
 our $stepnr = 0;
 our $stepid;
 
 do "part_config.pl" || die "Error $@";
-do 'translate.pl'   || die "Error in ";                                          # include function translate
+do 'translate.pl'   || die "Error in ";             # include function translate
 
 our $sectionid = 0;
 my $goindex = 0;
@@ -39,6 +39,7 @@ my $S_quote;
 my $S_number;
 
 #print $^O;
+
 
 if (length($SESSION{'WFILE'}) < 2) {
 	print '<meta http-equiv="refresh" content="0; URL=index.cgi?1=1'.$URLADD.'">';
@@ -613,8 +614,7 @@ if (($conftypef == -1) || ($conftypef eq "configfile")) {
 	}
 	$sysinfo .= '</td></tr>';
 }	
-print '</tr>
-			 <tr><td>&nbsp;</td></tr>'."\n";
+print '</tr><tr><td>&nbsp;</td></tr>'."\n";
 
 # Set error false, if true, the wizard step can't be used
 my $error = 0; 
@@ -639,8 +639,19 @@ $S_validation = $CWFO->get_tag_attribut_value ('STEP','TYPE','validation',$secti
 $S_quote =  $CWFO->get_tag_attribut_value ('STEP','TYPE','quote',$sectionid,0);
 ($S_quote < 0) && (undef ($S_quote));
 
-if (($conftypef == -1) || ($conftypef eq "configfile")) {
-	# if configtype is configuration file
+sub printform {
+	my $subsectionid = shift;
+	my $S_subconftype = shift;
+	
+	my $oldsectionid = 0;
+	my $oldconftype = "";
+	if ($subsectionid > 0) {
+		$oldsectionid = $sectionid;
+		$sectionid = $subsectionid;
+		$oldconftype = $S_conftype;
+		$S_conftype = $S_subconftype;
+	}
+	
 	if ((uc($S_conftype) eq "STANDARD") || ($S_conftype < 0)) {
 		print '<input type="hidden" name="dosave" value="1">'."\n";
 		# this step uses a standard value assignment
@@ -826,7 +837,17 @@ if (($conftypef == -1) || ($conftypef eq "configfile")) {
 		}	
 	} # Ende configuration type = standard
 
+	if ($subsectionid > 0) {
+		$sectionid = $oldsectionid;
+		$S_conftype = $oldconftype;
+	}
+} # end function printform
 
+if (($conftypef == -1) || ($conftypef eq "configfile")) {
+	# if configtype is configuration file
+
+	&printform ();
+	
 	if ((uc($S_conftype) eq "USER") || ($S_conftype < 0)) {
 		print '<input type="hidden" name="dosave" value="2">'."\n";
 		my $S_StartCode = $CWFO->get_tag_content ("STEP","START",$sectionid);
@@ -917,9 +938,6 @@ if (($conftypef == -1) || ($conftypef eq "configfile")) {
 			}
 			if (@sectionlines > $maxline) { print '...'; }
 			print '</pre>';
-			if ($SESSION{'WSUBSTEPID'} > 0) {
-				print '<hr><span id="norbold">'.&translate("Unterschritt").'</span><hr><br>';
-			}
 			print '</td>';			
 			#</td>';
 			print '<td align="left" nowrap valign="top">';
@@ -966,6 +984,17 @@ if (($conftypef == -1) || ($conftypef eq "configfile")) {
 			}
 	 		print '</td>';
 			print '</tr></table>';
+			print '<table width="100%" border="0" cellpadding="0" cellspacing="10">';
+			if ($SESSION{'WSUBSTEPID'} > 0) {
+				# Step Id wich should be shown is given   		
+				my $subsectionid = $CWFO->get_sectionnr_by_stepid ($SESSION{'WSUBSTEPID'});
+				($subsectionid > 0) && ($SESSION{'WSUBSTEPID'} = $CWFO->get_tag_attribut_value ("STEP","STEP","id",$sectionid));			
+				print '<hr><span id="norbold">'.&translate("Unterschritt").'</span><hr><br>';
+				#print "---Assumend Subsctionid:".$subsectionid;
+				my $S_subconftype = $CWFO->get_tag_attribut_value ('STEP','TYPE','kind',$subsectionid,0);
+				&printform ($subsectionid,$S_subconftype);
+			}			
+			print '</table>';
 			if (@sectionlines == 0) {
 				print $nl.'<span id="norbold">'.&translate("Abschnitt in Ihrer aktuellen Konfiguration noch nicht vorhanden",$lang)."!</span>";
 			}

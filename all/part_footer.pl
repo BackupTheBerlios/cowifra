@@ -12,7 +12,7 @@
                   <table border="0" width="100%" align="center" cellpadding="1" cellspacing="0">
                     <tr>
                       <td colspan="2" align="center" id="norbold">';
-                        print '(C) 2003 <a href="http://www.berlios.de" target="_blank" class="nor10">Berlios.de</a> / By C. Schmidt
+                        print '(C) 2003-2004 <a href="http://www.berlios.de" target="_blank" class="nor10">Berlios.de</a> / By C. Schmidt
                       </td>
                     </tr>
                   </table>

@@ -900,7 +900,7 @@
       </TYPE>	
 </STEP>
 
-<STEP id="44" group="2" skill="1">
+<STEP id="44" group="2" skill="1" subsetid="1">
       <NAME language="de">Server Name</NAME>
       <NAME language="uk">Server Name</NAME>
       <HELP language="de">
