@@ -567,8 +567,8 @@ if ($CGIO->param('doexec') == 1) {
 	    if (! $saveerror) {
 			(! $W_commentchar) && ($W_commentchar = "NOCOMMENT");
 			my $lineschanged;
-			################################################################ STAND
-	  		$lineschanged = $CFO->set_key_values_within_section ($S_key,$W_assignchar,$W_commentchar,\@finput, &myhtml2txt($S_instart),&myhtml2txt($S_instop));
+			#print "--------------------:".$CGIO->param('secnr').":-------------";
+	  		$lineschanged = $CFO->set_key_values_within_section ($S_key,$W_assignchar,$W_commentchar,\@finput, &myhtml2txt($S_instart),&myhtml2txt($S_instop),$CGIO->param('secnr'));
 			if ($CFO->is_error()) {
 	   			$saveerror .= "- ".&translate("Einstellung konnte nicht ge&auml;ndert werden",$lang).$nl;
 		 		($debug_level == 1) && (print $CFO->get_error_msg());
@@ -581,39 +581,39 @@ if ($CGIO->param('doexec') == 1) {
 	
 	
 		# Save configuration to file
-				if (! $saveerror) {
-					$CFO->save_file();
-					if ($CFO->is_error()) {
-					  $saveerror .= "- ".&translate("Einstellung konnte nicht gespeichert werden",$lang).$nl;
+		if (! $saveerror) {
+			$CFO->save_file();
+				if ($CFO->is_error()) {
+					$saveerror .= "- ".&translate("Einstellung konnte nicht gespeichert werden",$lang).$nl;
 				    ($debug_level == 1) && (print $CFO->get_error_msg());
-				  } 
-				}
+				} 
+			}
 		
-				# Load next step
-				if ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') <= $SESSION{'WSTEPID'})) {
-					# The next step ID is smaller then the current step ID, we must be at the end
-					# if no cleanup, goto index
-					# if cleanup, do cleanup
-					$goindex = 1;
-					print '<meta http-equiv="refresh" content="0; URL=site_startwizard.cgi?1=1'.$URLADD.'">';
-					return 1;	
-				} elsif ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') != $SESSION{'WSTEPID'})) {
-					$sectionid = $CWFO->get_sectionnr_by_stepid ($CGIO->param('fnextstepid'));
-					($sectionid > 0) && ($SESSION{'WSTEPID'} = $CWFO->get_tag_attribut_value ("STEP","STEP","id",$sectionid));
-				} else {
-					#print $saveerror;
-				}
+			# Load next step
+			if ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') <= $SESSION{'WSTEPID'})) {
+				# The next step ID is smaller then the current step ID, we must be at the end
+				# if no cleanup, goto index
+				# if cleanup, do cleanup
+				$goindex = 1;
+				print '<meta http-equiv="refresh" content="0; URL=site_startwizard.cgi?1=1'.$URLADD.'">';
+				return 1;	
+			} elsif ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') != $SESSION{'WSTEPID'})) {
+				$sectionid = $CWFO->get_sectionnr_by_stepid ($CGIO->param('fnextstepid'));
+				($sectionid > 0) && ($SESSION{'WSTEPID'} = $CWFO->get_tag_attribut_value ("STEP","STEP","id",$sectionid));
+			} else {
+				#print $saveerror;
+			}
 		
-				# Success message
-				if (! $saveerror) {
-					$msg = &translate("Einstellung gespeichert",$lang).$nl;
-				}
+			# Success message
+			if (! $saveerror) {
+				$msg = &translate("Einstellung gespeichert",$lang).$nl;
+			}
 	
-			} # End configuration is type STANDARD
-		} else {
-			print "No value defined?!";
-		}
-	} # end dosave = 1 (save standard assignment value)
+		} # End configuration is type STANDARD
+	} else {
+		print "No value defined?!";
+	}
+} # end dosave = 1 (save standard assignment value)
 	elsif (($CGIO->param('dosave') == 1) && ($finputtmp[0] eq "#LEAVEUNSET#") && (! $CGIO->param('fsubsectionid'))) {
 	  if ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') < $SESSION{'WSTEPID'})) {
 	    # The next step ID is smaller then the current step ID, we must be at the end
@@ -861,7 +861,8 @@ sub printform {
 		$S_keynumber = $CWFO->get_tag_attribut_value ('STEP','TYPE','number',$sectionid,0);
 		($S_keynumber < 0) && ($S_keynumber = "1");
 		print '<input type="hidden" name="fsubsectionid" value="'.$subsectionid.'">'."\n";
-		print '<input type="hidden" name="fsubstepid" value="'.$SESSION{'WSUBSTEPID'}.'">'."\n";		
+		print '<input type="hidden" name="fsubstepid" value="'.$SESSION{'WSUBSTEPID'}.'">'."\n";	
+		print '<input type="hidden" name="secnr" value="'.$secnr.'">'."\n";
 	}
 	#print $S_keynumber;
 	if ((uc($S_conftype) eq "STANDARD") || ($S_conftype < 0)) {

@@ -179,11 +179,11 @@ sub get_key_values_within_section {
 	my $searchstring = '^\s*'.&addslashes($key).'\s*?'.&addslashes($assignchars).'\s*';
 	my @valuesfound;
 	foreach $oneline (@fcontenta) {
-		if (($instart) && ($oneline =~ m/$instart/i)) {
+		if ($oneline =~ m/$instart/i) {
 			$isin++;
 			$actsec++;
 		}
-    	($instart) && ($oneline =~ m/$instop/i) && ($isin--);
+    	($oneline =~ m/$instop/i) && ($isin--);
 	  	($isin < 0) && ($isin = 0);
     	#print $actsec."--";
     	(($actsec != $secnr) || ($isin == 0)) && next;  # if we are in the section skip line	
@@ -237,9 +237,9 @@ sub get_alt_key_values {
 	foreach $oneline (@fcontenta) {
 		$oneline =~ s/\t/ /g; # remove tabs
 		($notinstart) && ($oneline =~ m/$notinstart/i) && ($innot++);
-    ($notinstop) && ($oneline =~ m/$notinstop/i) && ($innot--);
-    ($innot < 0) && ($innot = 0);
-    ($innot > 0) && next;  # if we are in the not section skip line
+    	($notinstop) && ($oneline =~ m/$notinstop/i) && ($innot--);
+    	($innot < 0) && ($innot = 0);
+    	($innot > 0) && next;  # if we are in the not section skip line
 		if (($oneline =~ m/$searchstring/i)) {
 			#$found++;
 			#print $oneline."<br>";
@@ -433,29 +433,6 @@ sub set_key_values {
 	@fcontenta = @ncontent;
 	undef (@ncontent);
 	
-	#4. change value of active key
-	#$searchstring = '^\s*'.&addslashes($key);
-	#$found = 0;
-	#for ($i=0;$i<$acount;$i++) {
-	#  $oneline = $fcontenta[$i];
-	#  ($notinstart) && ($oneline =~ m/$notinstart/i) && ($innot++);
-	#  ($notinstop) && ($oneline =~ m/$notinstop/i) && ($innot--);
-	#  ($innot < 0) && ($innot = 0);
-	#  ($innot > 0) && next;  # if we are in the not section skip line
-	#
-	#  if (($oneline =~ m/$searchstring/i)) {
-	#    my $subsearch = '^\s*'.&addslashes($key).'\s*'.&addslashes($assignchars).'\s*?.*';
-	#    if (($oneline =~ m/$subsearch/i)) {
-	#      $found++;	
-	#      $oneline = $key.$assignchars.$value."\n";
-	#      $linenumber = $i;
-	#    }
-	#  } 
-        #  push (@ncontent, $oneline);
-	#}
-	#@fcontenta = @ncontent;
-	#undef (@ncontent);
-	
 	#5. if value changed and if line number of last change is defined, add comment out old key -> value
 	if ($commentchar) {
 	  my ($sec, $min, $stunde, $mtag, $mon, $jahr, $tag, $nr_tag, $isdst) = localtime(time);
@@ -527,6 +504,228 @@ sub set_key_values {
 			}
 		}
   }
+
+	$self->{fcontent} = \@fcontenta;        # Write data back to object
+	#exit;
+	return 1;
+}
+
+sub set_key_values_within_section {
+	my $self = shift;
+	my $key = shift;
+	my $assignchars = shift;
+  	my $commentchar = shift;
+	my $valuesref = shift;					# contains reference to array
+	my @newvalues = @$valuesref;				# values coutains now all values (dereference)
+	my $instart = shift;
+	my $instop = shift;     
+	my $secnr = shift;
+	my $isin = 0;	
+	my $actsec = 0;
+	if (! $key) {
+		$self->{error} .= "- Need first argument key Method: set_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	if (! $assignchars) {
+		$self->{error} .= "- Need second argument assign chars Method: set_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	if (! $commentchar) {
+		$self->{error} .= "- Need third argument assign chars Method: set_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+	($commentchar eq "NOCOMMENT") && (undef($commentchar));
+
+	if (! $instart) {
+		$self->{error} .= "- Need fourth argument instart Method: set_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	if (! $instop) {
+		$self->{error} .= "- Need fifth argument instop Method: set_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	if (! $secnr) {
+		$self->{warning} .= "- Sixth argument not given using 1 as value  Method: set_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		$secnr = 1;
+	}	
+
+	if (@newvalues == 0) {
+		$self->{warning} .= "- Fourth argument not given using empty value  Method: set_key_values() (pm:CWFFile[".__LINE__."], $0)";
+	}
+	
+	if ((! $self->{cfile}) || (! $self->{fcontent})) {
+		$self->{error} .= "- File not loaded use load_file first Method: get_key_value() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	($self->{error}) && (return 0);
+
+	my $fcontent = $self->{fcontent};     # Get data from object
+	my @fcontenta = @$fcontent;
+	my $oneline;
+	my $searchstring;	
+	my @searchstrings;
+	#my $found = 0;
+  	my @ncontent;
+	my $linenumber = 0; # Remember the linenumber of the last line changed
+
+	#1. get the current values
+	my @currentvalues = $self->get_key_values_within_section ($key, $assignchars, $instart, $instop, $secnr);
+
+	#2. delete all comment out keys with active or old values
+	if ($commentchar) {
+    	for (my $i=0;$i<@newvalues;$i++) {
+    		push (@searchstrings,'^\s*'.&addslashes($commentchar).'+\s*'.&addslashes($key).'\s*?'.&addslashes($assignchars).'\s*?'.&addslashes($newvalues[$i]).'\s*?');
+		}	          
+		for (my $i=0;$i<@currentvalues;$i++) {
+		    push (@searchstrings,'^\s*'.&addslashes($commentchar).'+\s*'.&addslashes($key).'\s*?'.&addslashes($assignchars).'\s*?'.&addslashes($currentvalues[$i]).'\s*?');
+		}
+		#print "NOTSTART: ".$notinstart."<br>";
+		for (my $i=0;$i<@fcontenta;$i++) {
+			$oneline = $fcontenta[$i];
+		  	$oneline =~ s/\t/ /g; # remove tabs
+		    if ($oneline =~ m/$instart/i) {
+		    	$isin++;
+		    	$actsec++;
+		    }
+		    ($oneline =~ m/$instop/i) && ($isin--);
+		    ($isin < 0) && ($isin = 0);
+		    if (($actsec != $secnr) || ($isin == 0)) {  # if we are not in the section -> skip line	
+		    	push (@ncontent, $oneline);
+		    	next;
+		    }
+    	  	my $foundline = 0;
+		    for (my $j=0; $j < @searchstrings; $j++) {
+				if ($oneline =~ m/$searchstrings[$j]/i) {
+					$foundline = 1;
+			  		$linenumber = $i;
+		      	}
+    	  	}
+		    if ($foundline == 1) {
+		      next;  
+		    } else { 
+		      push (@ncontent, $oneline);
+		    }
+		}
+		@fcontenta = @ncontent;
+		undef (@ncontent);
+  	} 	
+
+	#3. delete all active keys, but remember the line number of the first
+	my $firstkeyfound = 0;
+	my @searchstrings; # reset searchstrings
+	push (@searchstrings,'^\s*'.&addslashes($key).'\s*?'.&addslashes($assignchars).'\s*?.*?\s*?'); # each key with any value
+	$isin = 0;	
+	$actsec = 0;
+	for (my $i=0;$i<@fcontenta;$i++) {
+	  	$oneline = $fcontenta[$i];
+	  	if ($oneline =~ m/$instart/i) {
+	  		$isin++;
+	  		$actsec++;
+	  	}
+	  	($oneline =~ m/$instop/i) && ($isin--);
+	  	($isin < 0) && ($isin = 0);
+		if (($actsec != $secnr) || ($isin == 0)) {  # if we are not in the section -> skip line	
+			push (@ncontent, $oneline);
+			next;
+		}	  
+
+    	my $foundline = 0;
+            
+	  	if ($oneline =~ m/$searchstrings[0]/i) {
+	  		$foundline = 1;
+	    	($firstkeyfound == 0) && ($firstkeyfound = $i);
+	  	}
+	  	if ($foundline == 1) {
+	  	  	next;  
+	  	} else { 
+	    	push (@ncontent, $oneline);
+	  	}
+  	} # end for
+	@fcontenta = @ncontent;
+	undef (@ncontent);
+	
+	#5. if value changed and if line number of last change is defined, add comment out old key -> value
+	if ($commentchar) {
+		my ($sec, $min, $stunde, $mtag, $mon, $jahr, $tag, $nr_tag, $isdst) = localtime(time);
+		if ($mon < 10) { $mon = "0$mon"; }
+		if ($tag < 10) { $tag = "0$tag"; }	  
+		my $useline = 0;
+		if ($firstkeyfound > 0) {
+			$useline = $firstkeyfound;
+		} elsif ($linenumber > 0) {
+			$useline = $linenumber;
+		}
+	
+		for (my $i=0; $i < @currentvalues; $i++) {
+			my $doinsert = 1;
+		  	for (my $j=0; $j < @newvalues; $j++) {
+		  		if ($newvalues[$j] eq $currentvalues[$i]) {			# if old value is still a new value do not insert as comment
+		  			$doinsert = 0;
+		  		}
+		  	}
+		  	if (($doinsert == 1) && ($useline > 0)) {		# insert new to existing line, if no line exists, skip insert as comment
+		    	splice @fcontenta, ($useline), 0, $commentchar." ".$key.$assignchars.$currentvalues[$i]."%CWF%".$mtag."-".$mon."-".($jahr+1900)."\n";  
+		  	}
+		}
+  	} # if commentchar
+
+
+  	if (($firstkeyfound == 0) && ($linenumber == 0)) {
+  		# if no active key found and no inactive key with old value, search for other line with key to find a linenumber for insert new key
+		my $searchstring = '^\s*'.&addslashes($commentchar).'+\s*?'.&addslashes($key).'\s*?'.&addslashes($assignchars).'\s*(.*)';
+		$isin = 0;	
+		$actsec = 0;		
+		for (my $i=0;$i<@fcontenta;$i++) {
+			$oneline = $fcontenta[$i];
+			$oneline =~ s/\t/ /g; # remove tabs
+			if ($oneline =~ m/$instart/i) {
+				$isin++;
+				$actsec++;
+			}
+	  	  	($oneline =~ m/$instop/i) && ($isin--);
+	  	  	($isin < 0) && ($isin = 0);
+			if (($actsec != $secnr) || ($isin == 0)) {  # if we are not in the section -> skip line	
+		    	next;
+		    }  	  	
+			($oneline =~ m/$searchstring/i) && ($linenumber = $i);
+		}
+  	}
+
+
+	#6. insert all new key-> values at first key found, line changed or at the end
+	my $useline = 0;
+	if ($firstkeyfound > 0) {
+		$useline = $firstkeyfound;
+	} elsif ($linenumber > 0) {
+		$useline = $linenumber;
+	}
+	
+	if ($useline > 0) {
+		for (my $j=0; $j < @newvalues; $j++) {
+	  		if ($newvalues[$j] ne "##  ##")	{		# Value should be not set	
+				my @parts = split(/%CWF%/, $newvalues[$j]);
+				if (@parts == 2) {
+					$newvalues[$j] = $parts[0];
+				}	  
+				splice @fcontenta, ($useline), 0, $key.$assignchars.$newvalues[$j]."\n";
+			}
+		} 
+	} else {
+		for (my $j=0; $j < @newvalues; $j++) {
+	    	if ($newvalues[$j] ne "##  ##")	{		# Value should be not set	
+				my @parts = split(/%CWF%/, $newvalues[$j]);
+				if (@parts == 2) {
+					$newvalues[$j] = $parts[0];
+				}	  
+				push (@fcontenta, "\n".$key.$assignchars.$newvalues[$j]);
+			}
+		}
+  	}
 
 	$self->{fcontent} = \@fcontenta;        # Write data back to object
 	#exit;
