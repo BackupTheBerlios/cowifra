@@ -836,10 +836,10 @@ if (($conftypef == -1) || ($conftypef eq "configfile")) {
 			$error = 1;
 		} else {
 			my $secnr = 1;
-		  if ($CGIO->param('secnr') > 0) {
-		  	$secnr = $CGIO->param('secnr');
-		  }
-		  print '<input type="hidden" name="secnr" value="'.$secnr.'">'."\n";
+		  	if ($CGIO->param('secnr') > 0) {
+		  		$secnr = $CGIO->param('secnr');
+		  	}
+		  	print '<input type="hidden" name="secnr" value="'.$secnr.'">'."\n";
 			my $sectionsfound = $CFO->count_sections (&myhtml2txt($S_StartCode),&myhtml2txt($S_StopCode));
 			my @sectionlines = $CFO->get_section (&myhtml2txt($S_StartCode),&myhtml2txt($S_StopCode),$S_keynumber,$secnr);
 			if ($CFO->is_error()) {
@@ -887,6 +887,64 @@ if (($conftypef == -1) || ($conftypef eq "configfile")) {
 			}				
 		}
 	}
+	
+	if ((uc($S_conftype) eq "SUBSET") || ($S_conftype < 0)) {
+		my $S_StartCode = $CWFO->get_tag_content ("STEP","START",$sectionid);
+		my $S_StopCode = $CWFO->get_tag_content ("STEP","STOP",$sectionid);
+		if (($S_StartCode < 0) || ($S_StopCode < 0)) {
+			$error = 1;
+		} else {
+			my $secnr = 1;
+		  	if ($CGIO->param('secnr') > 0) {
+		  		$secnr = $CGIO->param('secnr');
+		  	}
+			my $sectionsfound = $CFO->count_sections (&myhtml2txt($S_StartCode),&myhtml2txt($S_StopCode));
+			my @sectionlines = $CFO->get_section (&myhtml2txt($S_StartCode),&myhtml2txt($S_StopCode),$S_keynumber,$secnr);
+			if ($CFO->is_error()) {
+			  print $CFO->get_error_msg();
+			}
+			print '<tr><td align="center">
+			<a name="secedit"></a>';
+			if ($sectionsfound > 1) {
+				print '<span id="norbold">'.&translate("F&uuml;r diesen Schritt existieren bereits mehrere Abschnitte.",$lang)." ".&translate("Sie k&ouml;nnen zwischen den einzelnen Abschnitten, mit Hilfe der Links neben dem Textfeld, w&auml;hlen",$lang).'</span><br><br>';
+			}
+			print '<table width="100%" border="0" cellpadding="10" cellspacing="0" '.$table_body2.'><tr><td width="1%" id="sml" valign="top">'.&translate("Ausschnitt",$lang).'<hr><pre>';
+			for (my $i=0;$i<10;$i++) {
+				print $sectionlines[$i];
+			}
+			print '...</pre><hr>'.&translate("Unterschritte").'</td>';			
+			#</td>';
+			print '<td align="left" nowrap valign="top">';
+			if ($sectionsfound > 1) {
+				for (my $i=1; $i<=$sectionsfound; $i++) {
+					if ($i == $secnr) {
+					  print '&nbsp; <span id="norbold">'.&translate("Abschnitt",$lang).' '.$i.'</span><br>';
+					} else {
+						print '&nbsp; <a href="site_step.cgi?stepid='.$SESSION{'WSTEPID'}.$URLADD.'&secnr='.$i.'#secedit" class="nor10">'.&translate("Abschnitt",$lang).' '.$i.'</a><br>';
+					}	
+				}
+			}
+	 		print '</td>';
+			print '</tr></table>';
+			if (@sectionlines == 0) {
+				print $nl.'<span id="norbold">'.&translate("Abschnitt in Ihrer aktuellen Konfiguration noch nicht vorhanden",$lang)."!</span>";
+			}
+			print '</td></tr>';
+			if ($error == 0) {
+				print '<tr><td align="center"><br><br>';
+				#if (@sectionlines > 0) {
+				#	print '<input type="submit" name="SecSave" value="'.&translate('Abschnitt speichern',$lang).'">';
+				#}
+				#if (($S_keynumber eq "0") || ($sectionsfound < $S_keynumber)) {
+				#	print ' <input type="submit" name="SecSaveNew" value="'.&translate('Als neuen Abschnitt speichern',$lang).'">';
+	 			#}	
+	 			print ' <input type="submit" name="NextStep" value="'.&translate('Zum n&auml;chsten Schritt',$lang).'">';
+				print '<br><br></td></tr>';
+			} else {
+				print '<tr><td id="norredbold">'.&translate('Es trat ein Fehler auf, diese Konfigurationsschritt kann nicht ausgeführt werden',$lang).'</td></tr>';
+			}				
+		}
+	}	
 } # END if configuration type is config file
 elsif ($conftypef eq "configprogram") {
 	print '<tr><td id="nor" valign="top">';

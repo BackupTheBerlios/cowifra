@@ -427,14 +427,14 @@ sub get_tag_attribut_values_with_attribut_value {
 	my $attribut = shift;
 	my $wattribut = shift;
 	my $wattributv = shift;
-        my $sectionnr = shift;		
-        # should always be 1 for HEADER or CLEANUP
-        
-        (! $sectionnr) && ($sectionnr = 1);
+	my $sectionnr = shift;		
+	# should always be 1 for HEADER or CLEANUP
 
-        (! $section) && ($self->{error} 	.= "- Need first argument \$section. Method: get_tag_attribut_value_with_attribut_value() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);
-        (! $tagname) && ($self->{error} 	.= "- Need second argument \$tagname. Method: get_tag_attribut_value_with_attribut_value() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);
-        (! $attribut) && ($self->{error} 	.= "- Need third argument \$attribut. Method: get_tag_attribut_value_with_attribut_value() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);
+	(! $sectionnr) && ($sectionnr = 1);
+
+	(! $section) && ($self->{error} 	.= "- Need first argument \$section. Method: get_tag_attribut_value_with_attribut_value() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);
+	(! $tagname) && ($self->{error} 	.= "- Need second argument \$tagname. Method: get_tag_attribut_value_with_attribut_value() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);
+	(! $attribut) && ($self->{error} 	.= "- Need third argument \$attribut. Method: get_tag_attribut_value_with_attribut_value() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);
 	(! $wattribut) && ($self->{error} 	.= "- Need fourth argument \$wattribut. Method: get_tag_attribut_value_with_attribut_value() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);        
 	(! $wattributv) && ($self->{error} 	.= "- Need fifth argument \$wattributv. Method: get_tag_attribut_value_with_attribut_value() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);        
         (! $sectionnr) && ($self->{warning} 	.= "- Missing section number, using number 1 (pm:CWF[".__LINE__."], $0)".$self->{nl}) && ($sectionnr = 1);
@@ -513,6 +513,46 @@ sub get_next_step {
 				$next = $sid;
 				$nextid = $i;
 				#print "y";
+			} 	
+		}
+		$i++;
+	}
+	return $nextid;												# returns array id not the real step id!
+}
+
+###############################################################################################
+sub get_next_subset_step {
+    # Returns id of next step which is part of the give subset 
+	my $self = shift;
+	my $nr = shift;                                             # find next step after this
+	my $subsetid = shift;										# from which subset?
+
+	(! $nr) && ($nr = 0);
+
+	(! ($subsetid > 0)) && ($self->{error} 	.= "- Need second argument \$subsetid. Method: get_next_subset_step() (pm:CWF[".__LINE__."], $0)".$self->{nl}) && (return 0);
+
+	my $next = 0;
+	my $nextid = 0;
+	my $i=1;
+	if (! defined($self->{'STEP'}[$i])) {
+		return 0;				                               	# Section is not defined
+	}
+	while (defined($self->{'STEP'}[$i]{'STEP'}[0])) {			# as long as there is another step
+		my $sid = $self->{'STEP'}[$i]{'STEP'}[0]{'id'};
+		my $ssubsetid = $self->{'STEP'}[$i]{'STEP'}[0]{'subsetid'};
+
+		(! $sid) && ($sid = 0);
+		(! $ssubsetid) && ($ssubsetid = 0);
+        if (($sid > $nr) && ($sid < $next) && ($next > 0)) {	# is a step given and the next greater?
+			if ($subsetid == $ssubsetid) {						# is a skill and a group given and do they match?
+				$next = $sid;
+				$nextid = $i;
+			} 	
+		}
+		elsif (($sid > $nr) && ($next == 0)) {
+			if ($subsetid == $ssubsetid) {	# is a skill and a group given and do they match?
+				$next = $sid;
+				$nextid = $i;
 			} 	
 		}
 		$i++;

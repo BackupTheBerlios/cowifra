@@ -138,6 +138,9 @@ sub translate () {
     ($lang eq "uk") && ($string eq "Wert undefiniert lassen (Keine &Auml;nderung vornehmen)") && return "Don't set value (no change of current value)";
     ($lang eq "uk") && ($string eq "Ergebnis") && return "Result";
     ($lang eq "uk") && ($string eq "Ausgef&uuml;hrt") && return "Execute";
+    ($lang eq "uk") && ($string eq "Ausschnitt") && return "Sample";
+    ($lang eq "uk") && ($string eq "Unterschritte") && return "Subset";
+    
 
     #Steps errors
     ($lang eq "uk") && ($string eq "Fehler im Wizard-File") && return "Error in wizard file";

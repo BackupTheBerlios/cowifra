@@ -1770,7 +1770,7 @@
 	    NOTE: The use of &lt;VirtualHost&gt; does not affect what addresses Apache listens on. You may 
 	    need to ensure that Apache is listening on the correct addresses using either BindAddress or Listen.
       </HELP>
-      <TYPE kind="user" input="subset" number="0" subsetid="1">
+      <TYPE kind="subset" number="0" subsetid="1">
       	<START>^\s*&lt;VirtualHost.*?&gt;</START>
       	<STOP>&lt;/VirtualHost&gt;</STOP>
       </TYPE>	
