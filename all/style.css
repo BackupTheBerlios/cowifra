@@ -1,0 +1,38 @@
+#nor       	{ font-size:10pt; color:#000000; text-decoration:none;font-family:Arial, Helvetica, sans-serif; line-height: 12.5pt; }
+#norbold   	{ font-size:10pt; color:#000000; text-decoration:none;font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 12.5pt; }
+#norredbold	{ font-size:10pt; color:#990000; text-decoration:none;font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 12.5pt; }
+#sml       	{ font-size:8pt;  color:#000000; text-decoration:none;font-family:Arial, Helvetica, sans-serif; line-height: 10pt; }
+#wht       	{ font-size:10pt; color:#FFFFFF; text-decoration:none;font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 12.5pt; }
+#whtsmli   	{ font-size:8pt;  color:#FFFFFF; text-decoration:none;font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 8pt; }
+#norbold12 	{ font-size:12pt; color:#000000; text-decoration:none;font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 14pt; }
+#big       	{ font-size:16pt; color:#000000; text-decoration:none;font-family:Arial, Helvetica, sans-serif; line-height: 18pt; }
+#norgreenbold	{ font-size:10pt; color:#009900; text-decoration:none;font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 12.5pt; }
+
+
+a.nor8:link    { font-size:8pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 10pt; }
+a.nor8:visited { font-size:8pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 10pt; }
+a.nor8:active  { font-size:8pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 10pt; }
+a.nor8off:hover   { font-size:8pt; color:#000055; text-decoration:underline; font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 10pt; }
+a.nor8:hover   { font-size:8pt; color:#006600; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 10pt; }
+
+
+a.nor10:link    { font-size:10pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 12pt; }
+a.nor10:visited { font-size:10pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 12pt; }
+a.nor10:active  { font-size:10pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 12pt; }
+a.nor10off:hover   { font-size:10pt; color:#000055; text-decoration:underline; font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 12pt; }
+a.nor10:hover   { font-size:10pt; color:#006600; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 12pt; }
+
+
+a.nor12:link    { font-size:12pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+a.nor12:visited { font-size:12pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+a.nor12:active  { font-size:12pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+a.nor12off:hover   { font-size:12pt; color:#000055; text-decoration:underline; font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+a.nor12:hover   { font-size:12pt; color:#006600; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+
+
+a.nor14:link    { font-size:14pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+a.nor14:visited { font-size:14pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+a.nor14:active  { font-size:14pt; color:#000055; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+a.nor14off:hover   { font-size:14pt; color:#000055; text-decoration:underline; font-weight: bold; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+a.nor14:hover   { font-size:14pt; color:#006600; text-decoration:underline; font-family:Arial, Helvetica, sans-serif; line-height: 16pt; }
+

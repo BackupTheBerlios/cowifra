@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE WIZARD SYSTEM "file:wizard.dtd" >
+<WIZARD>
+<HEADER>
+      <APPLICATION>Mysqladmin</APPLICATION>
+      <APPVERSION>8.22</APPVERSION>
+      <CONFTYPE>configprogram</CONFTYPE>
+      <PATH distribution="Suse">/usr/bin/</PATH>
+      <PATH>/usr/bin/</PATH>
+      <FILE>mysqladmin</FILE>
+      <AUTHOR>C. Schmidt</AUTHOR>
+      <EMAIL>smt@fokus.fraunhofer.de</EMAIL>
+      <DATE>15.10.2003</DATE>	
+</HEADER>
+
+<STEP id="1" group="1" skill="1">
+      <NAME language="Deutsch">Datenbank erstellen</NAME>
+      <NAME language="English">Create database</NAME>
+      <HELP language="Deutsch">Um eine neue Mysql Datenbank zu erstellen, geben Sie bitte den Namen der neuen
+      	    Datenbank ein.´
+      	    
+      	    [[br]][[br]]
+      	    Achtung:[[br]]
+      	    Bitte geben Sie folgendes in die einzelnen Eingabefelder ein:[[br]]
+      	    1. -uusername (also -u direkt gefolgt vom Username der Zugriff auf den MySQL Server hat in der Regel root)[[br]]
+      	    2. -ppasswort (also -p direkt gefolgt vom Passwort des angegebenen Users)[[br]]
+      	    3. Den Namen der neuen Datenbank.[[br]][[br]]
+      	    
+      	    Wenn die Angabe eines Usernamens nicht notwendig ist, z.B. wenn root kein Passwort besitzt, k&ouml;nnen Sie 1. und
+      	    2. auch frei lassen, stellen Sie in jedem Fall sicher, dass der MySQL Server l&auml;ft (siehe Aktionen).
+      	    
+      	    
+      </HELP>
+      <HELP language="English">
+      	    If you like to create a new mysql database, please enter the name of the new database.
+
+      </HELP>
+      <TYPE kind="standard" default="-u" canempty="1" number="3">
+      <EXEC> #param1# #param2# create #param3# </EXEC>
+      </TYPE>	
+</STEP>
+
+<STEP id="2" group="1" skill="1">
+      <NAME language="Deutsch">Datenbank l&ouml;schen</NAME>
+      <NAME language="English">Delete database</NAME>
+      <HELP language="Deutsch">
+      	    
+      	    Bitte geben Sie folgendes in die einzelnen Eingabefelder ein:[[br]]
+      	    1. -uusername (also -u direkt gefolgt vom Username der Zugriff auf den MySQL Server hat in der Regel root)[[br]]
+      	    2. -ppasswort (also -p direkt gefolgt vom Passwort des angegebenen Users)[[br]]
+      	    3. Den Namen der zu l&ouml;schenden Datenbank.[[br]][[br]]
+      	    
+      	    Wenn die Angabe eines Usernamens nicht notwendig ist, z.B. wenn root kein Passwort besitzt, k&ouml;nnen Sie 1. und
+      	    2. auch frei lassen, stellen Sie in jedem Fall sicher, dass der MySQL Server l&auml;uft (siehe Aktionen).
+      	    
+      	    
+      </HELP>
+      <HELP language="English">
+      	    If you like to delete a mysql database, please enter the name of the new database.
+
+      </HELP>
+      <TYPE kind="standard" default="-u" canempty="1" number="3">
+      <EXEC> #param1# #param2# drop #param3# -f </EXEC>
+      </TYPE>	
+</STEP>
+
+</WIZARD>
+

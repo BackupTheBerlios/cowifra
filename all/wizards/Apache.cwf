@@ -1,0 +1,1786 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE WIZARD SYSTEM "file:wizard.dtd" >
+<!-- Test -->
+<WIZARD>
+<HEADER>
+      <!-- blub -->
+      <APPLICATION>Apache</APPLICATION>
+      <APPVERSION>1.234</APPVERSION>
+      <CONFTYPE>configfile</CONFTYPE>
+      <PATH distribution="Suse">/etc/httpd/</PATH>
+      <PATH>/etc/</PATH>
+      <FILE>httpd.conf</FILE>
+      <AUTHOR>Author des Wizard Files</AUTHOR>
+      <EMAIL>author@email.com</EMAIL>
+      <URL>http://www.myadress.com/mywizardfile.lwf</URL>
+      <DATE>01.01.1901</DATE>	
+      <COMMENTCHAR>#</COMMENTCHAR>
+      <VALASSIGN> </VALASSIGN>
+      <GROUPDEF id="1">Global Environment</GROUPDEF>
+      <GROUPDEF id="2">'Main' server configuration</GROUPDEF>
+      <GROUPDEF id="3">Virtual Hosts</GROUPDEF>
+      <SKILLDEF id="1" language="Deutsch">Schnellstart (N&ouml;tigste Einstellungen)</SKILLDEF>
+      <SKILLDEF id="1" language="uk">Quickstart (required options)</SKILLDEF>
+      <SKILLDEF id="2" language="Deutsch">Fortgeschrittene Einstellungen</SKILLDEF>
+      <SKILLDEF id="2" language="uk">Advanced options</SKILLDEF>
+      <WIZARDFILEADDON>Apache2.cwf</WIZARDFILEADDON>
+</HEADER>
+
+<STEP id="1" group="1" skill="1">
+      <NAME language="Deutsch">Server Type</NAME>
+      <NAME language="uk">Server Type</NAME>
+      <NAME language="spanisch">Server Type</NAME>
+      <HELP language="Deutsch">Hiermit kann bestimmt werden, in welchem Modus der Webserver betrieben werden soll. 
+
+	    Durch die beiden Einstellm&ouml;glichkeiten also Standalone Betrieb bzw. Daemon Betrieb als inetd k&ouml;nnen Sie die Performance des Webservers entscheidend beeinflussen. Prinzipell k&ouml;nnte man sagen, dass der standalonemodus effizienter ist, als der inetd Modus, da beim standalone Betrieb nicht f&uuml;r jede Anfrage ein neuer Prozess gestartet werden muss (was bei inetd Modus der Fall ist.)[[br]][[br]]
+
+	    Der inetd Modus hingegen wird allgemein als der sicherere Modus angesehen. F&uuml;r welchen Modus Sie sich entscheiden bleibt Ihnen &uuml;berlassen. Sollten Sie sich jedoch mehr f&uuml; die Sicherheit Ihrer Website k&uuml;mmern, so w&auml;re der inetd Betrieb ratsamer.[[br]][[br]]
+
+	    [[b]]Standalone Modus[[/b]][[br]]
+	    Port [Nummer] mit diesem Befehl kann der Prim&auml;re Server-Prozess angewiesen werden einen bestimmten Port zu &uuml;berwachen. Der Standart http Port, welcher bei den meisten Websites verwendet wird, ist 80. Falls Sie als Root User des Systems den Webserver ausf&uuml;hren wollen, so m&uuml;ssen Sie einen Port zwischen 1024 und 32768 w&auml;hlen. Beachten Sie jedoch, dass bei der Verwendung eines Ports, der schon von einem anderen Server verwendet wird, eine Fehlermeldung ausgegeben wird. [[br]][[br]]
+
+	    Wenn Sie Ihren Apache Webserver im Standalone Betrieb betreiben, so m&uuml;ssen Sie nun auch die Benutzer und Gruppennamen festlegen. Die Anweisungen, mit denen Sie dies erreichen k&ouml;nnen w&auml;ren:[[br]]
+	    User [Benutzername | # UID][[br]]
+	    Group[Gruppenname | # GID] [[br]]
+	    Beachten Sie, dass diese beiden Anweisungen sehr bedeutend f&uuml;r die Sicherheit des Webservers ist. Ordnen Sie am besten den Child Prozessen einen Benutzer mit wenig Spielraum zu, um so eine ausreichende Sicherheit zu gew&auml;hrleisten,
+	    [[br]][[br]]
+	    [[b]]inetd[[/b]][[br]]
+	    Wollen Sie aus den oben erw&auml;hnten Gr&uuml;nden ihren Webserver auf den inetd Modus betreiben, so m&uuml;ssen sie die Datei etc/inetd.conf Ihres Apache Webserver um eine kleine Anweisung erg&auml;nzen. Diese Datei weist ein eigenes Anweisungsformat auf, das Sie erkennen wenn Sie die anderen Eintragungen der Datei betrachten. 
+	    Die Datei verwendet meist folgendes Anweisungsformat:[[br]][[br]]
+	    &lt;service_name&gt; &lt;stock_type&gt; &lt;proto&gt; &lt;flags&gt; &lt;user&gt; &lt;server_path&gt; &lt;args&gt;[[br]]
+	    Dieser Datei kann man entnehmen, dass der Dienst &uuml;ber einen bestimmten Benutzer l&auml;uft. Richten Sie daraufhin einen besonderen httpd Benutzer ein und benutzen diesen wie folgt: [[br]]
+	    http stream tcp nowait httpd /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf
+	    [[br]][[br]]
+	    Daraufhin sollten Sie in der Datei /etc/services zus&auml;tzlich folgende Zeile eintragen:[[br]]
+	    httpd 80/tcp httpd[[br]][[br]]
+	    Dies legt fest, dass dieser Dienst httpd auf Port 80 laufen soll.
+	    Daraufhin sollten Sie den inetd Prozess neu starten.
+	    Die hierf&uuml;r notwendige Prozess ID k&ouml;nnen Sie mit dem Befehl 
+	    Ps ausw | grep inetd 
+	    Herausfinden
+	    [[br]][[br]]
+	    Diesen Prozess k&ouml;nnen Sie mit folgenden Befehl wieder stoppen:
+	    Kill -HUP &lt;PID von inetd&gt;
+	    Achten Sie darauf &lt;PID von inetd&gt; durch die Prozess ID zuerstetzen
+      </HELP>
+      <HELP language="uk">
+	    [[b]]inetd[[/b]] [[br]]
+	    The server will be run from the system process inetd; the command to start the server is added to /etc/inetd.conf [[br]][[br]]
+	    [[b]]standalone[[/b]][[br]] 
+	    The server will run as a daemon process; the command to start the server is added to the system startup scripts. (/etc/rc.local or /etc/rc3.d/....)[[br]][[br]]
+	    Inetd is the lesser used of the two options. For each http connection received, a new copy of the server is started from scratch; after the connection is complete, this program exits. There is a high price to pay per connection, but for security reasons, some admins prefer this option. Inetd mode is no longer recommended and does not always work properly. Avoid it if at all possible. 
+	    Standalone is the most common setting for ServerType since
+	    it is far more efficient. The server is started once, and
+	    services all subsequent connections. If you intend running
+	    Apache to serve a busy site, standalone will probably be
+	    your only option.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="standalone" key="ServerType">
+	    <SELECT value="standalone">Standalone</SELECT>
+	    <SELECT value="inetd">INETD</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="2" group="1" skill="1">
+      <NAME language="Deutsch">Server Root</NAME>
+      <NAME language="uk">Server Root</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.robert-web.de/httpdconf.shtml" target="_blank"]]http://www.robert-web.de/httpdconf.shtml[[/a]][[br]][[br]]
+	    "ServerRoot" bezeichnet die Spitze des Verzeichnisbaums, unter dem die Server-Konfiguration, Fehleranzeigen und Protokolle zu finden sind. Am Ende dieser Zeile darf kein Slash stehen. 
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+	    ServerRoot: The top of the directory tree under which the server's configuration, error, and log files are kept.
+	    [[br]][[br]]
+	    NOTE!  If you intend to place this on an NFS (or otherwise network) mounted filesystem then please read the LockFile documentation
+	    (available at [[a href="http://www.apache.org/docs/mod/core.html#lockfile" target="_blank"]]http://www.apache.org/docs/mod/core.html#lockfile[[/a]]); you will save yourself a lot of trouble.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="&quot;/usr/local/httpd&quot;" quote="&quot;" validation="existpath" key="ServerRoot">
+      </TYPE>	
+</STEP>
+
+<STEP id="3" group="1" skill="2">
+      <NAME language="Deutsch">Lock File</NAME>
+      <NAME language="uk">Lock File</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#lockfile" target="_blank"]]http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#lockfile[[/a]][[br]][[br]]
+	    Die Direktive LockFile legt den Pfad zur Lock-Datei fest, die verwendet wird, wenn der Apache mit einer der AcceptMutex-Einstellungen fcntl oder flock 
+	    verwendet wird. Die Anweisung sollte normalerweise bei der Voreinstellung belassen werden. Der Hauptgrund, sie zu &auml;ndern, ist, wenn das logs-Verzeichnis 
+	    auf einem per NFS-eingebundenen Laufwerk liegt, da die Lock-Datei auf einer lokalen Platte abgelegt sein muss. Die PID (Prozess-ID) des Hauptserverprozesses 
+	    wird automatisch an den Dateinamen angeh&auml;ngt.[[br]][[br]]
+	    [[b]]Sicherheit:[[/b]][[br]]
+	    Es ist am besten, die Ablage in einem allgemein (fuer jederman)
+	    beschreibbaren Verzeichnis wie /var/tmp zu vermeiden, da ein
+	    Denial-of-Servide-Angriff gestartet werden k&ouml;nnte und der Server am Start gehindert
+	    werden k&ouml;nnte, indem eine Lock-Datei mit dem gleichen Namen
+	    erstellt wird, wie der Server sie zu erstellen versuchen wuerde.
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    The LockFile directive sets the path to the lockfile used when Apache
+	    is compiled with either USE_FCNTL_SERIALIZED_ACCEPT or USE_FLOCK_SERIALIZED_ACCEPT. This directive should normally be left at
+	    its default value. The main reason for changing it is if the logs directory is NFS mounted, since the lockfile MUST BE STORED ON A LOCAL
+	    DISK. The PID of the main server process is automatically
+	    appended to the filename.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="/var/lock/subsys/httpd/httpd.accept.lock" key="LockFile">
+      </TYPE>	
+</STEP>
+
+<STEP id="4" group="1" skill="2">
+      <NAME language="Deutsch">Pid File</NAME>
+      <NAME language="uk">Pid File</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html##pidfile" target="_blank"]]http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#pidfile[[/a]][[br]][[br]]
+
+	    Die Direktive PidFile bestimmt die Datei, in welcher der Server die
+	    Prozess-ID des Daemons ablegt. Wenn der Dateiname nicht absolut
+	    angegeben wird, wird er relativ zu ServerRoot interpretiert.[[br]][[br]]
+
+	    [[b]]Beispiel[[/b]][[br]][[br]]
+
+	    PidFile /var/run/apache.pid[[br]][[br]]
+
+	    Es ist oft hilfreich, dem Server ein Signal senden zu k&ouml;nnen,
+	    damit er seine ErrorLogs und TransferLogs schlie&szlig;t und dann neu
+	    &ouml;ffnet und seine Konfigurationsdateien neu einliest. 
+	    Dies kann durch Senden eines SIGHUP-Signals (kill -1) an die Prozess-ID geschehen, die im PidFile eingetragen ist.
+
+	    Die PidFile-Datei unterliegt den gleichen Warnungen &uuml;ber die
+	    Ablage von Protokolldateien und Sicherheit.[[br]][[br]]
+
+	    [[b]]Anmerkung[[/b]][[br]][[br]]
+
+	    Ab Apache 2 wird empfohlen, nur das Skript apachectl zum (Neu-)Starten und Stoppen des Servers zu verwenden.
+      </HELP>
+
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    PidFile: The file in which the server should record its process
+	    identification number when it starts.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="/var/run/httpd.pid" validation="file" key="PidFile">
+</TYPE>	
+</STEP>
+
+<STEP id="6" group="1" skill="2">
+      <NAME language="Deutsch">Score Board File</NAME>
+      <NAME language="uk">Score Board File</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#scoreboardfile" target="_blank"]]http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#scoreboardfile[[/a]][[br]][[br]]
+
+	    Apache verwendet ein Scoreboard zur Kommunikation zwischen
+	    seinen Eltern- und Kindprozessen. Einige Architekturen
+	    erfordern eine Datei zur Unterst&uuml;tzung der
+	    Kommunikation. Wenn die Datei undefiniert bleibt, versucht
+	    der Apache zuerst, das Scoreboard im Arbeitsspeicher zu
+	    erstellen (Verwendung von anonymem Shared-Memory), und
+	    versucht bei einem Fehlschlag anschlie&szlig;end die Datei
+	    auf der Festplatte zu erstellen (Verwendung von
+	    Datei-basiertem Shared-Memory). Die Angabe dieser
+	    Direktive veranla&szlig;t den Apache stets, die Datei auf
+	    der Festplatte zu erstellen.[[br]][[br]]
+	    [[b]]Beispiel[[/b]][[br]][[br]]
+
+	    ScoreBoardFile /var/run/apache_status[[br]][[br]]
+
+	    Datei-basiertes Shared-Memory ist f&uuml;r Applikationen
+	    von Drittanbietern hilfreich, die direkten Zugriff auf das Scoreboard ben&ouml;tigen.
+
+	    Wenn Sie eine ScoreBoardFile-Anweisung verwenden,
+	    erreichen Sie eventuell eine h&ouml;here Geschwindigkeit,
+	    wenn Sie die Datei auf einer RAM-Disk ablegen. Achten Sie
+	    darauf, die gleichen Warnungen wie &uuml;ber die Ablage von Protokolldateien und Sicherheit zu beherzigen.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    ScoreBoardFile: File used to store internal server process information.
+	    Not all architectures require this.  But if yours does (you'll know because
+	    this file will be  created when you run Apache) then you *must* ensure that
+	    no two invocations of Apache share the same scoreboard file.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="/var/run/httpd.scoreboard" validation="file" key="PidFile">
+      </TYPE>	
+</STEP>
+
+<STEP id="8" group="1" skill="2">
+      <NAME language="Deutsch">ResourceConfig</NAME>
+      <NAME language="uk">ResourceConfig</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://selfaktuell.teamone.de/artikel/server/apacheconf/apconf062.htm" target="_blank"]]http://selfaktuell.teamone.de/artikel/server/apacheconf/apconf062.htm[[/a]][[br]][[br]]
+
+	    In der Standard-Konfiguration wird der Server die Dateien httpd.conf (diese
+	    Datei), srm.conf, und access.conf in dieser Reihenfolge abarbeiten.
+	    Die beiden letztgenannten Dateien werden jetzt leer belassen, da empfohlen
+	    wird, zur besseren &uuml;bersicht s&auml;mtliche Anweisungen in einer einzigen
+	    Konfigurationsdatei zusammenzufassen.
+	    Die auskommentierten Werte unten sind jeweils die vorgegebenen
+	    Standardwerte. Sie k&ouml;nnen festlegen, da&szlig; der Server diese Dateien
+	    ignoriert, indem Sie den Anweisungen den Parameter "/dev/null" mitgeben.
+
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+            In the standard configuration, the server will process httpd.conf (this 
+            file, specified by the -f command line option), srm.conf, and access.conf 
+            in that order.  The latter two files are now distributed empty, as it is 
+            recommended that all directives be kept in a single file for simplicity.  
+            The commented-out values below are the built-in defaults.  You can have the 
+            server ignore these files altogether by using "/dev/null" (for Unix) or
+            "nul" (for Win32) for the arguments to the directives.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" canempty="1" validation="file" key="ResourceConfig">
+      </TYPE>	
+</STEP>
+<STEP id="10" group="1" skill="2">
+      <NAME language="Deutsch">Timeout</NAME>
+      <NAME language="uk">Timeout</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.linux-praxis.de/linux3/apache1.html" target="_blank"]]http://www.linux-praxis.de/linux3/apache1.html[[/a]][[br]][[br]]
+	    
+	    Die Anzahl von Sekunden, die der Server beim Senden und
+	    Empfangen von Daten wartet, bis er aufgibt und einen 
+	    Timeout-Fehler ausgibt.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Timeout: The number of seconds before receives and sends time out.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1"
+      validation="numbers" key="Timeout" default="300">
+      </TYPE>	
+</STEP>
+
+<STEP id="12" group="1" skill="2">
+      <NAME language="Deutsch">Keep alive</NAME>
+      <NAME language="uk">Keep alive</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    Unterst&uuml;tzung der HTTP / 1.1 Persistent
+           Connections. Dadurch k&ouml;nnen &uuml;ber eine
+           TCP-Verbindung mehrere
+           Anfragen an den Server geschickt werden.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+	    KeepAlive: Whether or not to allow persistent connections (more than
+	    one request per connection). Set to "Off" to deactivate.
+      
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="On" key="KeepAlive">
+	    <SELECT value="On" language="Deutsch">An</SELECT>
+	    <SELECT value="On" language="uk">On</SELECT>
+	    <SELECT value="Off" language="Deutsch">Aus</SELECT>
+	    <SELECT value="Off" language="uk">Off</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="14" group="1" skill="2">
+      <NAME language="Deutsch">Keep alive timeout</NAME>
+      <NAME language="uk">Keep alive timeout</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	     KeepAliveTimeout gibt in Sekunden an, wie lange der
+	     Server auf eine nachfolgende Anforderung wartet, nachdem
+	     eine Anforderung bearbeitet wurde. Danach wird die
+	     Verbindung getrennt. Nach dem Empfang einer Anforderung
+	     gilt stattdessen die Anweisung Timeout.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+	    KeepAliveTimeout: Number of seconds to wait for the next request from the
+	    same client on the same connection.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="15"
+      key="KeepAliveTimeout" validation="numbers">
+      </TYPE>	
+</STEP>
+
+<STEP id="16" group="1" skill="2">
+      <NAME language="Deutsch">Min spare Servers</NAME>
+      <NAME language="uk">Min spare servers</NAME>
+      <DEPENDS>18</DEPENDS>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    Der Apache Web-Server passt sich dynamisch an die erkannte
+	    Last an, indem je nach Datenverkehr eine geeignete 
+	    Anzahl von Reserve-Serverprozessen aufrechterhalten
+	    werden. Der Server pr&uuml;ft die Anzahl von Servern, 
+	    die auf eine Anforderung warten, und beendet einige davon,
+	    wenn mehr als von MaxSpareServers angegeben 
+	    vorhanden sind bzw. erzeugt einige neue, wenn weniger als in MinSpareServers.[[br]][[br]]
+
+	    Die Standardeinstellung des Servers f&uuml;r MinSpareServers
+	    ist 5. Die Standardeinstellung des Servers f&uuml;r 
+	    MaxSpareServers ist 20. Diese Standardeinstellungen sind
+	    f&uuml;r die meisten Situationen geeignet. 
+	    MinSpareServers sollte nicht auf eine zu gro&szlig;e Zahl
+	    eingestellt werden, weil dadurch selbst bei geringem 
+	    Datenverkehr die Belastung des Servers hoch ist.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Server-pool size regulation.  Rather than making you guess how many
+	    server processes you need, Apache dynamically adapts to the load it
+	    sees --- that is, it tries to maintain enough server processes to
+	    handle the current load, plus a few spare servers to handle transient
+	    load spikes (e.g., multiple simultaneous requests from a single
+	    Netscape browser).[[br]][[br]]
+
+	    It does this by periodically checking how many servers are waiting
+	    for a request.  If there are fewer than MinSpareServers, it creates
+	    a new spare.  If there are more than MaxSpareServers, some of the
+	    spares die off.  The default values are probably OK for most sites.[[br]][[br]]
+	    
+	    Note: these two values are set by SuSEconfig according to the setting of the
+	    HTTPD_PERFORMANCE variable in /etc/sysconfig/apache!
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="5" key="MinSpareServers" validation="numbers">
+      </TYPE>	
+</STEP>
+
+<STEP id="18" group="1" skill="2">
+      <NAME language="Deutsch">Max spare Servers</NAME>
+      <NAME language="uk">Max spare servers</NAME>
+      <DEPENDS>16</DEPENDS>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    Der Apache Web-Server passt sich dynamisch an die erkannte
+	    Last an, indem je nach Datenverkehr eine geeignete 
+	    Anzahl von Reserve-Serverprozessen aufrechterhalten
+	    werden. Der Server pr&uuml;ft die Anzahl von Servern, 
+	    die auf eine Anforderung warten, und beendet einige davon,
+	    wenn mehr als von MaxSpareServers angegeben 
+	    vorhanden sind bzw. erzeugt einige neue, wenn weniger als in MinSpareServers.[[br]][[br]]
+
+	    Die Standardeinstellung des Servers f&uuml;r MinSpareServers
+	    ist 5. Die Standardeinstellung des Servers f&uuml;r 
+	    MaxSpareServers ist 20. Diese Standardeinstellungen sind
+	    f&uuml;r die meisten Situationen geeignet. 
+	    MinSpareServers sollte nicht auf eine zu gro&szlig;e Zahl
+	    eingestellt werden, weil dadurch selbst bei geringem 
+	    Datenverkehr die Belastung des Servers hoch ist.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Server-pool size regulation.  Rather than making you guess how many
+	    server processes you need, Apache dynamically adapts to the load it
+	    sees --- that is, it tries to maintain enough server processes to
+	    handle the current load, plus a few spare servers to handle transient
+	    load spikes (e.g., multiple simultaneous requests from a single
+	    Netscape browser).[[br]][[br]]
+
+	    It does this by periodically checking how many servers are waiting
+	    for a request.  If there are fewer than MinSpareServers, it creates
+	    a new spare.  If there are more than MaxSpareServers, some of the
+	    spares die off.  The default values are probably OK for most sites.[[br]][[br]]
+	    
+	    Note: these two values are set by SuSEconfig according to the setting of the
+	    HTTPD_PERFORMANCE variable in /etc/sysconfig/apache!
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="20" key="MaxSpareServers" validation="numbers">
+      </TYPE>	
+</STEP>
+
+<STEP id="20" group="1" skill="2">
+      <NAME language="Deutsch">Start Servers</NAME>
+      <NAME language="uk">Start servers</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	     StartServers bestimmt, wie viele Serverprozesse beim
+	     Start erzeugt werden. Da der Web-Server je nach
+	     Datenverkehrsaufkommen Serverprozesse dynamisch beendet
+	     bzw. erzeugt, muss dieser Parameter nicht ver&auml;ndert 
+	     werden. Der Web-Server ist so konfiguriert, 
+	     dass beim Start acht Serverprozesse erzeugt werden.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Number of servers to start initially --- should be a reasonable ballpark
+	    figure.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="8" key="StartServers" validation="numbers">
+      </TYPE>	
+</STEP>
+
+<STEP id="20" group="1" skill="2">
+      <NAME language="Deutsch">Start Servers</NAME>
+      <NAME language="uk">Start servers</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	     StartServers bestimmt, wie viele Serverprozesse beim
+	     Start erzeugt werden. Da der Web-Server je nach
+	     Datenverkehrsaufkommen Serverprozesse dynamisch beendet
+	     bzw. erzeugt, muss dieser Parameter nicht ver&auml;ndert 
+	     werden. Der Web-Server ist so konfiguriert, 
+	     dass beim Start acht Serverprozesse erzeugt werden.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Number of servers to start initially --- should be a reasonable ballpark
+	    figure.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="8" key="StartServers" validation="numbers">
+      </TYPE>	
+</STEP>
+
+<STEP id="22" group="1" skill="2">
+      <NAME language="Deutsch">Max Clients</NAME>
+      <NAME language="uk">Max Clients</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    MaxClients gibt eine Obergrenze f&uuml;r die Gesamtzahl
+	    von Serverprozessen an (d.h. gleichzeitig verbundene 
+	    Clients), die gleichzeitig ausgef&uuml;hrt werden
+	    k&ouml;nnen. Sie sollten MaxClients auf einer hohen Anzahl 
+	    belassen (die Standardeinstellung des Servers ist 150),
+	    weil kein anderer Client eine Verbindung aufbauen darf, 
+	    sobald diese Anzahl von gleichzeitig verbundenen Clients
+	    erreicht ist. Wenn MaxClients auf eine Anzahl eingestellt 
+	    werden soll, die gr&ouml;&szlig;er als 256 ist, muss
+	    Apache neu kompiliert werden. Der Hauptgrund f&uuml;r die
+	    Existenz von MaxClients ist, dass damit 
+	    verhindert werden soll, dass Ihr Betriebssystem durch
+	    einen &uuml;berlasteten Web-Server 
+	    zum Absturz gebracht wird.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Limit on total number of servers running, i.e., limit on the number
+	    of clients who can simultaneously connect --- if this limit is ever
+	    reached, clients will be LOCKED OUT, so it should NOT BE SET TOO LOW.
+	    It is intended mainly as a brake to keep a runaway server from taking
+	    the system with it as it spirals down...
+
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="150" key="MaxClients" validation="numbers">
+      </TYPE>	
+</STEP>
+
+<STEP id="24" group="1" skill="2">
+      <NAME language="Deutsch">Max Requests Per Child</NAME>
+      <NAME language="uk">Max Requests Per Child</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    MaxRequestsPerChild legt die Gesamtzahl der Anfragen fest,
+	    die jeder Kind-Server-Prozess ben&ouml;tigt, bevor das Kind 
+	    stirbt. Der Hauptgrund f&uuml;r die Einstellung von
+	    MaxRequestsPerChild ist, dass lang andauernde, durch
+	    Prozesse 
+	    verursachte Speicherlecks vermieden werden sollen. Die
+	    Standardeinstellung f&uuml;r 
+	    MaxRequestsPerChild f&uuml;r den Server ist 1000.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    MaxRequestsPerChild: the number of requests each child process is
+	    allowed to process before the child dies.  The child will exit so
+	    as to avoid problems after prolonged use when Apache (and maybe the
+	    libraries it uses) leak memory or other resources.  On most systems, this
+	    isn't really needed, but a few (such as Solaris) do have notable leaks
+	    in the libraries. For these platforms, set to something like 10000
+	    or so; a setting of 0 means unlimited.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="0" key="MaxRequestsPerChild" validation="numbers">
+      </TYPE>	
+</STEP>
+
+<STEP id="26" group="1" skill="1">
+      <NAME language="Deutsch">Listen</NAME>
+      <NAME language="uk">Listen</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    Der Befehl Listen kennzeichnet den Port, an dem Ihr
+	    Web-Server ankommende Anforderungen annimmt. Der
+	    Web-Server ist so konfiguriert, dass auf Port 80 auf
+	    unverschl&uuml;sselte Web-Kommunikation und 
+	    (in Virtual Host-Tags, die den Secure Server definieren) auf Port 443 auf sichere Web-Kommunikation gewartet wird.[[br]][[br]]
+
+	    Wenn Sie Apache so konfigurieren, dass an einem Port
+	    kleiner als 1024 gewartet wird (Listen-Modus), m&uuml;ssen
+	    Sie als Root angemeldet sein, um den Prozess zu
+	    starten. F&uuml;r Port 1024 und dar&uuml;ber kann httpd 
+	    als normaler Benutzer gestartet werden.
+
+	    Listen kann auch zur Angabe spezieller IP-Adressen verwendet werden, &uuml;ber die der Server Verbindungen annimmt.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Listen: Allows you to bind Apache to specific IP addresses and/or
+	    ports, in addition to the default. See also the &gt;VirtualHost&lt;
+	    directive.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="127.0.0.1" key="Listen" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      </TYPE>	
+</STEP>
+<STEP id="28" group="1" skill="1">
+      <NAME language="Deutsch">Bind Adress</NAME>
+      <NAME language="uk">Bind Adress</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    BindAddress ist eine M&ouml;glichkeit, um anzugeben, an
+	    welcher IP-Adresse der Server Verbindungen annimmt. Wenn 
+	    Sie diese Funktion ben&ouml;tigen, sollten Sie stattdessen
+	    Listen verwenden. 
+	    BindAddress wird vom Web-Server nicht verwendet. Dies ist
+	    in der Datei httpd.conf standardm&auml;&szlig;ig auskommentiert
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+            BindAddress: You can support virtual hosts with this
+            option. This directive is used to tell the server which IP
+            address to listen to. It can either
+            contain &quot;*&quot;, an IP address, or a fully qualified Internet domain name.
+            See also the &lt;VirtualHost&gt; and Listen directives.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" default="*" key="BindAdress" canempty="1" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      </TYPE>	
+</STEP>
+<STEP id="30" group="1" skill="1">
+      <NAME language="Deutsch">Load Module</NAME>
+      <NAME language="uk">Load Module</NAME>
+      <DEPENDS>32</DEPENDS>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    Da Apache 1.3 DSOs unterst&uuml;tzt, k&ouml;nnen Sie
+	    Apache Module auf einfache Weise laden bzw. Ihre eigenen
+	    Module f&uuml;r den Web-Server
+	    einkompilieren. DSO-Unterst&uuml;tzung bedeutet, dass 
+	    Module w&auml;hrend der Laufzeit geladen werden
+	    k&ouml;nnen. Da die Module nur bei Bedarf geladen werden, 
+	    belegen Sie keinen Speicherplatz, wenn sie nicht geladen
+	    sind. Dadurch sinkt der Speicherbedarf insgesamt.
+	    [[br]][[br]]
+	    Die Apache Group stellt eine vollst&auml;ndige
+	    DSO-Dokumentation unter 
+	    [[a href="http://httpd.apache.org/docs/dso.html"
+	    target="_blank"]]http://httpd.apache.org/docs/dso.html
+	    [[/a]] zur Verf&uuml;gung. Nach der Installation 
+	    Ihres Servers k&ouml;nnen Sie auch unter
+	    http://your_domain/manual/mod/ Dokumentationen im
+	    HTML-Format zu Apache Modulen finden (falls das Paket
+	    apache-manual installiert ist). Im Folgenden wird 
+	    eine Kurzbeschreibung zum Laden von Modulen gegeben. Wenn
+	    Sie mehr Einzelheiten wissen m&ouml;chten, sollten Sie jedoch die oben genannten URLs aufrufen..
+	    [[br]][[br]]
+	    Damit Apache ein dynamisch gemeinsam verwendetes Modul
+	    verwenden kann, muss f&uuml;r dieses Modul in der 
+	    Datei httpd.conf eine LoadModule-Zeile und eine
+	    AddModule-Zeile enthalten sein. Viele Module enthalten 
+	    diese zwei Zielen bereits standardm&auml;&szlig;ig in
+	    httpd.conf, doch sind einige der weniger oft 
+	    verwendeten Module auskommentiert. Die auskommentierten
+	    Module wurden w&auml;hrend des Kompilierens 
+	    eingef&uuml;gt, werden jedoch standardm&auml;&szlig;ig nicht geladen.
+
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Dynamic Shared Object (DSO) Support
+	    To be able to use the functionality of a module which was built as a DSO you
+	    have to place corresponding `LoadModule' lines at this location so the
+	    directives contained in it are actually available _before_ they are used.
+	    Please read the file [[a href="http://httpd.apache.org/docs/dso.html" target="_blank"]]http://httpd.apache.org/docs/dso.html[[/a]]
+	    for more details about the DSO mechanism and run `httpd -l' for the list of already
+	    built-in (statically linked and thus always available) modules in your httpd
+	    binary.
+	    [[br]][[br]]
+	    Note: The order in which modules are loaded is important.  Don't change
+	    the order below without expert advice.
+	    [[br]][[br]]
+	    Note:
+	    [[br]][[br]]
+	    The file that is included after the LoadModule statements is generated
+	    by SuSEconfig according to
+	    [[br]][[br]]
+	    1) which modules (ones not included with apache) are installed[[br]]
+	    2) the settings in /etc/sysconfig/apache
+	    [[br]][[br]]
+	    SuSEconfig uses the /etc/httpd/modules/* files that come with each module
+	    to determine the necessary directives.
+	    [[br]][[br]]
+	    Apache no longer needs to be started with '-D &lt;modules&gt;' switches (with
+	    the exception of mod_ssl, which has a lot of conditional statements).
+      </HELP>
+      <TYPE kind="standard" input="textline" key="LoadModule" number="0" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      </TYPE>	
+</STEP>
+
+<STEP id="32" group="1" skill="1">
+      <NAME language="Deutsch">Add Module</NAME>
+      <NAME language="uk">Add Module</NAME>
+      <DEPENDS>30</DEPENDS>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    Da Apache 1.3 DSOs unterst&uuml;tzt, k&ouml;nnen Sie
+	    Apache Module auf einfache Weise laden bzw. Ihre eigenen
+	    Module f&uuml;r den Web-Server
+	    einkompilieren. DSO-Unterst&uuml;tzung bedeutet, dass 
+	    Module w&auml;hrend der Laufzeit geladen werden
+	    k&ouml;nnen. Da die Module nur bei Bedarf geladen werden, 
+	    belegen Sie keinen Speicherplatz, wenn sie nicht geladen
+	    sind. Dadurch sinkt der Speicherbedarf insgesamt.
+	    [[br]][[br]]
+	    Die Apache Group stellt eine vollst&auml;ndige
+	    DSO-Dokumentation unter 
+	    [[a href="http://httpd.apache.org/docs/dso.html"
+	    target="_blank"]]http://httpd.apache.org/docs/dso.html
+	    [[/a]] zur Verf&uuml;gung. Nach der Installation 
+	    Ihres Servers k&ouml;nnen Sie auch unter
+	    http://your_domain/manual/mod/ Dokumentationen im
+	    HTML-Format zu Apache Modulen finden (falls das Paket
+	    apache-manual installiert ist). Im Folgenden wird 
+	    eine Kurzbeschreibung zum Laden von Modulen gegeben. Wenn
+	    Sie mehr Einzelheiten wissen m&ouml;chten, sollten Sie jedoch die oben genannten URLs aufrufen..
+	    [[br]][[br]]
+	    Damit Apache ein dynamisch gemeinsam verwendetes Modul
+	    verwenden kann, muss f&uuml;r dieses Modul in der 
+	    Datei httpd.conf eine LoadModule-Zeile und eine
+	    AddModule-Zeile enthalten sein. Viele Module enthalten 
+	    diese zwei Zielen bereits standardm&auml;&szlig;ig in
+	    httpd.conf, doch sind einige der weniger oft 
+	    verwendeten Module auskommentiert. Die auskommentierten
+	    Module wurden w&auml;hrend des Kompilierens 
+	    eingef&uuml;gt, werden jedoch standardm&auml;&szlig;ig nicht geladen.
+
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Dynamic Shared Object (DSO) Support
+	    To be able to use the functionality of a module which was built as a DSO you
+	    have to place corresponding `LoadModule' lines at this location so the
+	    directives contained in it are actually available _before_ they are used.
+	    Please read the file [[a href="http://httpd.apache.org/docs/dso.html" target="_blank"]]http://httpd.apache.org/docs/dso.html[[/a]]
+	    for more details about the DSO mechanism and run `httpd -l' for the list of already
+	    built-in (statically linked and thus always available) modules in your httpd
+	    binary.
+	    [[br]][[br]]
+	    Note: The order in which modules are loaded is important.  Don't change
+	    the order below without expert advice.
+	    [[br]][[br]]
+	    Note:
+	    [[br]][[br]]
+	    The file that is included after the LoadModule statements is generated
+	    by SuSEconfig according to
+	    [[br]][[br]]
+	    1) which modules (ones not included with apache) are installed[[br]]
+	    2) the settings in /etc/sysconfig/apache
+	    [[br]][[br]]
+	    SuSEconfig uses the /etc/httpd/modules/* files that come with each module
+	    to determine the necessary directives.
+	    [[br]][[br]]
+	    Apache no longer needs to be started with '-D &lt;modules&gt;' switches (with
+	    the exception of mod_ssl, which has a lot of conditional statements).
+      </HELP>
+      <TYPE kind="standard" input="textline" key="LoadModule" number="0" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      </TYPE>	
+</STEP>
+
+<STEP id="34" group="1" skill="2">
+      <NAME language="Deutsch">Extended Status</NAME>
+      <NAME language="uk">Extended Status</NAME>
+      <HELP language="Deutsch">
+	    Von: http.conf &Uuml;bersetzung von C.S.[[br]][[br]]
+	    
+	    Extend Status definiert, ob der Apache volle (an) oder nur Basis (aus) Status Informationen generieren soll 
+	    wenn der "server-status" Handler aufgerufen wird.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    ExtendedStatus controls whether Apache will generate "full" status
+	    information (ExtendedStatus On) or just basic information (ExtendedStatus
+	    Off) when the "server-status" handler is called. The default is Off.
+
+      
+      </HELP>
+      <TYPE kind="standard" input="selectable" default="On" key="ExtendedStatus">
+	    <SELECT value="On" language="Deutsch">An</SELECT>
+	    <SELECT value="On" language="uk">On</SELECT>
+	    <SELECT value="Off" language="Deutsch">Aus</SELECT>
+	    <SELECT value="Off" language="uk">Off</SELECT>
+      </TYPE>	
+</STEP>
+<STEP id="36" group="2" skill="2">
+      <NAME language="Deutsch">Port</NAME>
+      <NAME language="uk">Port</NAME>
+      <DEPENDS>26</DEPENDS>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+ 	    Normalerweise definiert Port den Port, an dem der Server auf Anforderungen wartet. Ihr Web-Server 
+ 	    wartet jedoch standardm&auml;&szlig;ig an mehr als einem Port, da die Anweisung Listen ebenfalls verwendet 
+ 	    wird. Wenn Listen-Anweisungen aktiv sind, wartet der Server an allen diesen Ports. Weitere 
+ 	    Informationen zu Listen und Vieles mehr, finden Sie in der Beschreibung der Anweisung Listen.
+	    [[br]][[br]]
+	    Der Befehl Port wird auch dazu verwendet, die Portnummer anzugeben, die zur Erstellung des 
+	    kanonischen Namens f&uuml;r Ihren Server verwendet wird. Weitere Informationen &uuml;ber den kanonischen 
+	    Namen Ihres Servers finden Sie in Abschnitt namens UseCanonicalName. 
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Port: The port to which the standalone server listens. For
+	    ports &lt; 1023, you will need httpd to be run as root initially.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="80" key="Port" validation="numbers" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      </TYPE>	
+</STEP>
+
+<STEP id="38" group="2" skill="1">
+      <NAME language="Deutsch">User</NAME>
+      <NAME language="uk">User</NAME>
+      <DEPENDS>40</DEPENDS>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+ 	    Die Anweisung User definiert die Benutzer-ID, die vom Server zur Beantwortung von Anforderungen verwendet 
+ 	    wird. Die User-Einstellung bestimmt die Zugriffsrechte des Servers. Alle Dateien, auf die dieser Benutzer 
+ 	    nicht zugreifen darf, sind f&uuml;r die Besucher Ihrer Website ebenfalls nicht zug&auml;nglich. Die 
+ 	    Standardeinstellung f&uuml;r User ist apache.[[br]][[br]]
+
+	    Der User sollte nur Zugriffsrechte auf solche Dateien haben, die f&uuml;r die Au&szlig;enwelt sichtbar sein 
+	    sollen. Der in User eingetragene Benutzer ist auch der Eigent&uuml;mer aller vom Server erzeugten 
+	    CGI-Prozesse. Der in User eingetragene Benutzer sollte nur Codes ausf&uuml;hren d&uuml;rfen, die zur Beantwortung 
+	    von HTTP-Anforderungen vorgesehen sind.
+	    [[br]][[br]]
+	    Bitte beachten
+ 	    [[br]][[br]]
+ 	    Aus Sicherheitsgr&uuml;nden kann Apache nicht als User root laufen. Root als Eintrag f&uuml;r User 
+ 	    verwenden, w&uuml;rde riesige Sicherheitsl&ouml;cher f&uuml;r Ihren Web-Server bedeuten.
+	    [[br]][[br]]
+	    Der Eltern-Prozess httpd wird im Normalbetrieb zuerst als Root ausgef&uuml;hrt, wird dann aber 
+	    sofort zum Benutzer apache weitergegeben. Der Server muss als Root starten, weil die Bindung an 
+	    einen Port unter 1024 erforderlich ist (der Standardport f&uuml;r sichere Web-Kommunikation ist der 
+	    Port 443, der Standardport f&uuml;r unverschl&uuml;sselte Web-Kommunikation ist der Port 80). Ports 
+	    unter 1024 sind f&uuml;r die Verwendung durch das System reserviert und k&ouml;nnen daher nur von Root 
+	    verwendet werden. Sobald sich der Server jedoch an den Port gebunden hat, wird der Prozess an den 
+	    in User eingetragenen Benutzer weitergegeben, bevor er Verbindungsanforderungen annimmt. 
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    If you wish httpd to run as a different user or group, you must run
+	    httpd as root initially and it will switch.
+	    [[br]][[br]]
+	    User/Group: The name (or #number) of the user/group to run httpd as.
+	    On SCO (ODT 3) use "User nouser" and "Group nogroup".
+	    On HPUX you may not be able to use shared memory as nobody, and the
+	    suggested workaround is to create a user www and use that user.
+	    [[br]][[br]]
+	    NOTE that some kernels refuse to setgid(Group) or semctl(IPC_SET)
+	    when the value of (unsigned)Group is above 60000;
+	    don't use Group nogroup on these systems!
+
+
+      </HELP>
+      <TYPE kind="standard" input="textline" default="apache" key="User" validation="numletters">
+      </TYPE>	
+</STEP>
+
+<STEP id="40" group="2" skill="1">
+      <NAME language="Deutsch">Group</NAME>
+      <NAME language="uk">Group</NAME>
+      <DEPENDS>38</DEPENDS>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    Die Anweisung Group &auml;hnelt der Anweisung User. Group legt die Gruppe fest, unter der der 
+	    Server Anforderungen beantwortet. Die Standardeinstellung f&uuml;r Group ist apache.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    If you wish httpd to run as a different user or group, you must run
+	    httpd as root initially and it will switch.
+	    [[br]][[br]]
+	    User/Group: The name (or #number) of the user/group to run httpd as.
+	    On SCO (ODT 3) use "User nouser" and "Group nogroup".
+	    On HPUX you may not be able to use shared memory as nobody, and the
+	    suggested workaround is to create a user www and use that user.
+	    [[br]][[br]]
+	    NOTE that some kernels refuse to setgid(Group) or semctl(IPC_SET)
+	    when the value of (unsigned)Group is above 60000;
+	    don't use Group nogroup on these systems!
+
+
+      </HELP>
+      <TYPE kind="standard" input="textline" default="apache" key="Group" validation="numletters">
+      </TYPE>	
+</STEP>
+
+<STEP id="42" group="2" skill="1">
+      <NAME language="Deutsch">Admin E-Mail</NAME>
+      <NAME language="uk">Admin E-Mail</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	     ServerAdmin sollte auf die E-Mail-Adresse Ihres Web-Server-Administrators eingestellt sein. 
+	     Diese E-Mail-Adresse wird in Fehlermeldungen auf vom Server erstellten Web-Seiten angezeigt, 
+	     damit die Benutzer dem Serveradministrator ein Problem per E-Mail melden k&ouml;nnen. ServerAdmin 
+	     ist standardm&auml;&szlig;ig auf root@localhost.
+	    [[br]][[br]]
+	    Meistens ist es am g&uuml;nstigsten, bei ServerAdmin webmaster@your_domain.com. Richten Sie dann 
+	    in /etc/aliases einen Alias webmaster ein, der auf den f&uuml;r den Web-Server Verantwortlichen 
+	    zeigt. F&uuml;hren Sie schlie&szlig;lich /usr/bin/newaliases aus, um den neuen Alias hinzuzuf&uuml;gen.
+	    ServerName
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Note: this email address is set by SuSEconfig according to the setting of the
+	    HTTPD_SEC_SERVERADMIN variable in /etc/rc.config.d/apache.rc.config!
+
+      </HELP>
+      <TYPE kind="standard" input="textline" default="root@localhost" key="ServerAdmin" validation="email" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      </TYPE>	
+</STEP>
+
+<STEP id="44" group="2" skill="1">
+      <NAME language="Deutsch">Server Name</NAME>
+      <NAME language="uk">Server Name</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+ 	    Mit ServerName k&ouml;nnen Sie einen Rechnernamen f&uuml;r Ihren Server angeben, der sich vom wirklichen 
+ 	    Namen Ihres Rechners unterscheidet. Zum Beispiel k&ouml;nnen Sie so den Namen www.your_domain.com 
+ 	    einrichten, obwohl der wirkliche Name Ihres Servers foo.your_domain.com. Beachten Sie, dass ServerName 
+ 	    einen g&uuml;ltigen Domain Name Service (DNS)-Namen enthalten muss, den Sie auch tats&auml;chlich verwenden 
+ 	    d&uuml;rfen (also nicht einfach etwas ausdenken).
+
+	   Wenn Sie in ServerName einen Servernamen angeben, muss die entsprechende Zuordnung von IP-Adresse und 
+	   Servername in Ihrer /etc/hosts-Datei enthalten sein. 
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    Note: the host name is set by SuSEconfig according to the setting of the
+	    FQHOSTNAME variable in /etc/rc.config!
+
+
+      </HELP>
+      <TYPE kind="standard" input="textline" key="ServerName" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      </TYPE>	
+</STEP>
+
+<STEP id="46" group="2" skill="1">
+      <NAME language="Deutsch">Document Root</NAME>
+      <NAME language="uk">Document Root</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    	
+	    DocumentRoot ist das Verzeichnis, das die meisten HTML-Dateien enth&auml;lt, die der Server auf Anforderung 
+	    &uuml;bertr&auml;gt. Der Standardeintrag f&uuml;r DocumentRoot ist sowohl f&uuml;r den unverschl&uuml;sselten 
+	    als auch f&uuml;r den Secure Web-Server /var/www/html. Zum Beispiel k&ouml;nnte der Server eine Anforderung 
+	    f&uuml;r folgendes Dokument empfangen:
+		[[br]][[br]]	
+	    http://your_domain/foo.html
+		[[br]][[br]]	
+	    Der Server sucht die folgende Datei im Standardverzeichnis:
+		[[br]][[br]]
+	    /var/www/html/foo.html
+		[[br]][[br]]
+	    Wenn Sie den Eintrag in DocumentRoot &auml;ndern m&ouml;chten, dass dieser nicht vom sicheren und vom 
+	    unverschl&uuml;sselten Web-Server gemeinsam benutzt wird, finden Sie in Abschnitt namens Virtuelle 
+	    Hosts verwenden entsprechende Informationen. 
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    DocumentRoot: The directory out of which you will serve your
+	    documents. By default, all requests are taken from this directory, but
+	    symbolic links and aliases may be used to point to other locations.
+      </HELP>
+      <TYPE kind="standard" input="textline" quote="&quot;" key="DocumentRoot" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      </TYPE>	
+</STEP>
+
+<STEP id="48" group="2" skill="2">
+      <NAME language="Deutsch">Verzeichnis Rechte (ML)</NAME>
+      <NAME language="uk">Directory rights (ML)</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    	
+ 	    Die Tags &lt;Directory /path/to/directory&gt; und &lt;/Directory&gt; werden verwendet, um eine Gruppe von 
+ 	    Konfigurationsanweisungen zu umschlie&szlig;en, die sich nur auf dieses Verzeichnis und alle seine 
+ 	    Unterverzeichnisse beziehen sollen. Alle Anweisungen, die auf ein Verzeichnis anwendbar sind, 
+ 	    k&ouml;nnen innerhalb der &lt;Directory&gt;-Tags verwendet werden. &lt;File&gt;-Tags k&ouml;nnen 
+ 	    auf die gleiche Weise verwendet werden, allerdings f&uuml;r eine oder mehrere spezielle Dateien.
+	    [[br]][[br]]
+	    In der Standardeinstellung werden f&uuml;r das Root-Verzeichnis mit den Anweisungen Options 
+	    (siehe Abschnitt namens Options) und AllowOverride (siehe Abschnitt namens AllowOverride) sehr 
+	    restriktive Parameter vorgegeben. Bei dieser Konfiguration m&uuml;ssen f&uuml;r jedes Verzeichnis 
+	    die Einstellungen explizit vergeben werden, wenn weniger restriktive Einstellungen erforderlich sind.
+   	    [[br]][[br]]
+	    Mit Directory-Tags werden f&uuml;r DocumentRoot weniger restriktive Parameter definiert, damit 
+	    HTTP-Anforderungen in diesem Verzeichnis bearbeitet werden k&ouml;nnen.
+	    [[br]][[br]]
+	    Das Verzeichnis cgi-bin wird mit der Option ExecCGI f&uuml;r die Ausf&uuml;hrung von CGI-Skripten 
+	    eingerichtet. Wenn die Ausf&uuml;hrung von CGI-Skripten in anderen Verzeichnissen erforderlich ist, 
+	    m&uuml;ssen Sie ExecCGI entsprechend f&uuml;r dieses Verzeichnis einstellen. Wenn Ihr Verzeichnis 
+	    cgi-bin zum Beispiel /var/www/cgi-bin ist, Sie aber CGI-Skripte im Verzeichnis /home/my_cgi_directory 
+	    ausf&uuml;hren m&ouml;chten, k&ouml;nnen Sie in Ihrer Datei httpd.conf eine ExecCGI-Anweisung mit 
+	    einem Satz von Directory-Anweisungen hinzuf&uuml;gen:
+	    [[br]][[br]]
+	    &lt;Directory /home/my_cgi_directory&gt;[[br]]	
+ 		   Options +ExecCGI[[br]]
+	    &lt;/Directory&gt;
+	    [[br]][[br]]
+	    Um die Ausf&uuml;hrung von CGI-Skripten in /home/my_cgi_directory zuzulassen, sind neben der Einstellung 
+	    von ExecCGI noch einige zus&auml;tzliche Schritte n&ouml;tig. F&uuml;r die Anweisung AddHandler m&uuml;ssen 
+	    die Kommentare entfernt werden, damit Dateien mit der Endung .cgi als CGI-Skripte erkannt werden 
+	    k&ouml;nnen. Anleitungen zur Einstellung von AddHandler finden Sie in Abschnitt namens AddHandler. 
+	    Die Zugriffsberechtigungen f&uuml;r CGI-Skripte und den gesamten Pfad zu den Skripten m&uuml;ssen auf 
+	    0755 eingestellt sein.
+	    
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+	    Each directory to which Apache has access, can be configured with respect
+	    to which services and features are allowed and/or disabled in that
+	    directory (and its subdirectories).
+	    [[br]][[br]]
+	    First, we configure the &quot;default&quot; to be a very restrictive set of
+	    permissions.
+      </HELP>
+      <TYPE kind="user" input="multiline" number="0">
+      	<START>^\s*&lt;Directory /&gt;</START>
+      	<STOP>&lt;/Directory&gt;</STOP>
+      </TYPE>	
+</STEP>
+
+<STEP id="50" group="2" skill="2">
+      <NAME language="Deutsch">If Defined (ML)</NAME>
+      <NAME language="uk">If Defined (ML)</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    	
+	    IfDefine
+
+	    Die Tags &lt;IfDefine&gt; und &lt;/IfDefine&gt; umschlie&szlig;en Konfigurationsanweisungen, die 
+	    ausgef&uuml;hrt werden, wenn sich f&uuml;r die Bedingung im Tag &lt;IfDefine&gt; die Aussage wahr ergibt. 
+	    Die Anweisungen werden nicht ausgef&uuml;hrt, wenn sich die Aussage falsch ergibt.
+	    [[br]][[br]]
+	    Die Bedingung in den Tags &lt;IfDefine&gt; ist eine Parameterbezeichnung (z.B. HAVE_PERL). 
+	    Wenn der Parameter definiert ist (d.h. er wurde beim Start des Servers als Argument des Startbefehls 
+	    angegeben), ist die Aussage wahr. In diesem Fall ist die Bedingung wahr, wenn Ihr Web-Server 
+	    gestartet ist, und die Anweisungen in den Tags IfDefine werden ausgef&uuml;hrt.
+	    [[br]][[br]]
+	    Standardm&auml;&szlig;ig umschlie&szlig;en die Tags &lt;IfDefine HAVE_SSL&gt; die virtuellen Rechnertags 
+	    f&uuml;r den Secure Server. &lt;IfDefine HAVE_SSL&gt;-Tags umschlie&szlig;en au&szlig;erdem auch die 
+	    Anweisungen LoadModule und AddModule f&uuml;r das ssl_module. 	    
+      </HELP>
+      <HELP language="uk">
+	    From: [[a href="http://httpd.apache.org/docs/mod/core.html#ifdefine" target="_blank"]]http://httpd.apache.org/docs/mod/core.html#ifdefine[[/a]
+	    [[br]][[br]]
+	    The &lt;IfDefine test&gt;...&lt;/IfDefine&gt;  section is used to mark directives that are conditional. The directives 
+	    within an IfDefine section are only processed if the test is true. If test is false, everything between 
+	    the start and end markers is ignored.
+	    [[br]][[br]]
+	    The test in the &lt;IfDefine&gt; section directive can be one of two forms:
+	    [[br]][[br]]
+	    * parameter-name[[br]]
+    	    * !parameter-name
+	    [[br]][[br]]
+	    In the former case, the directives between the start and end markers are only processed if the parameter 
+	    named parameter-name is defined. The second format reverses the test, and only processes the directives 
+	    if parameter-name is not defined.
+	    [[br]][[br]]
+	    The parameter-name argument is a define as given on the httpd command line via -Dparameter-, at the 
+	    time the server was started.
+	    [[br]][[br]]
+	    &lt;IfDefine&gt; sections are nest-able, which can be used to implement simple multiple-parameter tests. Example:
+	    [[br]][[br]]
+	    $ httpd -DReverseProxy ...
+	    [[br]][[br]]
+	    # httpd.conf
+  	    &lt;IfDefine ReverseProxy&gt;[[br]]
+  	    LoadModule rewrite_module libexec/mod_rewrite.so[[br]]
+  	    LoadModule proxy_module   libexec/libproxy.so[[br]]
+  	    &lt;/IfDefine&gt;
+      </HELP>
+      <TYPE kind="user" input="multiline" number="0">
+      	<START>^\s*&lt;IfDefine.*?&gt;</START>
+      	<STOP>&lt;/IfDefine&gt;</STOP>
+      </TYPE>	
+</STEP>
+
+<STEP id="52" group="2" skill="2">
+      <NAME language="Deutsch">AccessFileName</NAME>
+      <NAME language="uk">AccessFileName</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    AccessFileName bestimmt die Datei, die vom Server zur Speicherung von Zugriffskontrollinformationen in jedem Verzeichnis 
+	    verwendet werden soll. Standardm&auml;&szlig;ig ist Ihr Web-Server so konfiguriert, dass f&uuml;r die Speicherung von 
+	    Zugriffskontrollinformationen die Datei .htaccess verwendet wird (falls vorhanden).
+	    [[br]][[br]]
+	    Unmittelbar nach der Anweisung AccessFileName wird durch eine Reihe von Files-Tags die Zugangskontrolle zu 
+	    allen Dateien geregelt, die mit .ht beginnen. Diese Anweisungen verwehren aus Sicherheitsgr&uuml;nden den Zugriff 
+	    auf alle .htaccess-Dateien (bzw. andere Dateien, die mit .ht beginnen). 
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    AccessFileName: The name of the file to look for in each directory
+	    for access control information.
+
+
+      </HELP>
+      <TYPE kind="standard" input="textline" default=".htaccess" key="AccessFileName">
+      </TYPE>	
+</STEP>
+
+<STEP id="54" group="2" skill="2">
+      <NAME language="Deutsch">CacheNegotiatedDocs</NAME>
+      <NAME language="uk">CacheNegotiatedDocs</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+ 	    Standardm&auml;&szlig;ig fordert Ihr Web-Server Proxyserver auf, keine Dokumente im Cache zu halten, die auf der 
+ 	    Grundlage des Inhalts &uuml;bertragen wurden (d.h. sie k&ouml;nnen nach einer gewissen Zeit oder aufgrund der Eingabe 
+ 	    des Anforderers ge&auml;ndert werden). Wenn die Kommentare f&uuml;r CacheNegotiatedDocs entfernt werden, wird diese 
+ 	    Funktion deaktiviert, und Proxyserver k&ouml;nnen von diesem Zeitpunkt an Dokumente im Cache halten.
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    UseCanonicalName:  (new for 1.3)  With this setting turned on, whenever
+	    Apache needs to construct a self-referencing URL (a URL that refers back
+	    to the server the response is coming from) it will use ServerName and
+  	    Port to form a "canonical" name.  With this setting off, Apache will
+	    use the hostname:port that the client supplied, when possible.  This
+	    also affects SERVER_NAME and SERVER_PORT in CGI scripts.
+
+
+      </HELP>
+      <TYPE kind="standard" input="textline" default="" canempty="1" key="CacheNegotiatedDocs">
+      </TYPE>	
+</STEP>
+
+<STEP id="56" group="2" skill="2">
+      <NAME language="Deutsch">Use Canonical Name</NAME>
+      <NAME language="uk">Use Canonical Name</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    UseCanonicalName ist standardm&auml;&szlig;ig auf on eingestellt. UseCanonicalName erm&ouml;glicht dem Server, mit 
+	    ServerName und Port eine URL zu erstellen, die den Server selbst referenziert. Der Server verwendet diese 
+	    URL, wenn er sich aufgrund von Anforderungen selbst referenziert. Wenn UseCanonicalName auf off eingestellt wird, 
+	    verwendet der Server stattdessen den Wert, der in der Anforderung des Clients enthalten ist, um sich selbst zu 
+	    referenzieren.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+	    UseCanonicalName:  (new for 1.3)  With this setting turned on, whenever
+	    Apache needs to construct a self-referencing URL (a URL that refers back
+	    to the server the response is coming from) it will use ServerName and
+ 	    Port to form a "canonical" name.  With this setting off, Apache will
+	    use the hostname:port that the client supplied, when possible.  This
+	    also affects SERVER_NAME and SERVER_PORT in CGI scripts.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="On" key="UseCanonicalName">
+	    <SELECT value="On" language="Deutsch">An</SELECT>
+	    <SELECT value="On" language="uk">On</SELECT>
+	    <SELECT value="Off" language="Deutsch">Aus</SELECT>
+	    <SELECT value="Off" language="uk">Off</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="58" group="2" skill="2">
+      <NAME language="Deutsch">Default Type</NAME>
+      <NAME language="uk">Default Type</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+	    DefaultType definiert einen Standardinhaltstyp, den der Web-Server f&uuml;r Dokumente verwendet, deren MIME-Types nicht 
+	    bestimmt werden k&ouml;nnen. Die Standardeinstellung f&uuml;r Ihren Web-Server ist, dass bei Dateien mit einem nicht genau 
+	    zu bestimmenden Inhaltstyp ein Standardtext-Inhaltstyp angenommen wird.
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    DefaultType is the default MIME type the server will use for a document
+	    if it cannot otherwise determine one, such as from filename extensions.
+	    If your server contains mostly text or HTML documents, "text/plain" is
+	    a good value.  If most of your content is binary, such as applications
+	    or images, you may want to use "application/octet-stream" instead to
+	    keep browsers from trying to display binary files as though they are
+	    text.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" default="text/plain" key="DefaultType">
+      </TYPE>	
+</STEP>
+
+<STEP id="60" group="2" skill="2">
+      <NAME language="Deutsch">Hostname Lookups</NAME>
+      <NAME language="uk">Hostname Lookups</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    HostnameLookups kann auf on, off oder double eingestellt werden. Wenn Sie HostnameLookups erlauben (durch Einstellung auf on),
+	    wird vom Server die IP-Adresse f&uuml;r jede Verbindung, die ein Dokument von Ihrem Web-Server anfordert, automatisch aufgel&ouml;st.
+	    Die Aufl&ouml;sung der IP-Adresse bedeutet, dass Ihr Server mindestens eine Verbindung zum DNS herstellt, um den zu 
+	    einer IP-Adresse geh&ouml;renden Host-Namen zu bestimmen. Wenn Sie HostnameLookups auf double einstellen, stellt 
+	    Ihr Server einen doppelt-umgekehrten DNS aus. Mit anderen Worten: nach einem umgekehrten Lookup wird ein Vorw&auml;rts-Lookup 
+	    ausgef&uuml;hrt. Mindestens eine der IP-Adressen im Vorw&auml;rts-Lookup muss der Adresse des ersten umgekehrten Lookup 
+	    entsprechen.
+	    [[br]][[br]]
+	    Im Allgemeinen sollten Sie die Einstellung f&uuml;r HostnameLookups auf off belassen, da die DNS-Anforderungen Ihren Server 
+	    zus&auml;tzlich belasten und ihn unter Umst&auml;nden langsamer machen. Wenn Ihr Server ausgelastet ist, kann die 
+	    Wirkung der Einstellung von HostnameLookups ziemlich deutlich sp&uuml;rbar sein.
+	    [[br]][[br]]
+	    HostnameLookups ist auch f&uuml;r das Internet insgesamt von Bedeutung. Die einzelnen Verbindungen f&uuml;r das Heraussuchen
+	    des Host-Namens addieren sich. Deshalb ist es sowohl f&uuml;r Ihren Server als auch f&uuml;r das Internet insgesamt von 
+	    Vorteil, die Einstellung von HostnameLookups auf off zu belassen.
+	    [[br]][[br]]
+	    Wenn Sie sich die Host-Namen in Ihrer Protokolldai ansehen wollen, verwenden Sie eines der vielen 
+	    Protokolldateinanalysier-Tools, mit denen die DNS-Lookups wirkungsvoller und stapelweise erfolgt 
+	    wenn Sie Ihre Protokolldatein rotieren.
+
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+	    HostnameLookups: Log the names of clients or just their IP addresses
+	    e.g., www.apache.org (on) or 204.62.129.132 (off).
+	    The default is off because it'd be overall better for the net if people
+	    had to knowingly turn this feature on, since enabling it means that
+	    each client request will result in AT LEAST one lookup request to the
+	    nameserver.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="On" key="HostnameLookups">
+	    <SELECT value="on" language="Deutsch">An</SELECT>
+	    <SELECT value="on" language="uk">On</SELECT>
+	    <SELECT value="off" language="Deutsch">Aus</SELECT>
+	    <SELECT value="off" language="uk">Off</SELECT>
+	    <SELECT value="double" language="Deutsch">Double</SELECT>
+	    <SELECT value="double" language="uk">Double</SELECT>
+	    
+      </TYPE>	
+</STEP>
+
+<STEP id="62" group="2" skill="2">
+      <NAME language="Deutsch">Error Log</NAME>
+      <NAME language="uk">Error Log</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+	    
+ 	    ErrorLog bestimmt die Datei, in der Server-Fehler protokolliert werden. Wie durch den Namen der Anweisung angedeutet, 
+ 	    ist die Fehlerprotokolldatei f&uuml;r Ihren Web-Server /var/log/httpd/error_log.
+	    [[br]][[br]]
+	    Wenn Ihr Web-Server fehlerhaft oder &uuml;berhaupt nicht arbeitet und Sie sich nicht sicher sind, warum dies 
+	    auftritt, sollten Sie zuerst das Fehlerprotokoll &uuml;berpr&uuml;fen.       
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    ErrorLog: The location of the error log file.
+	    If you do not specify an ErrorLog directive within a &lt;VirtualHost&gt;
+	    container, error messages relating to that virtual host will be
+	    logged here.  If you *do* define an error logfile for a &lt;VirtualHost&gt;
+	    container, that host's errors will be logged there and not here.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" key="ErrorLog" notinstart="^\s*&lt;Vir.+?&gt;" notinstop="^\s*&lt;/Vir.+?&gt;">
+      </TYPE>	
+</STEP>
+
+<STEP id="64" group="2" skill="2">
+      <NAME language="Deutsch">Log Level</NAME>
+      <NAME language="uk">Log Level</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    LogLevel legt fest, wie ausf&uuml;hrlich die Fehlermeldungen im Fehlerprotokoll dargestellt werden. 
+	    LogLevel kann auf emerg, alert, crit, error, warn, notice, info oder debug eingestellt 
+	    werden (von der k&uuml;rzesten bis zur ausf&uuml;hrlichsten Darstellung). Das LogLevel f&uuml;r Ihren 
+	    Web-Server ist auf warn eingestellt.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+	    LogLevel: Control the number of messages logged to the error_log.
+	    Possible values include: debug, info, notice, warn, error, crit,
+	    alert, emerg.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="On" key="LogLevel">
+	    <SELECT value="debug">debug</SELECT>
+	    <SELECT value="info">info</SELECT>	    
+	    <SELECT value="notice">notice</SELECT>	    
+	    <SELECT value="warn">warn</SELECT>	    
+	    <SELECT value="error">error</SELECT>	    
+	    <SELECT value="crit">crit</SELECT>	    
+	    <SELECT value="alert">alert</SELECT>	    
+	    <SELECT value="ermerg">emerg</SELECT>	    
+      </TYPE>	
+</STEP>
+
+<STEP id="66" group="2" skill="2">
+      <NAME language="Deutsch">Log Format</NAME>
+      <NAME language="uk">Log Format</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+ 	    Die LogFormat-Anweisungen in Ihrer httpd.conf-Datei legen ein Format f&uuml;r die Meldungen in Ihrem Zugriffsprotokoll
+ 	    fest. Welches LogFormat verwendet wird, h&auml;ngt von den Einstellungen in der CustomLog-Anweisung ab (siehe 
+ 	    Abschnitt namens CustomLog).
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+ 	    The following directives define some format nicknames for use with
+	    a CustomLog directive (see below).
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" key="LogFormat" notinstart="^\s*&lt;Vir.+?&gt;" notinstop="^\s*&lt;/Vir.+?&gt;"></TYPE>	
+</STEP>
+
+<STEP id="68" group="2" skill="2">
+      <NAME language="Deutsch">Custom Log</NAME>
+      <NAME language="uk">Custom Log</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    CustomLog bestimmt die Protokolldatei und das Protokolldateiformat. In der Standardkonfiguration 
+	    Ihres Web-Servers bestimmt CustomLog die Protokolldatei, in der die Zugriffe auf Ihren Web-Server 
+	    protokolliert werden: /var/log/httpd/access_log. Wenn Sie f&uuml;r Ihren Web-Server 
+	    Server-Leistungsstatistiken auf der Basis der Zugriffe erstellen m&ouml;chten, muss Ihnen bekannt 
+	    sein, wo diese Datei abgelegt ist.
+ 	    [[br]][[br]]
+	    CustomLog stellt au&szlig;erdem das Protokolldateiformat auf &quot;common&quot; ein. Das 
+	    Protokolldateiformat &quot;common&quot; sieht folgenderma&szlig;en aus:
+ 	    [[br]][[br]]
+	    [[b]]remotehost rfc931 authuser [date] &quot;request&quot; status bytes referer user-agent[[/b]]
+	    [[br]][[br]]
+	    [[b]]remotehost[[/b]]
+	    [[br]]
+	    Der Name des Remote-Hosts. Wenn der Host-Name &uuml;ber DNS nicht verf&uuml;gbar ist, oder wenn 
+	    HostnameLookups auf Off eingestellt ist, ist remotehost die IP-Adresse des Remote-Hosts. 
+	    [[br]][[br]]
+	    [[b]]rfc931[[/b]][[br]]
+	    Wird nicht verwendet. An dieser Stelle wird in der Protokolldatei - eingetragen.
+	    [[br]][[br]]
+	    [[b]]authuser[[/b]][[br]]
+	    Wenn eine Authentifizierung erforderlich war, hat der Benutzer diesen Namen angegeben. Normalerweise 
+	    nicht verwendet. An dieser Stelle wird - eingetragen. [[br]][[br]]
+  	    [[b]][date][[/b]][[br]]
+	    Das Datum und die Uhrzeit der Anforderung. 
+	    [[br]][[br]]
+	    [[b]]&quot;request&quot;[[/b]][[br]]
+	    Die Request-Zeichenkette wie sie vom Browser oder Client gesendet wurde.
+	    [[br]][[br]]
+	    [[b]]status[[/b]][[br]]
+	    Der HTTP-Statuscode, der an den Browser oder Client zur&uuml;ckgegeben wurde. 
+	    [[br]][[br]]
+	    [[b]]bytes[[/b]][[br]]
+	    Die Gr&ouml;&szlig;e des Dokuments. 
+	    [[br]][[br]]
+	    [[b]]referer[[/b]][[br]]
+	    Hier kann die URL der Web-Seite ausgegeben werden, die mit der aktuellen Anfrage verkn&uuml;pft war.
+	    [[br]][[br]]
+	    [[b]]user-agent[[/b]][[br]]
+	    Hier gibt der Name des Browser oder Clients ausgegeben, der die Anfrage gestellt hat.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+	    The location and format of the access logfile (Common Logfile Format).
+	    If you do not define any access logfiles within a &lt;VirtualHost&gt;
+ 	    container, they will be logged here.  Contrariwise, if you *do*
+	    If you do not define any access logfiles within a &lt;VirtualHost&gt;
+	    container, they will be logged here.  Contrariwise, if you *do*
+	    define per-&lt;VirtualHost&gt; access logfiles, transactions will be
+	    logged therein and *not* in this file.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" key="CustomLog" notinstart="^\s*&lt;Vir.+?&gt;" notinstop="^\s*&lt;/Vir.+?&gt;"></TYPE>	
+</STEP>
+
+<STEP id="70" group="2" skill="2">
+      <NAME language="Deutsch">Server Signature</NAME>
+      <NAME language="uk">Server Signature</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    Die Anweisung ServerSignature f&uuml;gt in alle vom Server erstellten Dokumente eine Zeile ein, die 
+	    die Apache Serverversion und den ServerName des Rechners enth&auml;lt, auf dem der Server 
+	    ausgef&uuml;hrt wird (z.B. Fehlermeldungen, die an Clients zur&uuml;ckgesendet werden). 
+	    ServerSignature ist standardm&auml;&szlig;ig auf on eingestellt. Sie k&ouml;nnen die Einstellung 
+	    auf off setzen (so wird keine Signaturzeile eingef&uuml;gt) oder auf EMail &auml;ndern . EMail 
+	    f&uuml;gt ein HTML-Tag mailto:ServerAdmin in die Signaturzeile.
+
+
+      </HELP>
+      <HELP language="uk">
+	    Adds a line to all sites created by the server. This line contains the apache version and the server name.
+	    Default is on for this option, if you change this option to &quot;EMail&quot;, the server will add 
+	    a mailto:ServerAdmin tag.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="On" key="ServerSignature" notinstart="^\s*&lt;Vir.+?&gt;" notinstop="^\s*&lt;/Vir.+?&gt;">
+	    <SELECT value="On" language="Deutsch">An</SELECT>
+	    <SELECT value="On" language="uk">On</SELECT>
+	    <SELECT value="Off" language="Deutsch">Aus</SELECT>
+	    <SELECT value="Off" language="uk">Off</SELECT>
+	    <SELECT value="EMail" language="uk">Email</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="72" group="2" skill="2">
+      <NAME language="Deutsch">Locations (ML)</NAME>
+      <NAME language="uk">Locations (ML)</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+
+	    Die Tags &lt;Location&gt; und &lt;/Location&gt; erm&ouml;glichen die Angabe von Zugangsberechtigungen 
+	    auf URL-Basis.
+	    [[br]][[br]]
+	    Eine weitere M&ouml;glichkeit, Location-Tags zu verwenden, ist die Angabe in IfModule mod_perl.c-Tags. 
+	    Diese Konfigurationsanweisungen sind aktiv, wenn das DSO mod_perl.so geladen ist. Weitere Informationen 
+	    zum Hinzuf&uuml;gen von Modulen zu Apache finden Sie in Abschnitt namens Hinzuf&uuml;gen von Modulen 
+	    zu Ihrem Server for more information about adding modules to Apache.
+	    [[br]][[br]]
+	    In den Location-Tags wird das Verzeichnis /var/www/perl (ein Alias f&uuml;r /perl) als das 
+	    Verzeichnis angegeben, von dem Perl-Skripten bereitgestellt werden. Wenn ein Dokument mit einer 
+	    URL mit /perl im Pfad angefordert wird, sucht der Web-Server in /var/www/perl/ nach dem 
+	    entsprechenden Perl-Skript.
+	    [[br]][[br]]
+	    Mehrere andere &lt;Location&gt;-Optionen in der Datei httpd.conf sind auskommentiert. Wenn Sie 
+	    deren Funktionen nutzen wollen, m&uuml;ssen Sie f&uuml;r den entsprechenden Anweisungsabschnitt 
+	    die Kommentare entfernen.
+	    [[br]][[br]]
+	    Bitte beachten
+ 	    [[br]][[br]]
+	    Das Put-Modul ist nicht mehr im Lieferumfang des Apache-Pakets enthalten. Das Paket mod_put muss 
+	    eigens heruntergeladen werden.
+	    [[br]][[br]]
+	    Direkt nach den gerade besprochenen Perl-Anweisungen folgt in der Datei httpd.conf ein 
+	    Abschnitt mit Anweisungen zur Aktivierung von HTTP PUT (z.B. f&uuml;r die Publizieren-Funktion 
+	    von Netscape Gold, &uuml;ber die Web-Seiten auf einem Web-Server ver&ouml;ffentlicht werden 
+	    k&ouml;nnen). Wenn Sie HTTP PUT zulassen m&ouml;chten, m&uuml;ssen Sie f&uuml;r diesen 
+	    gesamten Abschnitt die Kommentare entfernen:
+	    [[br]][[br]]
+	    #Alias /upload /tmp[[br]]
+	    #&lt;Location /upload&gt;[[br]]
+	    #    EnablePut On[[br]]
+	    #    AuthType Basic[[br]]
+	    #    AuthName Temporary[[br]]
+	    #    AuthUserFile /etc/httpd/conf/passwd[[br]]
+	    #    EnableDelete Off[[br]]
+	    #    umask 007[[br]]
+	    #    &lt;Limit PUT&gt;[[br]]
+	    #       require valid-user[[br]]
+	    #    &lt;/Limit&gt;[[br]]
+	    #&lt;/Location&gt;
+ 	    [[br]][[br]]
+	    Weiterhin m&uuml;ssen Sie die folgenden Zeilen am Anfang von httpd.conf auskommentieren, so 
+	    dass das Modul mod_put module geladen werden kann:
+	    [[br]][[br]]
+	    #LoadModule put_module          modules/mod_put.so[[br]]
+	    #AddModule mod_put.c
+	    [[br]][[br]]
+	    Wenn Sie zulassen m&ouml;chten, dass Benutzer von Ihrer Dom&auml;ne aus Serverstatusberichte 
+	    einsehen k&ouml;nnen, sollten Sie f&uuml;r den n&auml;chsten Abschnitt mit Anweisungen die 
+	    Kommentare entfernen:
+	    [[br]][[br]]
+	    #&lt;Location /server-status&gt;[[br]]
+	    #    SetHandler server-status[[br]]	
+	    #    Order deny,allow[[br]]	
+	    #    Deny from all[[br]]
+	    #    Allow from .your_domain.com[[br]]
+	    #&lt;/Location&gt;
+	    [[br]][[br]]
+	    Dabei muss .your_domain.com durch den Namen Ihrer Second Level-Dom&auml;ne ersetzt werden.
+	    [[br]][[br]]
+	    Wenn Sie Serverkonfigurationsberichte (einschlie&szlig;lich installierter Module und 
+	    Konfigurationsanweisungen) f&uuml;r Anforderungen aus Ihrer Dom&auml;ne bereitstellen m&ouml;chten, 
+	    m&uuml;ssen f&uuml;r die folgenden Zeilen die Kommentare entfernt werden:
+	    [[br]][[br]]
+	    #&lt;Location /server-info&gt;[[br]]
+	    #    SetHandler server-info[[br]]
+	    #    Order deny,allow[[br]]
+	    #    Deny from all[[br]]
+	    #    Allow from .your_domain.com[[br]]
+	    #&lt;/Location&gt;[[br]]
+	    [[br]]	
+	    Auch hier muss .your_domain.com entsprechend angegeben werden.
+	    [[br]][[br]]
+	    Im n&auml;chsten Abschnitt mit Anweisungen werden Location-Tags verwendet, um den Zugriff auf 
+	    die Dokumentation in /usr/share/doc zu erlauben (z.B. mit einer URL wie 
+	    http://your_domain/doc/beliebig.html). Diese Anweisungen erlauben nur Anforderungen vom 
+	    lokalen Rechner den Zugriff.
+	    [[br]][[br]]
+	    Eine weitere M&ouml;glichkeit, Location-Tags zu verwenden, ist ein auskommentierter Abschnitt, 
+	    der Angriffe auf Ihren Web-Server aufsp&uuml;ren soll, die einen alten Bug aus der Zeit vor 
+	    Apache 1.1 ausnutzen. Wenn Sie diese Anforderungen verfolgen wollen, entfernen Sie die 
+	    Kommentare f&uuml;r die folgenden Zeilen:
+	    [[br]][[br]]
+	    #&lt;Location /cgi-bin/phf*&gt;[[br]]
+	    #    Deny from all[[br]]
+	    #    ErrorDocument 403 http://phf.apache.org/phf_abuse_log.cgi[[br]]
+	    #&lt;/Location&gt;
+	    [[br]][[br]]
+	    Wenn f&uuml;r diese Zeilen die Kommentare entfernt werden, leitet Ihr Web-Server alle Anfragen, 
+	    die mit /cgi-bin/phf* enden, zu einem CGI-Protokollierungsskript um, das von der Apache Group 
+	    ausgef&uuml;hrt wird. 	    	
+	        
+      </HELP>
+      <HELP language="uk">
+	    From: [[a href="http://httpd.apache.org/docs/mod/core.html#location" target="_blank"]]http://httpd.apache.org/docs/mod/core.html#location[[/a]]
+	    [[br]][[br]]
+	
+	    The &lt;Location&gt; directive provides for access control by URL. It is similar to the &lt;Directory&gt; directive, 
+	    and starts a subsection which is terminated with a &lt;/Location&gt;  directive. &lt;Location&gt; sections are 
+	    processed in the order they appear in the configuration file, after the &lt;Directory&gt; sections and 
+	    .htaccess files are read, and after the &lt;Files&gt; sections.
+	    [[br]][[br]]
+	    Note that URLs do not have to line up with the filesystem at all, it should be emphasized that 
+	    &lt;Location&gt; operates completely outside the filesystem.
+	    [[br]][[br]]
+	    For all origin (non-proxy) requests, the URL to be matched is of the form /path/, and you should 
+	    not include any http://servername prefix. For proxy requests, the URL to be matched is of the form 
+	    scheme://servername/path, and you must include the prefix.
+	    [[br]][[br]]
+	    The URL may use wildcards In a wild-card string, `?&acute; matches any single character, and `*&acute; 
+	    matches any sequences of characters.
+	    [[br]][[br]]
+	    Apache 1.2 and above: Extended regular expressions can also be used, with the addition of the 
+	    ~ character. For example:
+	    [[br]][[br]]
+	    &lt;Location ~ &quot;/(extra|special)/data&quot;&gt;
+	    would match URLs that contained the substring &quot;/extra/data&quot; or &quot;/special/data&quot;. In Apache 1.3 
+	    and above, a new directive &lt;LocationMatch&gt; exists which behaves identical to the regex version of &lt;Location&gt;.
+	    [[br]][[br]]
+	    The Location functionality is especially useful when combined with the SetHandler directive. 
+	    For example, to enable status requests, but allow them only from browsers at foo.com, you might use:
+	    [[br]][[br]]
+	    &lt;Location /status&gt;[[br]]
+		SetHandler server-status[[br]]
+		Order Deny,Allow[[br]]
+		Deny from all[[br]]
+		Allow from .foo.com[[br]]
+	    &lt;/Location&gt;
+	    [[br]][[br]]
+	    Apache 1.3 and above note about / (slash): The slash character has special meaning depending on where 
+	    in a URL it appears. People may be used to its behavior in the filesystem where multiple adjacent 
+	    slashes are frequently collapsed to a single slash (i.e., /home///foo is the same as /home/foo). In 
+	    URL-space this is not necessarily true. The &lt;LocationMatch&gt; directive and the regex version of &lt;Location&gt; 
+	    require you to explicitly specify multiple slashes if that is your intention. For example, 
+	    &lt;LocationMatch ^/abc&gt; would match the request URL /abc but not the request URL //abc. The (non-regex) 
+	    &lt;Location&gt; directive behaves similarly when used for proxy requests. But when (non-regex) &lt;Location&gt; 
+	    is used for non-proxy requests it will implicitly match multiple slashes with a single slash. 
+	    For example, if you specify &lt;Location /abc/def&gt; and the request is to /abc//def then it will match.
+	    [[br]][[br]]
+	    See also: How Directory, Location and Files sections work for an explanation of how these different sections are combined when a request is received      
+      </HELP>
+      <TYPE kind="user" input="multiline" number="0">
+      	<START>^\s*&lt;Location.*?&gt;</START>
+      	<STOP>&lt;/Location&gt;</STOP>
+      </TYPE>	
+</STEP>
+
+<STEP id="74" group="2" skill="2">
+      <NAME language="Deutsch">If Module (ML)</NAME>
+      <NAME language="uk">If Module (ML)</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+
+	    &lt;IfModule&gt; und &lt;/IfModule&gt;-Tags umschlie&szlig;en Anweisungen, die Bedingungen enthalten. Die in den IfModule-Tags enthaltenen 
+	    Anweisungen werden verarbeitet, wenn eine der zwei folgenden Bedingungen erf&uuml;llt ist. Die Anweisungen werden 
+	    verarbeitet, wenn das im ersten &lt;IfModule&gt;-Tag enthaltene Modul in den Apache Server geladen wurde. Wenn ein 
+	    &quot;!&quot; (Ausrufezeichen) vor dem Modulnamen steht, werden die Anweisungen nur verarbeitet, wenn das Modul im 
+	    ersten &lt;IfModule&gt;-Tag not  einkompiliert ist.
+	    [[br]][[br]]
+	    Die Datei mod_mime_magic.c ist in diesen IfModule-Tags enthalten. Das Modul mod_mime_magic ist mit 
+	    dem Befehl file in UNIX vergleichbar, der einige Bytes des Inhalts einer Datei untersucht und 
+	    &quot;magic numbers&quot; sowie weitere Hinweise verwendet, um den MIME-Type der Datei zu bestimmen.
+	    [[br]][[br]]
+	    Wenn das Modul mod_mime_magic in Apache einkompiliert ist, wird dem Modul mod_mime_magic &uuml;ber 
+	    diese IfModule-Tags mitgeteilt, wo sich die Hinweisdatei befindet: /usr/share/magic in diesem Fall.
+	    [[br]][[br]]
+	    Das Modul mod_mime_magic ist nicht standardm&auml;&szlig; einkompiliert. Wenn Sie das Modul verwenden 
+	    m&ouml;chten, finden Sie in Abschnitt namens Hinzuf&uuml;gen von Modulen zu Ihrem ServerHinweise zum Hinzuf&uuml;gen 
+	    von Modulen zu Ihrem Server. 	        
+      </HELP>
+      <HELP language="uk">
+	    From: [[a href="http://httpd.apache.org/docs/mod/core.html#ifmodule" target="_blank"]]http://httpd.apache.org/docs/mod/core.html#ifmodule[[/a]]
+	    [[br]][[br]]
+	    The &lt;IfModule test&gt;...&lt;/IfModule&gt;  section is used to mark directives that are conditional. The directives within an 
+	    IfModule section are only processed if the test is true. If test is false, everything between the start and 
+	    end markers is ignored.
+	    [[br]][[br]]
+	    The test in the &lt;IfModule&gt; section directive can be one of two forms:
+	    [[br]][[br]]
+	    * module name[[br]]
+	    * !module name
+	    [[br]][[br]]
+	    In the former case, the directives between the start and end markers are only processed if the module 
+	    named module name is included in Apache -- either compiled in or dynamically loaded using LoadModule. 
+	    The second format reverses the test, and only processes the directives if module name is not included.
+	    [[br]][[br]]
+	    The module name argument is the file name of the module, at the time it was compiled. For example, mod_rewrite.c.
+	    [[br]][[br]]
+	    &lt;IfModule&gt; sections are nest-able, which can be used to implement simple multiple-module tests.
+      </HELP>
+      <TYPE kind="user" input="multiline" number="0">
+      	<START>^\s*&lt;IfModule.*?&gt;</START>
+      	<STOP>&lt;/IfModule&gt;</STOP>
+      </TYPE>	
+</STEP>
+
+<STEP id="76" group="2" skill="2">
+      <NAME language="Deutsch">Meta Dir</NAME>
+      <NAME language="uk">Meta Dir</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    MetaDir gibt den Namen eines Verzeichnisses an, in dem Ihr Web-Server nach Dateien suchen soll, die 
+	    Metainformationen enthalten (zus&auml;tzliche HTTP-Header), die bei der Bereitstellung von 
+	    Dokumenten mit einzubeziehen sind.
+
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    MetaDir: specifies the name of the directory in which Apache can find
+	    meta information files. These files contain additional HTTP headers
+	    to include when sending the document
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default=".web" key="MetaDir" notinstart="^\s*&lt;Vir.+?&gt;" notinstop="^\s*&lt;/Vir.+?&gt;"></TYPE>	
+</STEP>
+
+<STEP id="78" group="2" skill="2">
+      <NAME language="Deutsch">Meta Suffix</NAME>
+      <NAME language="uk">Meta Suffix</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    MetaSuffix gibt das Dateinamensuffix f&uuml;r die Datei an, die die Metainformationen enth&auml;lt (zus&auml;tzliche HTTP-Header), 
+	    die im Verzeichnis MetaDir directory abgelegt sein sollten.
+	    
+      </HELP>
+      <HELP language="uk">
+	    From: http.conf[[br]][[br]]
+
+	    MetaSuffix: specifies the file name suffix for the file containing the
+	    meta information.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default=".meta" key="MetaSuffix" notinstart="^\s*&lt;Vir.+?&gt;" notinstop="^\s*&lt;/Vir.+?&gt;"></TYPE>	
+</STEP>
+
+<STEP id="80" group="3" skill="2">
+      <NAME language="Deutsch">Name Virtual Host</NAME>
+      <NAME language="uk">Name Virtual Host</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm" target="_blank"]]http://www.informatik.uni-hamburg.de/Frauen/Admina/Beitraege/www_server/Config1.htm[[/a]][[br]][[br]]
+	    
+	    Wenn Sie namensbasierte virtuelle Hosts einrichten, m&uuml;ssen Sie die Anweisung NameVirtualHost f&uuml;r die IP-Adresse 
+	    verwenden (und die Portnummer, falls erforderlich). Die Konfiguration von namensbasierten virtuellen 
+	    Hosts wird verwendet, wenn Sie verschiedene virtuelle Hosts f&uuml;r verschiedene Dom&auml;nen einrichten m&ouml;chten, 
+	    aber nicht gen&uuml;gend verschiedene IP-Adressen f&uuml;r die verschiedenen Dom&auml;nennamen haben (oder 
+	    verwenden m&ouml;chten), f&uuml;r die Ihr Web-Server Dokumente bereitstellt.
+	    [[br]][[br]]
+	    [[b]]Bitte beachten[[/b]]
+ 	    [[br]][[br]]
+	    Namensbasierte virtuelle Hosts k&ouml;nnen nicht gemeinsam mit dem Secure Server verwendet werden. 
+	    Alle eingerichteten namensbasierten virtuelle Hosts funktionieren nur f&uuml;r unverschl&uuml;sselte 
+	    HTTP-Verbindungen, nicht f&uuml;r SSL-Verbindungen.
+	    [[br]][[br]]
+	    Namensbasierte virtuelle Hosts k&ouml;nnen nicht zusammen mit dem Secure Server verwendet werden, weil 
+	    der SSL-Handshake (der Zeitpunkt, wenn der Browser das Authentifizierungszertifikat des Secure 
+	    Web-Servers annimmt) vor der HTTP-Anforderung stattfindet, die den richtigen namensbasierten 
+	    virtuellen Host identifiziert. Anders ausgedr&uuml;ckt, die Authentifizierung findet statt, bevor die 
+	    Identifikation der verschiedenen namensbasierten virtuellen Host erfolgt. Virtuelle Hosts 
+	    m&uuml;ssen IP-Adressen-basiert sein, um sie gemeinsam mit dem Secure Server verwenden zu k&ouml;nnen.
+	    [[br]][[br]]
+	    Wenn Sie namensbasierte virtuelle Hosts verwenden, sind f&uuml;r die Konfigurationsanweisung 
+	    NameVirtualHost die Kommentare zu entfernen, und nach NameVirtualHost ist die richtige IP-Adresse 
+	    f&uuml;r Ihren Server anzugeben. Anschlie&szlig;end sind mit VirtualHost-Tags weitere Informationen zu den 
+	    verschiedenen Dom&auml;nen hinzuzuf&uuml;gen, die ServerName f&uuml;r jeden virtuellen Host sowie weitere 
+	    Konfigurationsanweisungen einschlie&szlig;en, die nur f&uuml;r diesen virtuellen Host gelten. 	    
+      </HELP>
+      <HELP language="uk">
+	    From: [[a href="http://httpd.apache.org/docs/mod/core.html#ifmodule" target="_blank"]]http://httpd.apache.org/docs/mod/core.html#ifmodule[[/a]]
+	    [[br]][[br]]
+	    The NameVirtualHost directive is a required directive if you want to configure name-based virtual hosts.
+	    [[br]][[br]]
+	    Although addr can be hostname it is recommended that you always use an IP address or wildcard, e.g.
+	    [[br]][[br]]
+	    NameVirtualHost 111.22.33.44 
+	    [[br]][[br]]
+	    With the NameVirtualHost directive you specify the IP address on which the server will receive requests 
+	    for the name-based virtual hosts. This will usually be the address to which your name-based virtual host 
+	    names resolve. In cases where a firewall or other proxy receives the requests and forwards them on a 
+	    different IP address to the server, you must specify the IP address of the physical interface on the 
+	    machine which will be servicing the requests. If you have multiple name-based hosts on multiple addresses, 
+	    repeat the directive for each address.
+	    [[br]][[br]]
+	    Note: the "main server" and any _default_ servers will never be served for a request to a NameVirtualHost 
+	    IP Address (unless for some reason you specify NameVirtualHost but then don't define any VirtualHosts 
+	    for that address).
+	    [[br]][[br]]
+	    Optionally you can specify a port number on which the name-based virtual hosts should be used, e.g.
+	    [[br]][[br]]
+	    NameVirtualHost 111.22.33.44:8080 
+	    [[br]][[br]]
+	    In Apache 1.3.13 and greater you can specify a * for the addr. This creates a wildcard 
+	    NameVirtualHost which will match connections to any address that isn't configured with a more specific 
+	    NameVirtualHost directive or &lt;VirtualHost&gt; section. This is useful if you want only name-based 
+	    virtual hosts and you don't want to hard-code the server's IP address into the configuration file.
+	    [[br]][[br]]
+	    See also: Apache Virtual Host documentation
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="*" key="NameVirtualHost" notinstart="^\s*&lt;Vir.+?&gt;" notinstop="^\s*&lt;/Vir.+?&gt;"></TYPE>	
+</STEP>
+
+<STEP id="82" group="3" skill="2">
+      <NAME language="Deutsch">Virtual Host</NAME>
+      <NAME language="uk">Virtual Host</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html" target="_blank"]]http://www.tu-chemnitz.de/linux/Dokumentation/redhat-docs/RH-DOCS/de/rhl-rg-de-7.2/s1-apache-config.html[[/a]][[br]][[br]]
+
+	    &lt;VirtualHost&gt;- und &lt;/VirtualHost&gt;-Tags umschlie&szlig;en alle Konfigurationsanweisungen, die f&uuml;r einen 
+	    virtuellen Host gelten. Die meisten Konfigurationsanweisungen k&ouml;nnen innerhalb von VirtualHost-Tags 
+	    verwendet werden und gelten dann f&uuml;r diesen virtuellen Host.
+	    [[br]][[br]]
+	    Eine Reihe von auskommentierten VirtualHost-Tags umschlie&szlig;en einige Beispielkonfigurationsanweisungen 
+	    und Platzhalter f&uuml;r die Informationen, die f&uuml;r die Einrichtung eines virtuellen Hosts ben&ouml;tigt 
+	    w&uuml;rden. Weitere Informationen &uuml;ber virtuelle Hosts finden Sie in Abschnitt namens Virtuelle Hosts 
+	    verwenden.       
+      </HELP>
+      <HELP language="uk">
+	    From: [[a href="http://httpd.apache.org/docs/mod/core.html#ifmodule" target="_blank"]]http://httpd.apache.org/docs/mod/core.html#ifmodule[[/a]]
+	    [[br]][[br]]
+	    &lt;VirtualHost&gt; and &lt;/VirtualHost&gt; are used to enclose a group of directives which will apply 
+	    only to a particular virtual host. Any directive which is allowed in a virtual host context may be 
+	    used. When the server receives a request for a document on a particular virtual host, it uses the 
+	    configuration directives enclosed in the &lt;VirtualHost&gt; section. Addr can be
+	    [[br]][[br]]
+	    * The IP address of the virtual host[[br]]
+    	    * A fully qualified domain name for the IP address of the virtual host.[[br]][[br]]
+
+	    Example:[[br]]
+
+	    &lt;VirtualHost 10.1.2.3&gt;[[br]]
+	    ServerAdmin webmaster@host.foo.com[[br]]
+	    DocumentRoot /www/docs/host.foo.com[[br]]
+	    ServerName host.foo.com[[br]]
+	    ErrorLog logs/host.foo.com-error_log[[br]]
+	    TransferLog logs/host.foo.com-access_log[[br]]
+	    &lt;/VirtualHost&gt; 
+  	    [[br]][[br]]
+	    Each VirtualHost must correspond to a different IP address, different port number or a different host 
+	    name for the server, in the former case the server machine must be configured to accept IP packets 
+	    for multiple addresses. (If the machine does not have multiple network interfaces, then this can 
+	    be accomplished with the ifconfig alias command (if your OS supports it), or with kernel patches 
+	    like VIF (for SunOS(TM) 4.1.x)).
+	    [[br]][[br]]
+	    You can specify more than one IP address. This is useful if a machine responds to the same name on 
+	    two different interfaces. For example, if you have a VirtualHost that is available to hosts on 
+	    an internal (intranet) as well as external (internet) network. Example:
+	    [[br]][[br]]
+	    &lt;VirtualHost 192.168.1.2 204.255.176.199&gt;[[br]]
+    	    DocumentRoot /www/docs/host.foo.com[[br]]
+    	    ServerName host.foo.com[[br]]
+    	    ServerAlias host[[br]]
+    	    &lt;/VirtualHost&gt; 	
+	    [[br]][[br]]
+	    The special name _default_ can be specified in which case this virtual host will match any IP address 
+	    that is not explicitly listed in another virtual host. In the absence of any _default_ virtual host 
+	    the "main" server config, consisting of all those definitions outside any VirtualHost section, 
+	    is used when no match occurs.
+	    [[br]][[br]]
+	    You can specify a :port to change the port that is matched. If unspecified then it defaults to 
+	    the same port as the most recent Port statement of the main server. You may also specify :* 
+	    to match all ports on that address. (This is recommended when used with _default_.)
+	    [[br]][[br]]
+	    SECURITY: See the security tips document for details on why your security could be compromised 
+	    if the directory where logfiles are stored is writable by anyone other than the user that starts 
+	    the server.
+	    [[br]][[br]]
+	    NOTE: The use of &lt;VirtualHost&gt; does not affect what addresses Apache listens on. You may 
+	    need to ensure that Apache is listening on the correct addresses using either BindAddress or Listen.
+      </HELP>
+      <TYPE kind="user" input="multiline" number="0">
+      	<START>^\s*&lt;VirtualHost.*?&gt;</START>
+      	<STOP>&lt;/VirtualHost&gt;</STOP>
+      </TYPE>	
+</STEP>
+
+<CLEANUP>
+      <EXECUTE id="1" distribution="suse" pathfile="/usr/sbin/apachectl" parameter="stop">Stop Server</EXECUTE>
+      <EXECUTE id="1" distribution="debian" pathfile="/usr/bin/apachectl" parameter="stop">Stop server</EXECUTE>
+      <EXECUTE id="2" distribution="suse" pathfile="/usr/sbin/apachectl" parameter="start">Start Server</EXECUTE>	    
+</CLEANUP>
+</WIZARD>
+

@@ -1,0 +1,79 @@
+<!ELEMENT WIZARD (HEADER, STEP+, CLEANUP?)> 
+<!ELEMENT HEADER (LANGDEF*, SKILLDEF*, GROUPDEF*, APPLICATION,
+                  APPVERSION, CONFTYPE, PATH*, FILE, AUTHOR?, EMAIL?,
+		  URL?, DATE?, VALASSIGN?, SECTIONSTART?,
+		  SECTIONSTOP?, COMMENT?)> 
+
+	  <!ELEMENT LANGDEF (#PCDATA)> 
+	  <!ATTLIST LANGDEF id CDATA #REQUIRED> 
+
+          <!ELEMENT SKILLDEF (#PCDATA)> 
+          <!ATTLIST SKILLDEF id CDATA #REQUIRED language CDATA #IMPLIED> 
+
+          <!ELEMENT GROUPDEF (#PCDATA)>  
+          <!ATTLIST GROUPDEF id CDATA #REQUIRED language CDATA #IMPLIED> 
+
+          <!ELEMENT APPLICATION (#PCDATA)> 
+          
+          <!ELEMENT APPVERSION (#PCDATA)> 
+
+          <!ELEMENT CONFTYPE (#PCDATA)> 
+
+          <!ELEMENT PATH (#PCDATA)> 
+          <!ATTLIST PATH distribution (Suse|Debian|RedHat) #IMPLIED> 
+
+          <!ELEMENT FILE (#PCDATA)> 
+
+          <!ELEMENT AUTHOR (#PCDATA)> 
+ 
+          <!ELEMENT EMAIL (#PCDATA)> 
+
+          <!ELEMENT URL (#PCDATA)> 
+
+          <!ELEMENT DATE (#PCDATA)> 
+
+          <!ELEMENT VALASSIGN (#PCDATA)> 
+
+          <!ELEMENT SECTIONSTART (#PCDATA)> 
+
+          <!ELEMENT SECTIONSTOP (#PCDATA)> 
+
+          <!ELEMENT COMMENT (#PCDATA)> 
+ 
+<!ELEMENT STEP (NAME+, DEPENDS*, HELP+, TYPE)> 
+<!ATTLIST STEP id CDATA #REQUIRED skill CDATA #IMPLIED group CDATA #IMPLIED> 
+          
+          <!ELEMENT DEPENDS (#PCDATA)> 
+
+          <!ELEMENT NAME (#PCDATA)> 
+          <!ATTLIST NAME language CDATA #IMPLIED> 
+
+          <!ELEMENT HELP (#CDATA)> 
+          <!ATTLIST HELP language CDATA #IMPLIED> 
+
+          <!ELEMENT TYPE (SELECT*,(START, STOP)?, DEFAULT?) > 
+          <!ATTLIST TYPE number CDATA #REQUIRED 
+	                 kind CDATA #REQUIRED 
+                         input CDATA #REQUIRED 
+                         key CDATA #IMPLIED 
+                         validation CDATA #IMPLIED
+			 default CDATA #IMPLIED 
+                         section CDATA #IMPLIED
+                         exec CDATA #IMPLIED
+			 notinstart CDATA #IMPLIED
+			 notinstop  CDATA #IMPLIED
+			 ignorealtvalues CDATA #IMPLIED
+			 > 
+
+			 <!ELEMENT SELECT (#PCDATA)> 
+			 <!ATTLIST SELECT language CDATA #IMPLIED value CDATA #REQUIRED> 
+
+			 <!ELEMENT START (#PCDATA)> 
+			 <!ELEMENT STOP (#PCDATA)> 
+
+			 <!ELEMENT EXEC (#PCDATA)> 
+
+<!ELEMENT CLEANUP (EXECUTE)> 
+
+          <!ELEMENT EXECUTE (#PCDATA)> 
+          <!ATTLIST EXECUTE id CDATA #REQUIRED distribution (Suse|Debian|RedHat) #IMPLIED>

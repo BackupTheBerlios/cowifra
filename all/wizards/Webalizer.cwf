@@ -1,0 +1,2189 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE WIZARD SYSTEM "file:wizard.dtd" >
+<WIZARD>
+<HEADER>
+      <APPLICATION>Webalizer</APPLICATION>
+      <APPVERSION>2.01-08</APPVERSION>
+      <CONFTYPE>configfile</CONFTYPE>
+      <PATH distribution="Suse">/etc/</PATH>
+      <PATH>/etc/</PATH>
+      <FILE>webalizer.conf</FILE>
+      <AUTHOR>Christian Schmidt</AUTHOR>
+      <EMAIL>smt@fokus.fraunhofer.de</EMAIL>
+      <URL>http://www.myadress.com/mywizardfile.lwf</URL>
+      <DATE>29.09.2003</DATE>	
+      <COMMENTCHAR>#</COMMENTCHAR>
+      <VALASSIGN> </VALASSIGN>
+      <GROUPDEF id="1" language="uk">Top Stats</GROUPDEF>
+      <GROUPDEF id="1" language="de">Top Statistiken</GROUPDEF>
+      <GROUPDEF id="2" language="de">HTML Seiten Layout</GROUPDEF>
+      <GROUPDEF id="2" language="uk">HTML output format</GROUPDEF>
+      <GROUPDEF id="3" language="de">Gruppierung von Eintr&auml;gen</GROUPDEF>
+      <GROUPDEF id="3" language="uk">Group entries</GROUPDEF>      
+      <SKILLDEF id="1" language="de">Grundeinstellungen</SKILLDEF>
+      <SKILLDEF id="1" language="uk">Basics</SKILLDEF>
+</HEADER>
+
+<STEP id="1" skill="1">
+      <NAME language="de">LogFile</NAME>
+      <NAME language="uk">LogFile</NAME>
+      <HELP language="de">
+            LogFile bestimmt das Webserver Logfile, welches analysiert werden soll. Wird hier oder
+            &uuml;ber die Kommandozeile kein Logfile angegeben, wird eine Angabe &uuml;ber die
+            Standardeingabe erwartet. Besitzt das Logfile die Endung 'gz' wird es f&uuml;r die
+            Analyse automatisch dekomp
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    LogFile defines the web server log file to use.  If not specified
+	    here or on on the command line, input will default to STDIN.  If
+	    the log filename ends in '.gz' (ie: a gzip compressed file), it will
+	    be decompressed on the fly as it is being read.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="/var/log/httpd/access_log" validation="existfile" key="LogFile" ignorealtvalues="1"></TYPE>	
+</STEP>
+
+<STEP id="2" skill="1">
+      <NAME language="de">LogType</NAME>
+      <NAME language="uk">LogType</NAME>
+      <HELP language="de">
+	    LogType definiert den Logtype der im Logfile genutzt wird. Normalerweise erwartet Webalizer
+	    ein CLF oder kombiniertes Logfile als Eingabe. Mit Hilfe dieser Option k&ouml;nnen auch FTP-Logfiles
+	    z.B. von wu-ftp und reine Squid Logfiles analysiert werden. Der Wert kann 'clf', 'ftp' oder 'squid' sein,
+	    'clf' ist der default Wert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    LogType defines the log type being processed.  Normally, the Webalizer
+	    expects a CLF or Combined web server log as input.  Using this option,
+	    you can process ftp logs as well (xferlog as produced by wu-ftp and
+	    others), or Squid native logs.  Values can be 'clf', 'ftp' or 'squid',
+	    with 'clf' the default.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="clf" key="LogType">	
+      	<SELECT value="clf">clf</SELECT>
+      	<SELECT value="ftp">ftp</SELECT>
+      	<SELECT value="squid">squid</SELECT>
+      </TYPE>
+</STEP>
+
+<STEP id="3" skill="1">
+      <NAME language="de">Ausgabe Verzeichnis</NAME>
+      <NAME language="uk">Output dir</NAME>
+      <HELP language="de">
+	    Das Ausgabeverzeichnis ist das Verzeichnis wo die Ausgabedateien gespeichert werden sollen. Der Pfad sollte
+	    in absoluter Form angegeben werden. Wenn kein Ausgabe Verzeichnis definiert ist, wird das aktuelle Verzeichnis
+	    genutzt.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    OutputDir is where you want to put the output files.  This should
+	    should be a full path name.
+	    If no output directory is specified, the current directory will be used.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" canempty="1" default="/var/lib/webalizer" key="OutputDir" validation="EXISTPATH"></TYPE>	
+</STEP>
+
+<STEP id="4">
+      <NAME language="de">History Name</NAME>
+      <NAME language="uk">History name</NAME>
+      <HELP language="de">
+	    History Name erlaubt es Ihnen, einen Dateinamen anzugeben, in der Webalizer 
+	    die bisherige History der Auswertung speichert. Diese History Datei enth&auml;lt
+	    max. die Auswertung der letzten 12 Monate und wird zur Generierung der HTML-Seiten
+	    genutzt. Der default Wert f&uuml;r diese Einstellung ist &quot;webalizer.hist&quot;. Die Datei
+	    wird in dem Verzeichnis gespeichert, welches unter Ausgabe-Verzeichnis angegeben wurde. Es
+	    kann jedoch auch ein absoluter Dateiname (inkl. Pfad) verwendet werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HistoryName allows you to specify the name of the history file produced
+	    by the Webalizer.  The history file keeps the data for up to 12 months
+	    worth of logs, used for generating the main HTML page (index.html).
+	    The default is a file named "webalizer.hist", stored in the specified
+	    output directory.  If you specify just the filename (without a path),
+	    it will be kept in the specified output directory.  Otherwise, the path
+	    is relative to the output directory, unless absolute (leading /).
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" canempty="1" default="webalizer.hist" key="HistoryName"></TYPE>	
+</STEP>
+
+<STEP id="5" skill="1">
+      <NAME language="de">Fortlaufend</NAME>
+      <NAME language="uk">Incremental</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie eine Auswertung &uuml;ber mehrere
+	    Logfiles vornehmen. Dies ist besonder n&uuml;tzlich, wenn Sie eine 
+	    gr&ouml;ssere Webseite betreiben und die Logfiles deshalb rotieren 
+	    m&uuml;ssen. Webalizer scannt dabei selbstst&auml;ndige nach doppelten
+	    Eintr&auml;gen. Die m&ouml;glichen Einstellungen sind 'yes' oder 'no'.
+	    Der default Wert ist 'no'. Die Datei 'webalizer.current' enth&auml;lt 
+	    Informationen &uuml;ber die aktuelle Auswertung und wird im 
+	    Ausgabe-Verzeichnis angelegt. Es empfiehlt sich den Abschnitt &uuml;ber
+	    fortlaufende Analysen in der README Datei von Webalizer zu lesen, bevor
+	    man diese Option verwendet.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    Incremental processing allows multiple partial log files to be used
+	    instead of one huge one.  Useful for large sites that have to rotate
+	    their log files more than once a month.  The Webalizer will save its
+	    internal state before exiting, and restore it the next time run, in
+	    order to continue processing where it left off.  This mode also causes
+	    The Webalizer to scan for and ignore duplicate records (records already
+	    processed by a previous run).  See the README file for additional
+	    information.  The value may be 'yes' or 'no', with a default of 'no'.
+	    The file 'webalizer.current' is used to store the current state data,
+	    and is located in the output directory of the program (unless changed
+	    with the IncrementalName option below).  Please read at least the section
+            on Incremental processing in the README file before you enable this option.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="Incremental">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+
+<STEP id="6">
+      <NAME language="de">Fortlaufend Name</NAME>
+      <NAME language="uk">Incremental name</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie den Dateinamen f&uuml;r die fortlaufenden
+	    Daten angeben. Der Dateiname ist realtiv zum aktuellen Verzeichnis, solange 
+	    kein absoluter Pfadname angegeben wird. Der Standard-Wert f&uuml;r diese
+	    Option ist 'webalizer.current', die Datei wird im Ausgabeverzeichnis angelegt.
+	    Wenn die Option 'Fortlaufend' mit 'no' angegeben wurde, hat diese Option
+	    keine Bedeutung.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    IncrementalName allows you to specify the filename for saving the
+	    incremental data in.  It is similar to the HistoryName option where the
+	    name is relative to the specified output directory, unless an absolute
+	    filename is specified.  The default is a file named &quot;webalizer.current&quot;
+	    kept in the normal output directory.  If you don't specify "Incremental"
+	    as 'yes' then this option has no meaning.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="webalizer.current" key="IncrementalName" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="7" skill="1">
+      <NAME language="de">Report Titel</NAME>
+      <NAME language="uk">Report title</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie den Titel f&uuml;r den HTML-Report angeben. Diesem Titel wird
+	    der Hostname (wenn dieser definiert ist) angeh&auml;ngt. Der Standard-Wert ist 'Usage Statistics
+	    for'.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    ReportTitle is the text to display as the title.  The hostname
+	    (unless blank) is appended to the end of this string (seperated with
+	    a space) to generate the final full title string.
+	    Default is (for english) "Usage Statistics for".
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="Usage Statistics for" key="ReportTitle" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="8" skill="1">
+      <NAME language="de">Host Name</NAME>
+      <NAME language="uk">Host name</NAME>
+      <HELP language="de">
+	    Mit HostName k&ouml;nnen Sie den Hostnamen f&uuml;r den Report angeben. Dieser Name wird
+	    im Titel verwendet. Dieser Name wird auch den URLs in den Tabellen vorangestellt und erm&ouml;glicht
+	    so das direkte klicken auf angegeben URLs. Wird hier oder &uuml;ber die Kommandozeile kein Hostname 
+	    angegeben, wird versucht den Hostname &uuml;ber den System Aufruf uname zu erhalten. Gelingt dies nicht,
+	    wird der Hostname 'localhost' verwendet.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HostName defines the hostname for the report.  This is used in
+	    the title, and is prepended to the URL table items.  This allows
+	    clicking on URL's in the report to go to the proper location in
+	    the event you are running the report on a 'virtual' web server,
+	    or for a server different than the one the report resides on.
+	    If not specified here, or on the command line, webalizer will
+	    try to get the hostname via a uname system call.  If that fails,
+	    it will default to "localhost".
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="localhost" key="HostName" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="9">
+      <NAME language="de">HTML Erweiterung</NAME>
+      <NAME language="uk">HTML extension</NAME>
+      <HELP language="de">
+      	    Mit der Option HTML Erweiterung-Option k&ouml;nnen Sie die Erweiterung der HTML-Ausgabe Datei
+      	    definieren. Normalerweise ist die Endung 'html', aber dies kann von Ihnen ge&auml;ndert werden, z.B.
+      	    nach php.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HTMLExtension allows you to specify the filename extension to use
+	    for generated HTML pages.  Normally, this defaults to "html", but
+	    can be changed for sites who need it (like for PHP embeded pages).
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="html" key="HTMLExtension" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="10">
+      <NAME language="de">Seiten Typen</NAME>
+      <NAME language="uk">PageType</NAME>
+      <HELP language="de">
+      	    Mit dieser Option k&ouml;nnen Sie angeben, bei welchen Dateien es sich um 'Pages' (Seiten) handelt. 
+      	    In den meisten F&auml;llen werden html und cgi Dokumente als Seiten angesehen, aber nicht Bilder oder
+      	    Audio Dokumente. Wenn hier keine Typen definiert, werden die Endungen 'htm*' und 'cgi' f&uuml;r Web 
+      	    Server Logdateien und 'txt' f&uuml;r ftp Logdateien. 
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    PageType lets you tell the Webalizer what types of URL's you
+	    consider a 'page'.  Most people consider html and cgi documents
+	    as pages, while not images and audio files.  If no types are
+	    specified, defaults will be used ('htm*', 'cgi' and HTMLExtension
+	    if different for web logs, 'txt' for ftp logs).
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" key="PageType" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="11">
+      <NAME language="de">HTTPS nutzen</NAME>
+      <NAME language="uk">Use HTTPS</NAME>
+      <HELP language="de">
+      	    Diese Option sollte aktiviert werden, wenn der Server SSL nutzt und Links
+      	    auf dem Server in der Form https:// genutzt werden. Die Standard-Einstellung
+      	    f&uuml;r diese URL ist 'nein'. 
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    UseHTTPS should be used if the analysis is being run on a
+	    secure server, and links to urls should use 'https://' instead
+	    of the default 'http://'.  If you need this, set it to 'yes'.
+	    Default is 'no'.  This only changes the behaviour of the 'Top
+	    URL's' table.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="UseHTTPS">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+
+<STEP id="12" skill="1">
+      <DEPENDS>13</DEPENDS>
+      <NAME language="de">DNS Cache</NAME>
+      <NAME language="uk">DNS Cache</NAME>
+      <HELP language="de">
+      	    Diese Option definiert den Dateinamen f&uuml;r den DNS Cache. Dieser Dateiname
+      	    muss angegeben werden, wenn Sie DNS Lookup aktivieren. Dann wird zu jeder vorhandenen
+      	    IP-Adresse der Hostname in Erfahrung gebracht. Damit dabei nicht jedesmal eine
+      	    Anfrage &uuml;ber das Internet gesendet werden muss, werden die gefundenen Daten in der
+      	    DNS Cache Datei zwischengespeichert. Wenn die Datei nicht im absoluten Format (beginnend
+      	    mit /) angegeben wird, wird sie relativ zum Ausgabeverzeichnis gespeichert. F&uuml;r 
+      	    mehr Informationen lesen Sie bitte die Datei DNS.README.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    DNSCache specifies the DNS cache filename to use for reverse DNS lookups.
+	    This file must be specified if you wish to perform name lookups on any IP
+	    addresses found in the log file.  If an absolute path is not given as
+  	    part of the filename (ie: starts with a leading '/'), then the name is
+	    relative to the default output directory.  See the DNS.README file for
+	    additional information.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="dns_cache.db" key="DNSCache"></TYPE>	
+</STEP>
+
+<STEP id="13">
+      <DEPENDS>12</DEPENDS>
+      <NAME language="de">DNS Children</NAME>
+      <NAME language="uk">DNS Children</NAME>
+      <DEPENDS>12</DEPENDS>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie angegeben, wieviel DNS Anfragen gleichzeitig &uuml;ber
+	    das Netz gestellt werden sollen. Der Standard-Wert f&uuml;r diese Option ist 0, was die
+	    Nutzung bzw. Erstellung eines DNS Cache Files w&auml;hrend der Ausf&uuml;hrung. Die Anzahl 
+	    der Anfragen sollte zwischen 1 und 100 liegen, eine gr&ouml;ssere Anzahl kann
+	    das Systemverhalten beeinflussen. In der Regel sollte der Wert zwischen 5 und 20 liegen. F&uuml;r 
+	    weitere Informationen lesen Sie bitte die Datei DNS.README.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    DNSChildren allows you to specify how many "children" processes are
+	    run to perform DNS lookups to create or update the DNS cache file.
+	    If a number is specified, the DNS cache file will be created/updated
+	    each time the Webalizer is run, immediately prior to normal processing,
+	    by running the specified number of "children" processes to perform
+	    DNS lookups.  If used, the DNS cache filename MUST be specified as
+	    well.  The default value is zero (0), which disables DNS cache file
+	    creation/updates at run time.  The number of children processes to
+	    run may be anywhere from 1 to 100, however a large number may effect
+	    normal system operations.  Reasonable values should be between 5 and
+	    20.  See the DNS.README file for additional information.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="10" key="DNSChildren" validation="numbers"></TYPE>	
+</STEP>
+
+<STEP id="14" group="2">
+      <NAME language="de">HTML Pre</NAME>
+      <NAME language="uk">HTML Pre</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie Code angeben, der am Anfang der HTML-Datei
+	    ausgeben werden soll. Die max. L&auml;ge des Codes ist auf 80 Zeichen begrenzt.
+	    Wird mehr Platz ben&ouml;tigt, k&ouml;nnen mehrere Zeilen angelegt werden. Der
+	    Standard-Wert ist der DOCTYPE wie oben angegeben.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HTMLPre defines HTML code to insert at the very beginning of the
+	    file.  Default is the DOCTYPE line shown below.  Max line length
+	    is 80 characters, so use multiple HTMLPre lines if you need more.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0 Transitional//EN&quot;&gt;" key="HTMLPre" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="15" group="2">
+      <NAME language="de">HTML Kopf</NAME>
+      <NAME language="uk">HTML Head</NAME>
+      <HELP language="de">
+	    An dieser Stelle k&ouml;nnen Sie HTML Code eingeben, der zwischen den &lt;HEAD&gt;&lt;/HEAD&gt;-Tags angezeigt wird. Der
+	    Code wird direkt nach dem &lt;TITLE&gt;-Tag eingef&uuml;gt. Die max. L&auml;ge des Codes ist auf 80 Zeichen begrenzt.
+	    Wird mehr Platz ben&ouml;tigt, k&ouml;nnen mehrere Zeilen angelegt werden. 
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HTMLHead defines HTML code to insert within the &lt;HEAD&gt;&lt;/HEAD&gt;
+	    block, immediately after the &lt;TITLE&gt; line.  Maximum line length
+	    is 80 characters, so use multiple lines if needed.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="&lt;META NAME=&quot;author&quot; CONTENT=&quot;The Webalizer&quot;&gt;" key="HTMLHead" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="16" group="2">
+      <NAME language="de">HTML Body</NAME>
+      <NAME language="uk">HTML Body</NAME>
+      <HELP language="de">
+	    Mit Hilfe dieser Option kann das &lt;BODY&gt; individuell angepasst werden. Wenn Sie diese Option nutzen m&ouml;chten,
+	    muss das eigentlich BODY-Tag ebenfalls von Ihnen mit angegeben werden. Die max. L&auml;ge des Codes ist auf 80 Zeichen begrenzt.
+	    Wird mehr Platz ben&ouml;tigt, k&ouml;nnen mehrere Zeilen angelegt werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HTMLBody defined the HTML code to be inserted, starting with the
+	    &lt;BODY&gt; tag.  If not specified, the default is shown below.  If
+	    used, you MUST include your own &lt;BODY&gt; tag as the first line.
+	    Maximum line length is 80 char, use multiple lines if needed.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="&lt;BODY BGCOLOR=&quot;#E8E8E8&quot; TEXT=&quot;#000000&quot; LINK=&quot;#0000FF&quot; VLINK=&quot;#FF0000&quot;&gt;" key="HTMLBody" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="17" group="2">
+      <NAME language="de">HTML Post</NAME>
+      <NAME language="uk">HTML Post</NAME>
+      <HELP language="de">
+      	    Mit dieser Option k&ouml;nnen Sie HTML-Code angeben, der unmittelbar vor dem ersten &lt;HR&gt;-Tag angezeigt wird.
+      	    Wie bereits bei der Option HTML Kopf k&ouml;nnen Sie auch hier beliebig viele Zeilen angeben, die in der Reihenfolge
+      	    Ihres erscheinens ausgegeben werden. Die max. L&auml;ge des Codes ist auf 80 Zeichen begrenzt.
+	    Wird mehr Platz ben&ouml;tigt, k&ouml;nnen mehrere Zeilen angelegt werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+    	    HTMLPost defines the HTML code to insert immediately before the
+	    first &lt;HR&gt; on the document, which is just after the title and
+	    "summary period"-"Generated on:" lines.  If anything, this should
+	    be used to clean up in case an image was inserted with HTMLBody.
+	    As with HTMLHead, you can define as many of these as you want and
+	    they will be inserted in the output stream in order of apperance.
+ 	    Max string size is 80 characters.  Use multiple lines if you need to.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="&lt;BR CLEAR=&quot;all&quot;&gt;" key="HTMLPost" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="18" group="2">
+      <NAME language="de">HTML Tail</NAME>
+      <NAME language="uk">HTML Tail</NAME>
+      <HELP language="de">
+	    Der Code, der hier von Ihnen angegeben werden kann, erscheint am Ende der generierten HTML-Seite und
+	    enth&auml;lt gew&ouml;hnlich einen Link zu&uuml;ck zu Ihrer Homepage oder eine kleine Grafik. Der 
+	    Code wird als Tabelle Inhalt innerhalb eines &lt;TD&gt;-Tags angezeigt und wird nach rechts ausgerichtet. Die
+	    max. l&auml;ge des Code ist 80 Zeichen.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HTMLTail defines the HTML code to insert at the bottom of each
+	    HTML document, usually to include a link back to your home
+ 	    page or insert a small graphic.  It is inserted as a table
+     	    data element (ie: &lt;TD&gt; your code here &lt;/TD&gt;) and is right
+	    alligned with the page.  Max string size is 80 characters.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="&lt;IMG SRC=&quot;msfree.png&quot; ALT=&quot;100% Micro$oft free!&quot;&gt;" key="HTMLPost" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="19" group="2">
+      <NAME language="de">HTML Ende</NAME>
+      <NAME language="uk">HTML End</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie HTML-Code am Ende der generierten HTML-Seiten einf&uuml;gen. Wenn Sie
+	    diese Option m&uuml;ssen Sie ebenfalls die schliessenden Tags f&uuml;r BODY (&lt;/BODY&gt;) und HTML (&lt;/HTML&gt;)
+	    definieren. Sie haben max. 80 Zeichen zur Verf&uuml;gung.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HTMLEnd defines the HTML code to add at the very end of the
+	    generated files.  It defaults to what is shown below.  If
+	    used, you MUST specify the &lt;/BODY&gt; and &lt;/HTML&gt; closing tags
+	    as the last lines.  Max string length is 80 characters.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="&lt;/BODY&gt;&lt;/HTML&gt;" key="HTMLEnd" canempty="1"></TYPE>	
+</STEP>
+
+<STEP id="20">
+      <NAME language="de">Keine Ausgabe</NAME>
+      <NAME language="uk">Quiet</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie Ausgabe Meldungen unterdr&uuml;cken. Dies ist z.B.
+	    n&uuml;tzlich wenn Sie Webalizer als CRON-Job starten um grosse E-Mails zu verhindern.
+	    Standard-Wert f&uuml;r diese Option ist "nein". Das einschalten dieser Option hat keinen
+	    Einfluss auf die Ausgabe von Fehlermeldungen, die &uuml;ber stderr ausgegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Quiet option suppresses output messages... Useful when run
+	    as a cron job to prevent bogus e-mails.  Values can be either
+	    "yes" or "no".  Default is "no".  Note: this does not suppress
+	    warnings and errors (which are printed to stderr).
+
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="Quiet">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+
+<STEP id="21">
+      <NAME language="de">Wirklich keine Ausgabe</NAME>
+      <NAME language="uk">Really Quiet</NAME>
+      <HELP language="de">
+	    Wenn Sie diese Option aktivieren ("ja"), werden alle Ausgaben (auch Fehlermeldung) 
+	    nicht mehr ausgegeben. Der Standard-Wert f&uuml;r diese Option ist "nein". Wenn diese
+	    Option aktiviert ist, kann Sie nicht mit Kommandozeilen Parametern &uuml;berschrieben 
+	    werden. 
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    ReallyQuiet will supress all messages including errors and
+	    warnings.  Values can be 'yes' or 'no' with 'no' being the
+	    default.  If 'yes' is used here, it cannot be overriden from
+	    the command line, so use with caution.  A value of 'no' has
+	    no effect.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="ReallyQuiet">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+
+<STEP id="22">
+      <NAME language="de">Zeitausgabe</NAME>
+      <NAME language="uk">Time me</NAME>
+      <HELP language="de">
+	    Wenn Sie diese Option aktivieren ("ja"), wird Webalizer dazu veranlasst am Ende einer
+	    Auswertung Informationen zur dauer der Auswertung auszugeben. 
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    TimeMe allows you to force the display of timing information
+     	    at the end of processing.  A value of 'yes' will force the
+	    timing information to be displayed.  A value of 'no' has no
+	    effect.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="TimeMe">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+
+<STEP id="23">
+      <NAME language="de">GMT Zeit</NAME>
+      <NAME language="uk">GMT Time</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie Webalizer dazu veranlassen GMT Zeit zu
+	    zeigen, anstatt lokaler Zeit. Normalerweise wird die Zeit im Report in der
+	    Zeit des lokalen Systems angezeigt. Sie sollten diese Option nur aktivieren,
+	    wenn Sie daf&uuml;r gute Gr&uuml;nde haben, da es den Report f&uuml;r die 
+	    Stunden die Ihre Zeitzone von der GMT-Zeit entfernt liegt verdreht.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    GMTTime allows reports to show GMT (UTC) time instead of local
+	    time.  Default is to display the time the report was generated
+	    in the timezone of the local machine, such as EDT or PST.  This
+	    keyword allows you to have times displayed in UTC instead.  Use
+	    only if you really have a good reason, since it will probably
+	    screw up the reporting periods by however many hours your local
+  	    time zone is off of GMT.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="GMTTime">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="24">
+      <NAME language="de">Debug</NAME>
+      <NAME language="uk">Debug</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie Webalizer dazu veranlassen mehr Informationen zu
+	    fehlerhaften Eintr&auml;gen in Log-Files auszugeben. Die Standard Einstellung ist
+	    &quot;no&quot;. Sie sollten diese Einstellung auf &quot;no&quot; belassen, au&szlig;er
+	    Sie erhalten viele Warnungen bez&uuml;glich fehlerhafter Eintr&auml;ge.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    Debug prints additional information for error messages.  This
+	    will cause webalizer to dump bad records/fields instead of just
+	    telling you it found a bad one.   As usual, the value can be
+	    either "yes" or "no".  The default is "no".  It shouldn't be
+	    needed unless you start getting a lot of Warning or Error
+	    messages and want to see why.  (Note: warning and error messages
+	    are printed to stderr, not stdout like normal messages).	    
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="Debug">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+
+<STEP id="25">
+      <NAME language="de">FoldSeqErr</NAME>
+      <NAME language="uk">FoldSeqErr</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie Webalizer dazu veranlassen Log Dateien, die m&ouml;glicherweise
+	    Eintr&auml;ge in nicht korrekter zeitlicher Abfolge enthalten, zu bearbeiten. Dabei werden
+	    Eintr&auml;ge, die zeitlich weiter zur&uuml;ck liegen, mit dem Datum des letzten zeitlich korrekten
+	    Eintrages behandelt. In der Standard Einstellung werden zeitlich nicht korrekte Eintr&auml;ge ignoriert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    FoldSeqErr forces the Webalizer to ignore sequence errors.
+	    This is useful for Netscape and other web servers that cache
+	    the writing of log records and do not guarentee that they
+	    will be in chronological order.  The use of the FoldSeqErr
+	    option will cause out of sequence log records to be treated
+	    as if they had the same time stamp as the last valid record.
+	    Default is to ignore out of sequence log records.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="FoldSeqErr">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+
+<STEP id="26">
+      <NAME language="de">Sessiondauer</NAME>
+      <NAME language="uk">VisitTimeout</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie entscheiden, wie lange die Zugriffe einer IP inaktiv sein
+	    m&uuml;ssen, bevor erneute Zugriffe von dieser Adresse als neuer Besucher gez&auml;hlt werden. 
+	    Die Voreinstellung sind 1.800 Sek. (30 Minuten). Ruft ein Besucher in diesem Fall 30 Minuten
+	    keine Seite ab, wird der Zugriff (nach 30 Minuten) als neuer Besucher gez&auml;hlt.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    VisitTimeout allows you to set the default timeout for a visit
+	    (sometimes called a 'session').  The default is 30 minutes,
+	    which should be fine for most sites.
+	    Visits are determined by looking at the time of the current
+	    request, and the time of the last request from the site.  If
+	    the time difference is greater than the VisitTimeout value, it
+	    is considered a new visit, and visit totals are incremented.
+	    Value is the number of seconds to timeout (default=1800=30min)      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="1800" key="VisitTimeout" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="27">
+      <NAME language="de">Ignore History</NAME>
+      <NAME language="uk">Ignore History</NAME>
+      <HELP language="de">
+	    Diese Option sollte in einer eigenen Konfigurationsdatei verwendet werden,
+	    erscheint hier aber trotzdem, da es Situation geben kann, in denen es Sinn macht sie zu aktivieren.
+	    Wird diese Option aktiviert, werden bisherige Analysen nicht ber&uuml;cksichtig und die Auswertung
+	    beginnt praktisch bei Null. DIESE OPTION MIT VORSICHT VERWENDEN! Der Wert dieser Option kann
+	    &quot;ja&quot; oder &quot;nein&quot; sein.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    IgnoreHist shouldn't be used in a config file, but it is here
+	    just because it might be usefull in certain situations.  If the
+	    history file is ignored, the main "index.html" file will only
+	    report on the current log files contents.  Usefull only when you
+	    want to reproduce the reports from scratch.  USE WITH CAUTION!
+	    Valid values are "yes" or "no".  Default is "no".
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="IgnoreHist">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="28" group="2">
+      <NAME language="de">L&auml;nder Graph</NAME>
+      <NAME language="uk">Country Graph</NAME>
+      <HELP language="de">
+      	    Mit dieser Option k&ouml;nnen Sie verhindern, dass eine L&auml;ndergrafik der Zugriffe
+      	    ausgegeben wird. M&ouml;gliche Werte sind &quot;ja&quot; oder &quot;nein&quot;. 
+      	    Per default wird die L&auml;nderstatistik erzeugt.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+  	    Country Graph allows the usage by country graph to be disabled.
+	    Values can be 'yes' or 'no', default is 'yes'.	    
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="yes" key="CountryGraph">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="29" group="2">
+      <NAME language="de">Tagesgrafik</NAME>
+      <NAME language="uk">Daily Graph</NAME>
+      <HELP language="de">
+      	Mit dieser Option k&ouml;nnen Sie die Tagesanzeige der grafischen Auswertung abschalten. 
+      	M&ouml;gliche Werte sind &quot;ja&quot; oder &quot;nein&quot;. Die Standard Einstellung
+      	ist &quot;ja&quot; die Anzeige ist aktiviert.
+      </HELP>
+      <HELP language="uk">
+	DailyGraph and DailyStats allows the daily statistics graph
+	and statistics table to be disabled (not displayed).  Values
+	may be &quot;yes&quot; or &quot;no&quot;. Default is "yes".    
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="yes" key="DailyGraph">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="30" group="2">
+      <NAME language="de">Tagesstatistik</NAME>
+      <NAME language="uk">Daily Stats</NAME>
+      <HELP language="de">
+      	Mit dieser Option k&ouml;nnen Sie die Tabelle mit der Tagesstatistik abschalten. 
+      	M&ouml;gliche Werte sind &quot;ja&quot; oder &quot;nein&quot;. Die Standard Einstellung
+      	ist &quot;ja&quot; die Anzeige ist aktiviert.
+      </HELP>
+      <HELP language="uk">
+	DailyGraph and DailyStats allows the daily statistics graph
+	and statistics table to be disabled (not displayed).  Values
+	may be &quot;yes&quot; or &quot;no&quot;. Default is "yes".    
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="yes" key="DailyStats">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="31" group="2">
+      <NAME language="de">Stunden Graph</NAME>
+      <NAME language="uk">Hour Graph</NAME>
+      <HELP language="de">
+      	Mit dieser Option k&ouml;nnen Sie die Stundenanzeige der grafischen Auswertung abschalten. 
+      	M&ouml;gliche Werte sind &quot;ja&quot; oder &quot;nein&quot;. Die Standard Einstellung
+      	ist &quot;ja&quot; die Anzeige ist aktiviert.
+      </HELP>
+      <HELP language="uk">
+	HourlyGraph and HourlyStats allows the hourly statistics graph
+	and statistics table to be disabled (not displayed).  Values
+	may be &quot;yes&quot; or &quot;no&quot;. Default is &quot;yes&quot;.
+  
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="yes" key="HourGraph">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="32" group="2">
+      <NAME language="de">Stunden Statistik</NAME>
+      <NAME language="uk">Hour Stats</NAME>
+      <HELP language="de">
+      	Mit dieser Option k&ouml;nnen Sie die Tabelle mit der Stundenstatistik abschalten. 
+      	M&ouml;gliche Werte sind &quot;ja&quot; oder &quot;nein&quot;. Die Standard Einstellung
+      	ist &quot;ja&quot; die Anzeige ist aktiviert.
+      </HELP>
+      <HELP language="uk">
+	HourlyGraph and HourlyStats allows the hourly statistics graph
+	and statistics table to be disabled (not displayed).  Values
+	may be &quot;yes&quot; or &quot;no&quot;. Default is &quot;yes&quot;.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="yes" key="HourStats">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="33" group="2">
+      <NAME language="de">Graph Legende</NAME>
+      <NAME language="uk">Graph Legend</NAME>
+      <HELP language="de">
+      	Mit dieser Option k&ouml;nnen Sie die farbliche Legende an- oder ausschalten. In der
+      	Standard Einstellung ist die Legende eingeschaltet. Andere Legenden werden von dieser
+      	Einstellung nicht beeinflusst. Wenn Ihnen die Gestaltung der Legende nicht gef&auml;llt
+      	w&auml;hlen Sie &quot;nein&quot; aus und schalten Sie damit die Legende ab.
+      </HELP>
+      <HELP language="uk">
+      	GraphLegend allows the color coded legends to be turned on or off
+	in the graphs.  The default is for them to be displayed.  This only
+	toggles the color coded legends, the other legends are not changed.
+	If you think they are hideous and ugly, say &acute;no&acute; here :)      
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="yes" key="GraphLegend">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="34" group="2">
+      <NAME language="de">Graph Linien</NAME>
+      <NAME language="uk">Graph Lines</NAME>
+      <HELP language="de">
+	Diese Option erlaubt es zus&auml;tzliche Linien in die Graphen einzuf&uuml;gen. Der Autor
+	von Webalizer fand dieser Feature eigentlich nicht erforderlich, wurde aber h&auml;figer
+	gefragt, ob er es einbauen kann und tat dies, da es nicht viel Zeit beanspruchte. Die Anzahl,
+	die hier ausgew&auml;lt werden kann, gibt an, wieviele Linie angezeigt werden sollen. Niedrige
+	Zahlen, liefern dabei das beste Ergebnis (max.20). 1,2,3,4, 6 und 10 liefern das beste
+	Ergebnis. Die Standardeinstellung ist 2.
+      </HELP>
+      <HELP language="uk">
+	GraphLines allows you to have index lines drawn behind the graphs.
+	I personally am not crazy about them, but a lot of people requested
+	them and they weren't a big deal to add.  The number represents the
+	number of lines you want displayed.  Default is 2, you can disable
+	the lines by using a value of zero ('0').  [max is 20]
+	Note, due to rounding errors, some values don't work quite right.
+	The lower the better, with 1,2,3,4,6 and 10 producing nice results.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="2" key="GraphLines">	
+      	<SELECT value="1">1</SELECT>
+      	<SELECT value="2">2</SELECT>
+      	<SELECT value="3">3</SELECT>
+      	<SELECT value="4">4</SELECT>
+      	<SELECT value="5">5</SELECT>
+      	<SELECT value="6">6</SELECT>
+      	<SELECT value="7">7</SELECT>
+      	<SELECT value="8">8</SELECT>
+      	<SELECT value="9">9</SELECT>
+      	<SELECT value="10">10</SELECT>
+      	<SELECT value="11">11</SELECT>
+      	<SELECT value="12">12</SELECT>
+      	<SELECT value="13">13</SELECT>
+      	<SELECT value="14">14</SELECT>
+      	<SELECT value="15">15</SELECT>
+      	<SELECT value="16">16</SELECT>
+      	<SELECT value="17">17</SELECT>
+      	<SELECT value="18">18</SELECT>
+      	<SELECT value="19">19</SELECT>
+      	<SELECT value="20">20</SELECT>
+      </TYPE>
+</STEP>
+<STEP id="35" group="1">
+      <NAME language="de">Top Seiten</NAME>
+      <NAME language="uk">Top Sites</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 30, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 30. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="30" key="TopSites" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="36" group="1">
+      <NAME language="de">Top Seiten (KB)</NAME>
+      <NAME language="uk">Top KSites</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 10, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 10. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="10" key="TopKSites" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="37" group="1">
+      <NAME language="de">Top URLs</NAME>
+      <NAME language="uk">Top URLs</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 30, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 30. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="30" key="TopURLs" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="38" group="1">
+      <NAME language="de">Top URLs (KB)</NAME>
+      <NAME language="uk">Top URLs (KB)</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 10, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 10. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="10" key="TopKURLs" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="39" group="1">
+      <NAME language="de">Top Referrers</NAME>
+      <NAME language="uk">Top Referrers</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 30, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 30. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="30" key="TopReferrers" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="40" group="1">
+      <NAME language="de">Top Browser</NAME>
+      <NAME language="uk">Top Agents</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 15, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 15. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="15" key="TopAgents" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="41" group="1">
+      <NAME language="de">Top L&auml;nder</NAME>
+      <NAME language="uk">Top Countries</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 30, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 30. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="30" key="TopCountries" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="42" group="1">
+      <NAME language="de">Top Eingangsseiten</NAME>
+      <NAME language="uk">Top Entry</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 10, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 10. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="10" key="TopEntry" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="43" group="1">
+      <NAME language="de">Top Ausgangsseiten</NAME>
+      <NAME language="uk">Top Exit</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 10, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 10. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="10" key="TopExit" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="44" group="1">
+      <NAME language="de">Top Suchbegriffe</NAME>
+      <NAME language="uk">Top Search</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 20, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 20. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="20" key="TopSearch" validation="numbers"></TYPE>	
+</STEP>
+<STEP id="45" group="1">
+      <NAME language="de">Top Benutzer</NAME>
+      <NAME language="uk">Top Users</NAME>
+      <HELP language="de">
+	    Gibt die Anzahl der maximalen Top-Eintr&auml;ge an, der Standard Wert ist 20, sollen die
+	    Top Eintr&auml;ge nicht angezeigt werden, sollte hier 0 angegeben werden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The &quot;Top&quot; options define the number of entries for top .
+	    Default is 20. Tables may be disabled by using zero (0) for the value.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="20" key="TopUsers" validation="numbers"></TYPE>	
+</STEP>
+
+<STEP id="46">
+      <NAME language="de">Alle Seiten</NAME>
+      <NAME language="uk">All sites</NAME>
+      <HELP language="de">
+	    W&auml;hrend auf der normalen &Uuml;bersicht immer nur die Top-Seiten angezeigt werden, l&auml;sst 
+	    sich mit dieser Option eine extra Seite erstellen, auf der alle Eintr&auml;ge erscheinen. Ob diese
+	    zus&auml;tzliche Seite generiert wird, h&auml;gt von zwei Faktoren ab. Zum einen muss es mehr Eintr&auml;ge geben,
+	    als bereits in der entsprechenden Top-Tabelle vorhanden sind und zum anderen werden auf der Zusatzseite nur
+	    allgemein sichtbare Eintr&auml;ge angezeigt und keine versteckten. Gruppierte Eintr&auml;ge werden auf der
+	    Zusatzseite zuerst angezeigt, gefolgt von den einzelnen rest Eintr&auml;gen. Bitte beachten Sie, dass
+	    die Zusatzseite sehr gro&szlig; werden kann, je nachdem wieviel Traffic ihr Server hat. Dar&uuml;ber hinaus
+	    werden Zusatzseiten f&uuml;r jeden Monat neu generiert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    Allows to display all Sites.  If enabled, a seperate
+	    HTML page will be created, and a link will be added to the bottom
+	    of the appropriate &quot;Top&quot; table.  There are a couple of conditions
+	    for this to occur..  First, there must be more items than will fit
+	    in the &quot;Top&quot; table (otherwise it would just be duplicating what is
+	    already displayed).  Second, the listing will only show those items
+	    that are normally visable, which means it will not show any hidden
+	    items.  Grouped entries will be listed first, followed by individual
+	    items.  The value for these keywords can be either &acute;yes&acute; or &acute;no&acute;,
+	    with the default being 'no'.  Please be aware that these pages can
+	    be quite large in size, particularly the sites page,  and seperate
+	    pages are generated for each month, which can consume quite a lot
+	    of disk space depending on the traffic to your site.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="AllSites">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="47">
+      <NAME language="de">Alle URLs</NAME>
+      <NAME language="uk">All URLs</NAME>
+      <HELP language="de">
+	    W&auml;hrend auf der normalen &Uuml;bersicht immer nur die Top-URLs angezeigt werden, l&auml;sst 
+	    sich mit dieser Option eine extra Seite erstellen, auf der alle Eintr&auml;ge erscheinen. Ob diese
+	    zus&auml;tzliche Seite generiert wird, h&auml;gt von zwei Faktoren ab. Zum einen muss es mehr Eintr&auml;ge geben,
+	    als bereits in der entsprechenden Top-Tabelle vorhanden sind und zum anderen werden auf der Zusatzseite nur
+	    allgemein sichtbare Eintr&auml;ge angezeigt und keine versteckten. Gruppierte Eintr&auml;ge werden auf der
+	    Zusatzseite zuerst angezeigt, gefolgt von den einzelnen rest Eintr&auml;gen. Bitte beachten Sie, dass
+	    die Zusatzseite sehr gro&szlig; werden kann, je nachdem wieviel Traffic ihr Server hat. Dar&uuml;ber hinaus
+	    werden Zusatzseiten f&uuml;r jeden Monat neu generiert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    Allows to display all URLs.  If enabled, a seperate
+	    HTML page will be created, and a link will be added to the bottom
+	    of the appropriate &quot;Top&quot; table.  There are a couple of conditions
+	    for this to occur..  First, there must be more items than will fit
+	    in the &quot;Top&quot; table (otherwise it would just be duplicating what is
+	    already displayed).  Second, the listing will only show those items
+	    that are normally visable, which means it will not show any hidden
+	    items.  Grouped entries will be listed first, followed by individual
+	    items.  The value for these keywords can be either &acute;yes&acute; or &acute;no&acute;,
+	    with the default being 'no'.  Please be aware that these pages can
+	    be quite large in size, particularly the sites page,  and seperate
+	    pages are generated for each month, which can consume quite a lot
+	    of disk space depending on the traffic to your site.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="AllURLs">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="48">
+      <NAME language="de">Alle Referrer</NAME>
+      <NAME language="uk">All referrers</NAME>
+      <HELP language="de">
+	    W&auml;hrend auf der normalen &Uuml;bersicht immer nur die Top-Referrer angezeigt werden, l&auml;sst 
+	    sich mit dieser Option eine extra Seite erstellen, auf der alle Eintr&auml;ge erscheinen. Ob diese
+	    zus&auml;tzliche Seite generiert wird, h&auml;gt von zwei Faktoren ab. Zum einen muss es mehr Eintr&auml;ge geben,
+	    als bereits in der entsprechenden Top-Tabelle vorhanden sind und zum anderen werden auf der Zusatzseite nur
+	    allgemein sichtbare Eintr&auml;ge angezeigt und keine versteckten. Gruppierte Eintr&auml;ge werden auf der
+	    Zusatzseite zuerst angezeigt, gefolgt von den einzelnen rest Eintr&auml;gen. Bitte beachten Sie, dass
+	    die Zusatzseite sehr gro&szlig; werden kann, je nachdem wieviel Traffic ihr Server hat. Dar&uuml;ber hinaus
+	    werden Zusatzseiten f&uuml;r jeden Monat neu generiert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    Allows to display all Referrers.  If enabled, a seperate
+	    HTML page will be created, and a link will be added to the bottom
+	    of the appropriate &quot;Top&quot; table.  There are a couple of conditions
+	    for this to occur..  First, there must be more items than will fit
+	    in the &quot;Top&quot; table (otherwise it would just be duplicating what is
+	    already displayed).  Second, the listing will only show those items
+	    that are normally visable, which means it will not show any hidden
+	    items.  Grouped entries will be listed first, followed by individual
+	    items.  The value for these keywords can be either &acute;yes&acute; or &acute;no&acute;,
+	    with the default being 'no'.  Please be aware that these pages can
+	    be quite large in size, particularly the sites page,  and seperate
+	    pages are generated for each month, which can consume quite a lot
+	    of disk space depending on the traffic to your site.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="AllReferrers">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="49">
+      <NAME language="de">Alle Agenten</NAME>
+      <NAME language="uk">All agents</NAME>
+      <HELP language="de">
+	    W&auml;hrend auf der normalen &Uuml;bersicht immer nur die Top-Agenten (Browser) angezeigt werden, l&auml;sst 
+	    sich mit dieser Option eine extra Seite erstellen, auf der alle Eintr&auml;ge erscheinen. Ob diese
+	    zus&auml;tzliche Seite generiert wird, h&auml;gt von zwei Faktoren ab. Zum einen muss es mehr Eintr&auml;ge geben,
+	    als bereits in der entsprechenden Top-Tabelle vorhanden sind und zum anderen werden auf der Zusatzseite nur
+	    allgemein sichtbare Eintr&auml;ge angezeigt und keine versteckten. Gruppierte Eintr&auml;ge werden auf der
+	    Zusatzseite zuerst angezeigt, gefolgt von den einzelnen rest Eintr&auml;gen. Bitte beachten Sie, dass
+	    die Zusatzseite sehr gro&szlig; werden kann, je nachdem wieviel Traffic ihr Server hat. Dar&uuml;ber hinaus
+	    werden Zusatzseiten f&uuml;r jeden Monat neu generiert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    Allows to display all Agents.  If enabled, a seperate
+	    HTML page will be created, and a link will be added to the bottom
+	    of the appropriate &quot;Top&quot; table.  There are a couple of conditions
+	    for this to occur..  First, there must be more items than will fit
+	    in the &quot;Top&quot; table (otherwise it would just be duplicating what is
+	    already displayed).  Second, the listing will only show those items
+	    that are normally visable, which means it will not show any hidden
+	    items.  Grouped entries will be listed first, followed by individual
+	    items.  The value for these keywords can be either &acute;yes&acute; or &acute;no&acute;,
+	    with the default being 'no'.  Please be aware that these pages can
+	    be quite large in size, particularly the sites page,  and seperate
+	    pages are generated for each month, which can consume quite a lot
+	    of disk space depending on the traffic to your site.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="AllAgents">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="50">
+      <NAME language="de">Alle Suchbegriffe</NAME>
+      <NAME language="uk">All search strings</NAME>
+      <HELP language="de">
+	    W&auml;hrend auf der normalen &Uuml;bersicht immer nur die Top-Suchbegriffe angezeigt werden, l&auml;sst 
+	    sich mit dieser Option eine extra Seite erstellen, auf der alle Eintr&auml;ge erscheinen. Ob diese
+	    zus&auml;tzliche Seite generiert wird, h&auml;gt von zwei Faktoren ab. Zum einen muss es mehr Eintr&auml;ge geben,
+	    als bereits in der entsprechenden Top-Tabelle vorhanden sind und zum anderen werden auf der Zusatzseite nur
+	    allgemein sichtbare Eintr&auml;ge angezeigt und keine versteckten. Gruppierte Eintr&auml;ge werden auf der
+	    Zusatzseite zuerst angezeigt, gefolgt von den einzelnen rest Eintr&auml;gen. Bitte beachten Sie, dass
+	    die Zusatzseite sehr gro&szlig; werden kann, je nachdem wieviel Traffic ihr Server hat. Dar&uuml;ber hinaus
+	    werden Zusatzseiten f&uuml;r jeden Monat neu generiert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    Allows to display all search strings.  If enabled, a seperate
+	    HTML page will be created, and a link will be added to the bottom
+	    of the appropriate &quot;Top&quot; table.  There are a couple of conditions
+	    for this to occur..  First, there must be more items than will fit
+	    in the &quot;Top&quot; table (otherwise it would just be duplicating what is
+	    already displayed).  Second, the listing will only show those items
+	    that are normally visable, which means it will not show any hidden
+	    items.  Grouped entries will be listed first, followed by individual
+	    items.  The value for these keywords can be either &acute;yes&acute; or &acute;no&acute;,
+	    with the default being 'no'.  Please be aware that these pages can
+	    be quite large in size, particularly the sites page,  and seperate
+	    pages are generated for each month, which can consume quite a lot
+	    of disk space depending on the traffic to your site.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="AllSearchStr">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="51">
+      <NAME language="de">Alle User</NAME>
+      <NAME language="uk">All users</NAME>
+      <HELP language="de">
+	    W&auml;hrend auf der normalen &Uuml;bersicht immer nur die Top-User angezeigt werden, l&auml;sst 
+	    sich mit dieser Option eine extra Seite erstellen, auf der alle Eintr&auml;ge erscheinen. Ob diese
+	    zus&auml;tzliche Seite generiert wird, h&auml;gt von zwei Faktoren ab. Zum einen muss es mehr Eintr&auml;ge geben,
+	    als bereits in der entsprechenden Top-Tabelle vorhanden sind und zum anderen werden auf der Zusatzseite nur
+	    allgemein sichtbare Eintr&auml;ge angezeigt und keine versteckten. Gruppierte Eintr&auml;ge werden auf der
+	    Zusatzseite zuerst angezeigt, gefolgt von den einzelnen rest Eintr&auml;gen. Bitte beachten Sie, dass
+	    die Zusatzseite sehr gro&szlig; werden kann, je nachdem wieviel Traffic ihr Server hat. Dar&uuml;ber hinaus
+	    werden Zusatzseiten f&uuml;r jeden Monat neu generiert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    Allows to display all users.  If enabled, a seperate
+	    HTML page will be created, and a link will be added to the bottom
+	    of the appropriate &quot;Top&quot; table.  There are a couple of conditions
+	    for this to occur..  First, there must be more items than will fit
+	    in the &quot;Top&quot; table (otherwise it would just be duplicating what is
+	    already displayed).  Second, the listing will only show those items
+	    that are normally visable, which means it will not show any hidden
+	    items.  Grouped entries will be listed first, followed by individual
+	    items.  The value for these keywords can be either &acute;yes&acute; or &acute;no&acute;,
+	    with the default being 'no'.  Please be aware that these pages can
+	    be quite large in size, particularly the sites page,  and seperate
+	    pages are generated for each month, which can consume quite a lot
+	    of disk space depending on the traffic to your site.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="AllUsers">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="52">
+      <NAME language="de">Index Aliase</NAME>
+      <NAME language="uk">Index alias</NAME>
+      <HELP language="de">
+	    Webalizer entfernt die Endung &acute;index.&acute; vom Ende jeder Adresse um so
+	    z.B. die Seiten /verzeichnis/index.html und /verzeichnis/ als gleiche Adresse zu
+	    verstehen. Mit dieser Option k&ouml;nnen jedoch weitere Strings definiert werden, die ebenfalls 
+	    wie /verzeichnis/ behandelt werden sollen z.B. &acute;home.&acute;. index. muss
+	    nicht angegeben, da es sowieso immer ersetzt wird. Es k&ouml;nnen mehrere Strings angegeben 
+	    werden, jedoch ben&ouml;tigen bereits ein paar zus&auml;tzliche Angaben erheblich mehr
+	    Performance, da jede URL gescannt werden muss. Die Adresse wird dabei komplett gescannt, 
+	    so das /verzeichnis/homepages/brad/home.html bei Angabe von home. auf /verzeichnis/ reduziert wird, was
+	    unter Umst&auml;nden nicht gewollt ist.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Webalizer normally strips the string &acute;index.&acute; off the end of
+	    URL&acute;s in order to consolidate URL totals.  For example, the URL
+	    /somedir/index.html is turned into /somedir/ which is really the
+	    same URL.  This option allows you to specify additional strings
+	    to treat in the same way.  You don&acute;t need to specify &acute;index.&acute; as
+	    it is always scanned for by The Webalizer, this option is just to
+	    specify _additional_ strings if needed.  If you don&acute;t need any,
+	    don&acute;t specify any as each string will be scanned for in EVERY
+	    log record... A bunch of them will degrade performance.  Also,
+	    the string is scanned for anywhere in the URL, so a string of
+	    &acute;home&acute; would turn the URL /somedir/homepages/brad/home.html into
+	    just /somedir/ which is probably not what was intended.
+
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IndexAlias"></TYPE>	
+</STEP>
+
+<STEP id="53">
+      <NAME language="de">Seiten verstecken</NAME>
+      <NAME language="uk">Hide sites</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie einzelne Seiten an dem erscheinen in der Top-Tabelle
+	    hindern, Sie werden dennoch in der Gesamtstatistik gez&auml;hlt. In der Angabe kann auch
+	    das Wildcard zeichen * verwendet werden. Wenn das Wildcard Zeichen nicht verwendet wurde, kann das Zeichen
+	    irgendwo enthalten sein. Eine Zeichenkette wie &quot;www.deineadresse.de&quot;, wird sowohl von
+	    der Option &quot;*adresse.de&quot; als auch von der Option &quot;www.deine*&quot; gefunden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    This option allow you to change the way Sites are manipulated. The Hide option will prevent
+	    things from being displayed in the 'Top' tables, but will still be
+	    counted in the main totals.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space or tab.
+	    [[br]][[br]]
+	    The value can have either a leading or trailing '*' wildcard character.  
+	    If no wildcard is found, a match can occur anywhere in the string. Given a 
+	    string &quot;www.yourmama.com&quot;, the values &quot;your&quot;,&quot;*mama.com&quot; and &quot;www.your*&quot; will all match.
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="HideSite"></TYPE>	
+</STEP>
+
+<STEP id="54">
+      <NAME language="de">Referer verstecken</NAME>
+      <NAME language="uk">Hide referrers</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie einzelne Referrer an dem erscheinen in der Top-Tabelle
+	    hindern, Sie werden dennoch in der Gesamtstatistik gez&auml;hlt. In der Angabe kann auch
+	    das Wildcard zeichen * verwendet werden. Wenn das Wildcard Zeichen nicht verwendet wurde, kann das Zeichen
+	    irgendwo enthalten sein. Eine Zeichenkette wie &quot;www.deineadresse.de&quot;, wird sowohl von
+	    der Option &quot;*adresse.de&quot; als auch von der Option &quot;www.deine*&quot; gefunden. Sie sollten
+	    mit Hilfe dieser Option auf jedenfall Ihre eigene URL als Referrer unterdr&uuml;cken, da diese vermutlich
+	    am h&auml;figsten als Referrer angef&uuml;hrt wird.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    This option allow you to change the way Referrers are manipulated. The Hide option will prevent
+	    things from being displayed in the 'Top' tables, but will still be
+	    counted in the main totals.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space or tab.
+	    [[br]][[br]]
+	    The value can have either a leading or trailing '*' wildcard character.  
+	    If no wildcard is found, a match can occur anywhere in the string. Given a 
+	    string &quot;www.yourmama.com&quot;, the values &quot;your&quot;,&quot;*mama.com&quot; and &quot;www.your*&quot; will all match.
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="HideReferrer"></TYPE>	
+</STEP>
+
+<STEP id="55">
+      <NAME language="de">URLs verstecken</NAME>
+      <NAME language="uk">Hide URLs</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie einzelne URLs an dem erscheinen in der Top-Tabelle
+	    hindern, Sie werden dennoch in der Gesamtstatistik gez&auml;hlt. In der Angabe kann auch
+	    das Wildcard zeichen * verwendet werden. Wenn das Wildcard Zeichen nicht verwendet wurde, kann das Zeichen
+	    irgendwo enthalten sein. Eine Zeichenkette wie &quot;www.deineadresse.de&quot;, wird sowohl von
+	    der Option &quot;*adresse.de&quot; als auch von der Option &quot;www.deine*&quot; gefunden. Sie sollten
+	    mit Hilfe dieser Option auf jedenfall Grafiken unterdr&uuml;cken, da diese sehr h&auml;fig angefragt werden
+	    und somit auch h&auml;fig in der Grafik aufgef&uuml;hrt werden w&uuml;rden.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    This option allow you to change the way URLs are manipulated. The Hide option will prevent
+	    things from being displayed in the 'Top' tables, but will still be
+	    counted in the main totals.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space or tab.
+	    [[br]][[br]]
+	    The value can have either a leading or trailing '*' wildcard character.  
+	    If no wildcard is found, a match can occur anywhere in the string. Given a 
+	    string &quot;www.yourmama.com&quot;, the values &quot;your&quot;,&quot;*mama.com&quot; and &quot;www.your*&quot; will all match.
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="HideURL"></TYPE>	
+</STEP>
+
+<STEP id="56">
+      <NAME language="de">Browser verstecken</NAME>
+      <NAME language="uk">Hide Agents</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie einzelne Browser an dem erscheinen in der Top-Tabelle
+	    hindern, Sie werden dennoch in der Gesamtstatistik gez&auml;hlt. In der Angabe kann auch
+	    das Wildcard zeichen * verwendet werden. Wenn das Wildcard Zeichen nicht verwendet wurde, kann das Zeichen
+	    irgendwo enthalten sein. [[br]][[br]]Beispiel:[[br]]RealPlayer
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    This option allow you to change the way agents are manipulated. The Hide option will prevent
+	    things from being displayed in the 'Top' tables, but will still be
+	    counted in the main totals.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space or tab.
+	    [[br]][[br]]
+	    Hiding agents is kind of futile
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="HideAgent"></TYPE>	
+</STEP>
+
+<STEP id="57">
+      <NAME language="de">User verstecken</NAME>
+      <NAME language="uk">Hide user</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie einzelne User an dem erscheinen in der Top-Tabelle
+	    hindern, Sie werden dennoch in der Gesamtstatistik gez&auml;hlt. In der Angabe kann auch
+	    das Wildcard zeichen * verwendet werden. Wenn das Wildcard Zeichen nicht verwendet wurde, kann das Zeichen
+	    irgendwo enthalten sein. [[br]][[br]]Beispiel:[[br]]root
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    This option allow you to change the way user are manipulated. The Hide option will prevent
+	    things from being displayed in the 'Top' tables, but will still be
+	    counted in the main totals.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space or tab.
+	    [[br]][[br]]
+	    You can also hide based on authenticated username
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="HideUser"></TYPE>	
+</STEP>
+
+<STEP id="58" group="3">
+      <NAME language="de">Gruppieren von URLs</NAME>
+      <NAME language="uk">Group URLs</NAME>
+      <HELP language="de">
+	    Diese Option erlaubt das gruppieren von &auml;hnlichen Objekten, als w&auml;ren Sie Eins. Gruppierte
+	    Eintr&auml;ge werden in den Top-Tabellen angezeigt und k&ouml;nnen optional in Fett-Schrift angezeigt werden.
+	    Gruppen k&ouml;nnen nicht versteckt werden und werden nie in der Gesamtstatistik gez&auml;hlt. Per default
+	    werden Eintr&auml;ge die zu einer Gruppe zusammengefasst worden nicht versteckt. Wenn diese Eintr&auml;ge
+	    versteckt werden sollen, sollte ein entsprechende &quot;Verstecken&quot; Option ebenfalls eingerichtet werden.
+	    Der Gruppierungsoption kann ein Name gegeben werden, der in der Statistik angezeigt wird, dieser sollte der
+	    Option getrennt von min. einem Leerzeichen folgen.
+	    [[br]][[br]]Beispiele:[[br]]
+	    /cgi-bin/* CGI Scripts[[br]]
+	    /images/* Images[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Group* keywords allow grouping
+	    similar objects as if they were one.  Grouped records are displayed
+	    in the &acute;Top&acute; tables and can optionally be displayed in BOLD and/or
+	    shaded. Groups cannot be hidden, and are not counted in the main
+	    totals. The Group* options do not, by default, hide all the items
+	    that it matches.  If you want to hide the records that match (so just
+	    the grouping record is displayed), follow with an identical Hide*
+	    keyword with the same value. In addition,
+	    Group* keywords may have an optional label which will be displayed
+	    instead of the keywords value.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space
+	    or tab.
+	    [[br]][[br]]
+	    Examples:[[br]]
+	    /cgi-bin/* CGI Scripts[[br]]
+	    /images/* Images[[br]]
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="GroupURL"></TYPE>	
+</STEP>
+
+<STEP id="59" group="3">
+      <NAME language="de">Gruppieren von Seiten</NAME>
+      <NAME language="uk">Group sites</NAME>
+      <HELP language="de">
+	    Diese Option erlaubt das gruppieren von &auml;hnlichen Objekten, als w&auml;ren Sie Eins. Gruppierte
+	    Eintr&auml;ge werden in den Top-Tabellen angezeigt und k&ouml;nnen optional in Fett-Schrift angezeigt werden.
+	    Gruppen k&ouml;nnen nicht versteckt werden und werden nie in der Gesamtstatistik gez&auml;hlt. Per default
+	    werden Eintr&auml;ge die zu einer Gruppe zusammengefasst worden nicht versteckt. Wenn diese Eintr&auml;ge
+	    versteckt werden sollen, sollte ein entsprechende &quot;Verstecken&quot; Option ebenfalls eingerichtet werden.
+	    Der Gruppierungsoption kann ein Name gegeben werden, der in der Statistik angezeigt wird, dieser sollte der
+	    Option getrennt von min. einem Leerzeichen folgen.
+	    [[br]][[br]]Beispiele:[[br]]*.aol.com[[br]]
+	    *.compuserve.com[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Group* keywords allow grouping
+	    similar objects as if they were one.  Grouped records are displayed
+	    in the &acute;Top&acute; tables and can optionally be displayed in BOLD and/or
+	    shaded. Groups cannot be hidden, and are not counted in the main
+	    totals. The Group* options do not, by default, hide all the items
+	    that it matches.  If you want to hide the records that match (so just
+	    the grouping record is displayed), follow with an identical Hide*
+	    keyword with the same value. In addition,
+	    Group* keywords may have an optional label which will be displayed
+	    instead of the keywords value.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space
+	    or tab.
+	    [[br]][[br]]
+	    Examples:[[br]]*.aol.com[[br]]
+	    *.compuserve.com[[br]]
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="GroupSite"></TYPE>	
+</STEP>
+
+<STEP id="60" group="3">
+      <NAME language="de">Gruppieren von Referrern</NAME>
+      <NAME language="uk">Group referrer</NAME>
+      <HELP language="de">
+	    Diese Option erlaubt das gruppieren von &auml;hnlichen Objekten, als w&auml;ren Sie Eins. Gruppierte
+	    Eintr&auml;ge werden in den Top-Tabellen angezeigt und k&ouml;nnen optional in Fett-Schrift angezeigt werden.
+	    Gruppen k&ouml;nnen nicht versteckt werden und werden nie in der Gesamtstatistik gez&auml;hlt. Per default
+	    werden Eintr&auml;ge die zu einer Gruppe zusammengefasst worden nicht versteckt. Wenn diese Eintr&auml;ge
+	    versteckt werden sollen, sollte ein entsprechende &quot;Verstecken&quot; Option ebenfalls eingerichtet werden.
+	    Der Gruppierungsoption kann ein Name gegeben werden, der in der Statistik angezeigt wird, dieser sollte der
+	    Option getrennt von min. einem Leerzeichen folgen.
+	    [[br]][[br]]Beispiele:[[br]]yahoo.com/ Yahoo![[br]]
+	    excite.com/     Excite[[br]]
+	    infoseek.com/   InfoSeek[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Group* keywords allow grouping
+	    similar objects as if they were one.  Grouped records are displayed
+	    in the &acute;Top&acute; tables and can optionally be displayed in BOLD and/or
+	    shaded. Groups cannot be hidden, and are not counted in the main
+	    totals. The Group* options do not, by default, hide all the items
+	    that it matches.  If you want to hide the records that match (so just
+	    the grouping record is displayed), follow with an identical Hide*
+	    keyword with the same value. In addition,
+	    Group* keywords may have an optional label which will be displayed
+	    instead of the keywords value.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space
+	    or tab.
+	    [[br]][[br]]
+	    Examples:[[br]]yahoo.com/ Yahoo![[br]]
+	    excite.com/     Excite[[br]]
+	    infoseek.com/   InfoSeek[[br]]
+
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="GroupReferrer"></TYPE>	
+</STEP>
+
+<STEP id="61" group="3">
+      <NAME language="de">Gruppieren von Benutzern</NAME>
+      <NAME language="uk">Group users</NAME>
+      <HELP language="de">
+	    Diese Option erlaubt das gruppieren von &auml;hnlichen Objekten, als w&auml;ren Sie Eins. Gruppierte
+	    Eintr&auml;ge werden in den Top-Tabellen angezeigt und k&ouml;nnen optional in Fett-Schrift angezeigt werden.
+	    Gruppen k&ouml;nnen nicht versteckt werden und werden nie in der Gesamtstatistik gez&auml;hlt. Per default
+	    werden Eintr&auml;ge die zu einer Gruppe zusammengefasst worden nicht versteckt. Wenn diese Eintr&auml;ge
+	    versteckt werden sollen, sollte ein entsprechende &quot;Verstecken&quot; Option ebenfalls eingerichtet werden.
+	    Der Gruppierungsoption kann ein Name gegeben werden, der in der Statistik angezeigt wird, dieser sollte der
+	    Option getrennt von min. einem Leerzeichen folgen.
+	    [[br]][[br]]Beispiele:[[br]] root            Admin users[[br]]
+	    admin           Admin users[[br]]
+	    wheel           Admin users[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Group* keywords allow grouping
+	    similar objects as if they were one.  Grouped records are displayed
+	    in the &acute;Top&acute; tables and can optionally be displayed in BOLD and/or
+	    shaded. Groups cannot be hidden, and are not counted in the main
+	    totals. The Group* options do not, by default, hide all the items
+	    that it matches.  If you want to hide the records that match (so just
+	    the grouping record is displayed), follow with an identical Hide*
+	    keyword with the same value. In addition,
+	    Group* keywords may have an optional label which will be displayed
+	    instead of the keywords value.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space
+	    or tab.
+	    [[br]][[br]]
+	    Examples:[[br]] root            Admin users[[br]]
+	    admin           Admin users[[br]]
+	    wheel           Admin users[[br]]
+
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="GroupUser"></TYPE>	
+</STEP>
+
+<STEP id="62" group="3">
+      <NAME language="de">Gruppieren von Browsern</NAME>
+      <NAME language="uk">Group agents</NAME>
+      <HELP language="de">
+	    Diese Option erlaubt das gruppieren von &auml;hnlichen Objekten, als w&auml;ren Sie Eins. Gruppierte
+	    Eintr&auml;ge werden in den Top-Tabellen angezeigt und k&ouml;nnen optional in Fett-Schrift angezeigt werden.
+	    Gruppen k&ouml;nnen nicht versteckt werden und werden nie in der Gesamtstatistik gez&auml;hlt. Per default
+	    werden Eintr&auml;ge die zu einer Gruppe zusammengefasst worden nicht versteckt. Wenn diese Eintr&auml;ge
+	    versteckt werden sollen, sollte ein entsprechende &quot;Verstecken&quot; Option ebenfalls eingerichtet werden.
+	    Der Gruppierungsoption kann ein Name gegeben werden, der in der Statistik angezeigt wird, dieser sollte der
+	    Option getrennt von min. einem Leerzeichen folgen.
+	    [[br]][[br]]Beispiele:[[br]]Mozilla  Netscape[[br]]
+	    Lynx*  Lynx[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Group* keywords allow grouping
+	    similar objects as if they were one.  Grouped records are displayed
+	    in the &acute;Top&acute; tables and can optionally be displayed in BOLD and/or
+	    shaded. Groups cannot be hidden, and are not counted in the main
+	    totals. The Group* options do not, by default, hide all the items
+	    that it matches.  If you want to hide the records that match (so just
+	    the grouping record is displayed), follow with an identical Hide*
+	    keyword with the same value. In addition,
+	    Group* keywords may have an optional label which will be displayed
+	    instead of the keywords value.  The label should be seperated from
+	    the value by at least one 'white-space' character, such as a space
+	    or tab.
+	    [[br]][[br]]
+	    Examples:[[br]]Mozilla  Netscape[[br]]
+	    Lynx*  Lynx[[br]]
+
+	    
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="GroupAgent"></TYPE>	
+</STEP>
+<STEP id="63" group="3">
+      <NAME language="de">Verstecken aller Seiten</NAME>
+      <NAME language="uk">Hide all sites</NAME>
+      <HELP language="de">
+	    Diese Option erlaubt das verstecken von einzelnen Seiten in der Statistik. Dies ist besonders
+	    dann Sinnvoll, wenn Sie einzelne Seiten zu Gruppen zusammenfassen lassen und die einzelnen Seiten
+	    anschlie&szlig;end nicht mehr anzeigen lassen m&ouml;chten. Der Wert f&uuml;r diese Option kann ja
+	    oder nein sein, nein ist die standard Einstellung und erlaubt die Anzeige von einzelnen Seiten.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    HideAllSites allows forcing individual sites to be hidden in the
+	    report.  This is particularly useful when used in conjunction
+	    with the "GroupDomain" feature, but could be useful in other
+	    situations as well, such as when you only want to display grouped
+	    sites (with the GroupSite keywords...).  The value for this
+  	    keyword can be either 'yes' or 'no', with 'no' the default,
+	    allowing individual sites to be displayed.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="HideAllSites">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	      
+</STEP>
+
+<STEP id="64" group="3">
+      <NAME language="de">Domains gruppieren</NAME>
+      <NAME language="uk">Group domains</NAME>
+      <HELP language="de">
+	    Die Option erlaubt das zusammenfassen von einzelnen Hostnamen in Ihre
+	    Domain. Der Wert der hier angegeben werden muss, beschreibt den Level
+	    der Zusammenfassung kann auch als Anzahl der Punkte im Hostnamen verstanden werden.
+	    Zum Beispiel, wenn der Host heisst cust1.tnt.mia.uu.net, w&uuml;rde bei Level
+	    1 nur &quot;uu.net&quot; erscheinen, bei Level 2 w&uuml;rde &quot;mia.uu.net&quot;
+	    erscheinen. Der Standard Wert ist 0 womit dieses Feature deaktiviert ist. Domains
+	    werden nur mit Hilfe dieser Option zusammengefasst, wenn es keinen entsprechenden
+	    Eintrag f&uuml;r das gruppieren von Seiten gibt.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The GroupDomains keyword allows you to group individual hostnames
+	    into their respective domains.  The value specifies the level of
+	    grouping to perform, and can be thought of as 'the number of dots'
+	    that will be displayed.  For example, if a visiting host is named
+	    cust1.tnt.mia.uu.net, a domain grouping of 1 will result in just
+	    &quot;uu.net&quot; being displayed, while a 2 will result in &quot;mia.uu.net&quot;.
+	    The default value of zero disable this feature.  Domains will only
+	    be grouped if they do not match any existing &quot;GroupSite" records,
+	    which allows overriding this feature with your own if desired.
+
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="0" key="GroupDomains">	
+      	<SELECT value="0">0</SELECT>
+      	<SELECT value="1">1</SELECT>
+      	<SELECT value="2">2</SELECT>
+      	<SELECT value="3">3</SELECT>
+      	<SELECT value="4">4</SELECT>     	
+      	<SELECT value="5">5</SELECT>
+     	<SELECT value="6">6</SELECT> 
+      </TYPE>	      
+</STEP>
+
+<STEP id="66" group="3">
+      <NAME language="de">Gruppen Schattierung</NAME>
+      <NAME language="uk">Group shading</NAME>
+      <HELP language="de">
+	    Mit dieser Option k&ouml;nnen Sie die Darstellung von Gruppeneintr&auml;gen beeinflussen
+	    und diese schattiert darstellen lassen. Dies ist besonders n&uuml;tzlich wenn Sie viele Gruppen und 
+	    einzelne Eintr&auml;ge haben und diese sich vermischen. M&ouml;gliche Werte sind ja oder nein, ja ist
+	    der standard Wert.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The GroupShading allows grouped rows to be shaded in the report.
+	    Useful if you have lots of groups and individual records that
+	    intermingle in the report, and you want to diferentiate the group
+	    records a little more.  Value can be 'yes' or 'no', with 'yes'
+	    being the default.
+
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="yes" key="GroupShading">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	      
+</STEP>
+
+<STEP id="67" group="3">
+      <NAME language="de">Gruppen hervorheben</NAME>
+      <NAME language="uk">Group highlight</NAME>
+      <HELP language="de">
+	    Wird diese Option auf &acute;ja&acute; eingestellt, werden Gruppen in fett Buchstaben 
+	    ausgegeben. Der Standard-Wert ist ja.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    GroupHighlight allows the group record to be displayed in BOLD.
+	    Can be either 'yes' or 'no' with the default 'yes'.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="yes" key="GroupHighlight">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	      
+</STEP>
+<STEP id="68">
+      <NAME language="de">Ignorieren von Seiten</NAME>
+      <NAME language="uk">Ignore sites</NAME>
+      <HELP language="de">
+      	    Diese Option erlaubt Ihnen das ignorieren von einzelnen Eintr&auml;gen &uuml;ber den
+      	    Hostnamen. Webalizer wurde eigentlich daf&uuml;r konzipiert genaue Statistiken &uuml;ber
+      	    die Performance eines Webserver zu geben. Das ignorieren von Eintr&auml;gen negiert 
+      	    den eigentlich Sinn von Webalizer. Trotzdem wurde die Option auf Grund der gro&szlig;en
+      	    Nachfrage integriert. Es k&ouml;nnen die gleichen Platzhalter wie bei den versteck Optionen
+      	    eingesetzt werden (z.B. *). Benutzung auf eigene Gefahr ;-)
+	    Beispiel:[[br]]bad.site.net[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Ignore* keywords allow you to completely ignore log records based
+	    on hostname.  I hessitated in adding these, since the Webalizer was designed to generate _accurate_
+	    statistics about a web servers performance.  By choosing to ignore
+	    records, the accuracy of reports become skewed, negating why I wrote
+	    this program in the first place.  However, due to popular demand, here
+	    they are.  Use the same as the Hide* keywords, where the value can have
+	    a leading or trailing wildcard '*'.  Use at your own risk ;)
+	    [[br]][[br]]
+	    Examples:[[br]]
+	    bad.site.net[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IgnoreSite"></TYPE>	
+</STEP>
+
+<STEP id="69">
+      <NAME language="de">Ignorieren von URLs</NAME>
+      <NAME language="uk">Ignore URLs</NAME>
+      <HELP language="de">
+      	    Diese Option erlaubt Ihnen das ignorieren von einzelnen Eintr&auml;gen &uuml;ber die
+      	    URL. Webalizer wurde eigentlich daf&uuml;r konzipiert genaue Statistiken &uuml;ber
+      	    die Performance eines Webserver zu geben. Das ignorieren von Eintr&auml;gen negiert 
+      	    den eigentlich Sinn von Webalizer. Trotzdem wurde die Option auf Grund der gro&szlig;en
+      	    Nachfrage integriert. Es k&ouml;nnen die gleichen Platzhalter wie bei den versteck Optionen
+      	    eingesetzt werden (z.B. *). Benutzung auf eigene Gefahr ;-)
+	    Beispiel:[[br]]/test*[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Ignore* keywords allow you to completely ignore log records based
+	    on URL.  I hessitated in adding these, since the Webalizer was designed to generate _accurate_
+	    statistics about a web servers performance.  By choosing to ignore
+	    records, the accuracy of reports become skewed, negating why I wrote
+	    this program in the first place.  However, due to popular demand, here
+	    they are.  Use the same as the Hide* keywords, where the value can have
+	    a leading or trailing wildcard '*'.  Use at your own risk ;)
+	    [[br]][[br]]
+	    Examples:[[br]]
+	    /test*[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IgnoreURL"></TYPE>	
+</STEP>
+
+<STEP id="69">
+      <NAME language="de">Ignorieren von Referrern</NAME>
+      <NAME language="uk">Ignore referrer</NAME>
+      <HELP language="de">
+      	    Diese Option erlaubt Ihnen das ignorieren von einzelnen Eintr&auml;gen &uuml;ber die
+      	    Referrer. Webalizer wurde eigentlich daf&uuml;r konzipiert genaue Statistiken &uuml;ber
+      	    die Performance eines Webserver zu geben. Das ignorieren von Eintr&auml;gen negiert 
+      	    den eigentlich Sinn von Webalizer. Trotzdem wurde die Option auf Grund der gro&szlig;en
+      	    Nachfrage integriert. Es k&ouml;nnen die gleichen Platzhalter wie bei den versteck Optionen
+      	    eingesetzt werden (z.B. *). Benutzung auf eigene Gefahr ;-)
+	    Beispiel:[[br]]file:/*[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Ignore* keywords allow you to completely ignore log records based
+	    on Referrer.  I hessitated in adding these, since the Webalizer was designed to generate _accurate_
+	    statistics about a web servers performance.  By choosing to ignore
+	    records, the accuracy of reports become skewed, negating why I wrote
+	    this program in the first place.  However, due to popular demand, here
+	    they are.  Use the same as the Hide* keywords, where the value can have
+	    a leading or trailing wildcard '*'.  Use at your own risk ;)
+	    [[br]][[br]]
+	    Examples:[[br]]
+	    file:/*[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IgnoreReferrer"></TYPE>	
+</STEP>
+
+<STEP id="70">
+      <NAME language="de">Ignorieren von Browsern</NAME>
+      <NAME language="uk">Ignore agents</NAME>
+      <HELP language="de">
+      	    Diese Option erlaubt Ihnen das ignorieren von einzelnen Eintr&auml;gen &uuml;ber die
+      	    verwendeten Browser. Webalizer wurde eigentlich daf&uuml;r konzipiert genaue Statistiken &uuml;ber
+      	    die Performance eines Webserver zu geben. Das ignorieren von Eintr&auml;gen negiert 
+      	    den eigentlich Sinn von Webalizer. Trotzdem wurde die Option auf Grund der gro&szlig;en
+      	    Nachfrage integriert. Es k&ouml;nnen die gleichen Platzhalter wie bei den versteck Optionen
+      	    eingesetzt werden (z.B. *). Benutzung auf eigene Gefahr ;-)
+	    Beispiel:[[br]]RealPlayer[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Ignore* keywords allow you to completely ignore log records based
+	    on used agent.  I hessitated in adding these, since the Webalizer was designed to generate _accurate_
+	    statistics about a web servers performance.  By choosing to ignore
+	    records, the accuracy of reports become skewed, negating why I wrote
+	    this program in the first place.  However, due to popular demand, here
+	    they are.  Use the same as the Hide* keywords, where the value can have
+	    a leading or trailing wildcard '*'.  Use at your own risk ;)
+	    [[br]][[br]]
+	    Examples:[[br]]
+	    RealPlayer[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IgnoreAgent"></TYPE>	
+</STEP>
+
+<STEP id="71">
+      <NAME language="de">Ignorieren von Usern</NAME>
+      <NAME language="uk">Ignore user</NAME>
+      <HELP language="de">
+      	    Diese Option erlaubt Ihnen das ignorieren von einzelnen Eintr&auml;gen &uuml;ber die
+      	    User. Webalizer wurde eigentlich daf&uuml;r konzipiert genaue Statistiken &uuml;ber
+      	    die Performance eines Webserver zu geben. Das ignorieren von Eintr&auml;gen negiert 
+      	    den eigentlich Sinn von Webalizer. Trotzdem wurde die Option auf Grund der gro&szlig;en
+      	    Nachfrage integriert. Es k&ouml;nnen die gleichen Platzhalter wie bei den versteck Optionen
+      	    eingesetzt werden (z.B. *). Benutzung auf eigene Gefahr ;-)
+	    Beispiel:[[br]]root[[br]]
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Ignore* keywords allow you to completely ignore log records based
+	    on users.  I hessitated in adding these, since the Webalizer was designed to generate _accurate_
+	    statistics about a web servers performance.  By choosing to ignore
+	    records, the accuracy of reports become skewed, negating why I wrote
+	    this program in the first place.  However, due to popular demand, here
+	    they are.  Use the same as the Hide* keywords, where the value can have
+	    a leading or trailing wildcard '*'.  Use at your own risk ;)
+	    [[br]][[br]]
+	    Examples:[[br]]
+	    root[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IgnoreUser"></TYPE>	
+</STEP>
+
+<STEP id="72">
+      <NAME language="de">Zulassen von Seiten</NAME>
+      <NAME language="uk">Include site</NAME>
+      <HELP language="de">
+      	    Mit dieser Option k&ouml;nnen Sie Aufnahme einzelener Hosts in die Statistik
+      	    erzwingen. Das zulassen besitzt eine h&ouml;here Priorit&auml;t als das
+      	    ignorieren. Achtung: Eine igonrieren/zulassen-Kombination um nur teile
+      	    einer Webseite auszuwerten ist sehr ineffizient und solltes deshalb vermieden
+      	    werden. Stattdessen lieber die entsprechenden Eintr&auml;ge mittels
+      	    grep in eigene Datei lesen.
+      	    [[br]][[br]]
+      	    Beispiel:[[br]]
+      	    *.myurl.com
+
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Include* keywords allow you to force the inclusion of log records
+	    based on hostname.  They take
+	    precidence over the Ignore* keywords.  Note: Using Ignore/Include
+	    combinations to selectivly process parts of a web site is _extremely
+	    inefficent_!!! Avoid doing so if possible (ie: grep the records to a
+	    seperate file if you really want that kind of report).
+	    [[br]][[br]]
+	    Example:[[br]]
+	    *.myurl.com[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IncludeSite"></TYPE>	
+</STEP>
+
+<STEP id="73">
+      <NAME language="de">Zulassen von URLs</NAME>
+      <NAME language="uk">Include URLs</NAME>
+      <HELP language="de">
+      	    Mit dieser Option k&ouml;nnen Sie Aufnahme einzelener URLs in die Statistik
+      	    erzwingen. Das zulassen besitzt eine h&ouml;here Priorit&auml;t als das
+      	    ignorieren. Achtung: Eine igonrieren/zulassen-Kombination um nur teile
+      	    einer Webseite auszuwerten ist sehr ineffizient und solltes deshalb vermieden
+      	    werden. Stattdessen lieber die entsprechenden Eintr&auml;ge mittels
+      	    grep in eigene Datei lesen.
+      	    [[br]][[br]]
+      	    Beispiel:[[br]]
+      	    ~joeuser*
+
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Include* keywords allow you to force the inclusion of log records
+	    based on URLs.  They take precidence over the Ignore* keywords.  Note: Using Ignore/Include
+	    combinations to selectivly process parts of a web site is _extremely
+	    inefficent_!!! Avoid doing so if possible (ie: grep the records to a
+	    seperate file if you really want that kind of report).
+	    [[br]][[br]]
+	    Example:[[br]]
+	    ~joeuser*[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IncludeURL"></TYPE>	
+</STEP>
+<STEP id="74">
+      <NAME language="de">Zulassen von Browsern</NAME>
+      <NAME language="uk">Include agents</NAME>
+      <HELP language="de">
+      	    Mit dieser Option k&ouml;nnen Sie Aufnahme einzelener Browser in die Statistik
+      	    erzwingen. Das zulassen besitzt eine h&ouml;here Priorit&auml;t als das
+      	    ignorieren. Achtung: Eine igonrieren/zulassen-Kombination um nur teile
+      	    einer Webseite auszuwerten ist sehr ineffizient und solltes deshalb vermieden
+      	    werden. Stattdessen lieber die entsprechenden Eintr&auml;ge mittels
+      	    grep in eigene Datei lesen.
+      	    [[br]][[br]]
+      	    Beispiel:[[br]]
+      	    Realplayer
+
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Include* keywords allow you to force the inclusion of log records
+	    based on agents.  They take precidence over the Ignore* keywords.  Note: Using Ignore/Include
+	    combinations to selectivly process parts of a web site is _extremely
+	    inefficent_!!! Avoid doing so if possible (ie: grep the records to a
+	    seperate file if you really want that kind of report).
+	    [[br]][[br]]
+	    Example:[[br]]
+	    Realplayer[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IncludeAgent"></TYPE>	
+</STEP>
+
+<STEP id="75">
+      <NAME language="de">Zulassen von Referrern</NAME>
+      <NAME language="uk">Include referrer</NAME>
+      <HELP language="de">
+      	    Mit dieser Option k&ouml;nnen Sie Aufnahme einzelener Referrer in die Statistik
+      	    erzwingen. Das zulassen besitzt eine h&ouml;here Priorit&auml;t als das
+      	    ignorieren. Achtung: Eine igonrieren/zulassen-Kombination um nur teile
+      	    einer Webseite auszuwerten ist sehr ineffizient und solltes deshalb vermieden
+      	    werden. Stattdessen lieber die entsprechenden Eintr&auml;ge mittels
+      	    grep in eigene Datei lesen.
+      	    [[br]][[br]]
+      	    Beispiel:[[br]]
+      	    file:/*
+
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Include* keywords allow you to force the inclusion of log records
+	    based on referrers.  They take precidence over the Ignore* keywords.  Note: Using Ignore/Include
+	    combinations to selectivly process parts of a web site is _extremely
+	    inefficent_!!! Avoid doing so if possible (ie: grep the records to a
+	    seperate file if you really want that kind of report).
+	    [[br]][[br]]
+	    Example:[[br]]
+	    file:/*[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IncludeReferrer"></TYPE>	
+</STEP>
+
+<STEP id="76">
+      <NAME language="de">Zulassen von Usern</NAME>
+      <NAME language="uk">Include users</NAME>
+      <HELP language="de">
+      	    Mit dieser Option k&ouml;nnen Sie Aufnahme einzelener User in die Statistik
+      	    erzwingen. Das zulassen besitzt eine h&ouml;here Priorit&auml;t als das
+      	    ignorieren. Achtung: Eine igonrieren/zulassen-Kombination um nur teile
+      	    einer Webseite auszuwerten ist sehr ineffizient und solltes deshalb vermieden
+      	    werden. Stattdessen lieber die entsprechenden Eintr&auml;ge mittels
+      	    grep in eigene Datei lesen.
+      	    [[br]][[br]]
+      	    Beispiel:[[br]]
+      	    root
+
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Include* keywords allow you to force the inclusion of log records
+	    based on users.  They take precidence over the Ignore* keywords.  Note: Using Ignore/Include
+	    combinations to selectivly process parts of a web site is _extremely
+	    inefficent_!!! Avoid doing so if possible (ie: grep the records to a
+	    seperate file if you really want that kind of report).
+	    [[br]][[br]]
+	    Example:[[br]]
+	    root[[br]]
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="IncludeUser"></TYPE>	
+</STEP>
+
+<STEP id="77">
+      <NAME language="de">Browser k&uuml;rzen</NAME>
+      <NAME language="uk">Mangle Agents</NAME>
+      <HELP language="de">
+	    Diese Option erlaubt das Spezifizieren, wieviel oder ob &uuml;berhaupt
+	    die Browser gek&uuml;rzt werden sollen. Das erlaubt verschiedene Detailtiefen
+	    f&uuml;r die Browserstatistik. Es gibt sechs Detaillevel. Level 5 zeigt
+	    nur die Browsername (z.B. MSIE oder Mozilla) und die Hauptversionsnummer. Level
+	    4 f&uuml;gt die Minor Versionsnummer mit einer nachkomma Stelle an. Level 3 f&uuml;gt
+	    die Minor Versionsnummer mit 2 nachkomma Stellen an (z.B. MSIE 3.0b oder
+	    Mozilla/3.01Gold). Level 1 gibt ausserdem noch das Betriebssystem mit an,
+	    wenn es angegeben wurde. Level 0 gibt alle Informationen die zum Browser und
+	    zum Betriebssystem gesendet wurden direkt aus und erzeugt damit die gr&ouml;sst
+	    m&ouml;gliche Detailstiefe. Browsernamen die nicht verk&uuml;rzt werden k&ouml;nnen
+	    werden unver&auml;ndert gelassen.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The MangleAgents allows you to specify how much, if any, The Webalizer
+	    should mangle user agent names.  This allows several levels of detail
+	    to be produced when reporting user agent statistics.  There are six
+	    levels that can be specified, which define different levels of detail
+	    supression.  Level 5 shows only the browser name (MSIE or Mozilla)
+	    and the major version number.  Level 4 adds the minor version number
+	    (single decimal place).  Level 3 displays the minor version to two
+	    decimal places.  Level 2 will add any sub-level designation (such
+	    as Mozilla/3.01Gold or MSIE 3.0b).  Level 1 will attempt to also add
+	    the system type if it is specified.  The default Level 0 displays the
+	    full user agent field without modification and produces the greatest
+	    amount of detail.  User agent names that can't be mangled will be
+	    left unmodified.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="" canempty="1" key="MangleAgents">	
+        <SELECT value="" language="de">Nicht definieren</SELECT>
+        <SELECT value="" language="uk">Leave undefined</SELECT>
+      	<SELECT value="0">0</SELECT>
+      	<SELECT value="1">1</SELECT>
+      	<SELECT value="2">2</SELECT>
+      	<SELECT value="3">3</SELECT>
+      	<SELECT value="4">4</SELECT>     	
+      	<SELECT value="5">5</SELECT> 
+      </TYPE>	
+</STEP>
+
+<STEP id="78">
+      <NAME language="de">Suchmaschinen Schl&uuml;sselworte</NAME>
+      <NAME language="uk">Searchengines keywords</NAME>
+      <HELP language="de">
+	    Hier k&ouml;nnen Sie Suchmaschinen und deren Suchstrings definieren. Diese
+	    werden verwendet um die Suchmaschine zu identifizieren und herauszufinden
+	    welche Suchbegriffe verwendet wurden. Die erste Zeichenfolge ein Teil des
+	    Refererres um die Suchmaschine zu identifizieren und die zweite Zeichenfolge
+	    ist der URL Parametername den die Suchmaschine verwendet hat.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The SearchEngine keywords allow specification of search engines and
+	    their query strings on the URL.  These are used to locate and report
+	    what search strings are used to find your site.  The first word is
+	    a substring to match in the referrer field that identifies the search
+	    engine, and the second is the URL variable used by that search engine
+	    to define it&acute;s search terms.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="0" default="" canempty="1" key="SearchEngine"></TYPE>
+</STEP>
+
+<STEP id="79">
+      <NAME language="de">Dump Verzeichnis</NAME>
+      <NAME language="uk">Dump path</NAME>
+      <HELP language="de">
+	    Webalizer erlaubt das speichern von Seiten, URLs, Referrern, Browsern,
+	    Usernamen und Suchbegriffen in Tabulator-getrennten Textdateien, die von vielen
+	    Datenbanken oder Spreadsheet Programmen verarbeitet werden k&ouml;nnen.
+	    [[br]][[br]]
+	    Hier muss das Verzeichnis angegeben werden, in dem die Dump Dateien gespeichert 
+	    werden sollen. Wird dieses Verzeichnis nicht angegeben, nutzt Webalizer das
+	    Standard Ausgabe Verzeichnis. Das Verzeichnis darf nicht durch einen
+	    abschliessenden Slash beendet werden (&acute;/&acute;).
+
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The Dump* keywords allow the dumping of Sites, URL's, Referrers
+	    User Agents, Usernames and Search strings to seperate tab delimited
+	    text files, suitable for import into most database or spreadsheet
+	    programs.
+	    [[br]][[br]]
+	    DumpPath specifies the path to dump the files.  If not specified,
+	    it will default to the current output directory.  Do not use a
+	    trailing slash ('/').
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="/var/lib/httpd/logs" canempty="1" key="DumpPath"></TYPE>
+</STEP>
+
+<STEP id="80">
+      <DEPENDS>79</DEPENDS>
+      <NAME language="de">Dump Kopfzeile</NAME>
+      <NAME language="uk">Dump Header</NAME>
+      <HELP language="de">
+	    Mit dieser Option kann konfiguriert werden, ob in Dump Dateien eine
+	    Kopfzeile eingef&uuml;gt werden soll. In dieser Kopfzeile steht die Beschreibung
+	    f&uuml;r die einzelnen Felder. Bei Daten die in eine Datenbank importiert 
+	    werden sollen, wir in der Regel keine Kopfzeile ben&ouml;tigt, Spreadsheet
+	    Programme dagegen nutzen dagegen meistens die Kopfzeile. M&ouml;gliche
+	    Werte sind &acute;ja&acute; oder &acute;nein&acute;, wobei &acute;nein&acute;
+	    der Standard Wert ist.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    The DumpHeader keyword specifies if a header record should be
+	    written to the file.  A header record is the first record of the
+	    file, and contains the labels for each field written.  Normally,
+	    files that are intended to be imported into a database system
+	    will not need a header record, while spreadsheets usually do.
+	    Value can be either &acute;yes&acute; or &acute;no&acute;, with &acute;no&acute; being the default.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="DumpHeader">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	      
+</STEP>
+
+<STEP id="81">
+      <DEPENDS>79</DEPENDS>
+      <NAME language="de">Dump Dateierweiterung</NAME>
+      <NAME language="uk">Dump Extension</NAME>
+      <HELP language="de">
+      	    Hier kann die Erweiterung f&uuml;r Dump Dateien festgelegt werden. Die
+      	    Standard Erweiterung ist &acute;tab&acute;, jedoch bevorzugen z.B.
+      	    die Endung csv.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    DumpExtension allow you to specify the dump filename extension
+	    to use.  The default is "tab", but some programs are pickey about
+	    the filenames they use, so you may change it here (for example,
+	    some people may prefer to use "csv").
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="tab" canempty="1" validation="numletters" key="DumpExtension"></TYPE>      
+</STEP>
+
+<STEP id="82">
+      <DEPENDS>79</DEPENDS>
+      <NAME language="de">Dumpen von Seiten</NAME>
+      <NAME language="uk">Dump sites</NAME>
+      <HELP language="de">
+ 	    Hiermit kann bestimmt werden ob Seiten gedumpt werden sollen.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    These control the dumping of each individual table.  The value
+	    can be either 'yes' or 'no'.. the default is 'no'.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="DumpSites">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+<STEP id="83">
+      <DEPENDS>79</DEPENDS>
+      <NAME language="de">Dumpen von URLs</NAME>
+      <NAME language="uk">Dump URLs</NAME>
+      <HELP language="de">
+ 	    Hiermit kann bestimmt werden ob URLs gedumpt werden sollen.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    These control the dumping of each individual table.  The value
+	    can be either 'yes' or 'no'.. the default is 'no'.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="DumpURLs">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="84">
+      <DEPENDS>79</DEPENDS>
+      <NAME language="de">Dumpen von Referrer</NAME>
+      <NAME language="uk">Dump Referrers</NAME>
+      <HELP language="de">
+ 	    Hiermit kann bestimmt werden ob Referrer gedumpt werden sollen.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    These control the dumping of each individual table.  The value
+	    can be either 'yes' or 'no'.. the default is 'no'.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="DumpReferrers">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="85">
+      <DEPENDS>79</DEPENDS>
+      <NAME language="de">Dumpen von Browsern</NAME>
+      <NAME language="uk">Dump agents</NAME>
+      <HELP language="de">
+ 	    Hiermit kann bestimmt werden ob Browser gedumpt werden sollen.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    These control the dumping of each individual table.  The value
+	    can be either 'yes' or 'no'.. the default is 'no'.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="DumpAgents">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="86">
+      <DEPENDS>79</DEPENDS>
+      <NAME language="de">Dumpen von Usern</NAME>
+      <NAME language="uk">Dump agents</NAME>
+      <HELP language="de">
+ 	    Hiermit kann bestimmt werden ob User gedumpt werden sollen.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    These control the dumping of each individual table.  The value
+	    can be either 'yes' or 'no'.. the default is 'no'.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="DumpUsers">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+
+<STEP id="87">
+      <DEPENDS>79</DEPENDS>
+      <NAME language="de">Dumpen von Suchbegriffen</NAME>
+      <NAME language="uk">Dump search strings</NAME>
+      <HELP language="de">
+ 	    Hiermit kann bestimmt werden ob Suchbegriffe gedumpt werden sollen.
+      </HELP>
+      <HELP language="uk">
+	    [[b]]from webalizer.conf[[/b]] [[br]]
+	    These control the dumping of each individual table.  The value
+	    can be either 'yes' or 'no'.. the default is 'no'.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="no" key="DumpSearchStr">	
+      	<SELECT value="yes" language="uk">yes</SELECT>
+      	<SELECT value="yes" language="de">ja</SELECT>
+      	<SELECT value="no" language="uk">no</SELECT>
+      	<SELECT value="no" language="de">nein</SELECT>
+      </TYPE>	
+</STEP>
+</WIZARD>
+

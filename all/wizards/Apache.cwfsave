@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE WIZARD SYSTEM "file:wizard.dtd" >
+<!-- Test -->
+<WIZARD>
+<HEADER>
+      <!-- blub -->
+      <APPLICATION>Apache</APPLICATION>
+      <APPVERSION>1.234</APPVERSION>
+      <CONFTYPE>configfile</CONFTYPE>
+      <PATH distribution="Suse">/etc/httpd/</PATH>
+      <PATH>/etc/</PATH>
+      <FILE>httpd.conf</FILE>
+      <AUTHOR>Author des Wizard Files</AUTHOR>
+      <EMAIL>author@email.com</EMAIL>
+      <URL>http://www.myadress.com/mywizardfile.lwf</URL>
+      <DATE>01.01.1901</DATE>	
+      <COMMENTCHAR>#</COMMENTCHAR>
+      <VALASSIGN> </VALASSIGN>
+      <GROUPDEF id="1">Global Environment</GROUPDEF>
+</HEADER>
+
+<STEP id="1" group="1">
+      <NAME language="Deutsch">Server Type</NAME>
+      <NAME language="English">Server Type</NAME>
+      <HELP language="Deutsch">Hiermit kann bestimmt werden, in welchem Modus der Webserver betrieben werden soll. 
+
+	    Durch die beiden Einstellm&ouml;glichkeiten also Standalone Betrieb bzw. Daemon Betrieb als inetd k&ouml;nnen Sie die Performance des Webservers entscheidend beeinflussen. Prinzipell k&ouml;nnte man sagen, dass der standalonemodus effizienter ist, als der inetd Modus, da beim standalone Betrieb nicht f&uuml;r jede Anfrage ein neuer Prozess gestartet werden muss (was bei inetd Modus der Fall ist.)[[br]][[br]]
+
+	    Der inetd Modus hingegen wird allgemein als der sicherere Modus angesehen. F&uuml;r welchen Modus Sie sich entscheiden bleibt Ihnen &uuml;berlassen. Sollten Sie sich jedoch mehr f&uuml; die Sicherheit Ihrer Website k&uuml;mmern, so w&auml;re der inetd Betrieb ratsamer.[[br]][[br]]
+
+	    [[b]]Standalone Modus[[/b]][[br]]
+	    Port [Nummer] mit diesem Befehl kann der Prim&auml;re Server-Prozess angewiesen werden einen bestimmten Port zu &uuml;berwachen. Der Standart http Port, welcher bei den meisten Websites verwendet wird, ist 80. Falls Sie als Root User des Systems den Webserver ausf&uuml;hren wollen, so m&uuml;ssen Sie einen Port zwischen 1024 und 32768 w&auml;hlen. Beachten Sie jedoch, dass bei der Verwendung eines Ports, der schon von einem anderen Server verwendet wird, eine Fehlermeldung ausgegeben wird. [[br]][[br]]
+
+	    Wenn Sie Ihren Apache Webserver im Standalone Betrieb betreiben, so m&uuml;ssen Sie nun auch die Benutzer und Gruppennamen festlegen. Die Anweisungen, mit denen Sie dies erreichen k&ouml;nnen w&auml;ren:[[br]]
+	    User [Benutzername | # UID][[br]]
+	    Group[Gruppenname | # GID] [[br]]
+	    Beachten Sie, dass diese beiden Anweisungen sehr bedeutend f&uuml;r die Sicherheit des Webservers ist. Ordnen Sie am besten den Child Prozessen einen Benutzer mit wenig Spielraum zu, um so eine ausreichende Sicherheit zu gew&auml;hrleisten,
+	    [[br]][[br]]
+	    [[b]]inetd[[/b]][[br]]
+	    Wollen Sie aus den oben erw&auml;hnten Gr&uuml;nden ihren Webserver auf den inetd Modus betreiben, so m&uuml;ssen sie die Datei etc/inetd.conf Ihres Apache Webserver um eine kleine Anweisung erg&auml;nzen. Diese Datei weist ein eigenes Anweisungsformat auf, das Sie erkennen wenn Sie die anderen Eintragungen der Datei betrachten. 
+	    Die Datei verwendet meist folgendes Anweisungsformat:[[br]][[br]]
+	    &lt;service_name&gt; &lt;stock_type&gt; &lt;proto&gt; &lt;flags&gt; &lt;user&gt; &lt;server_path&gt; &lt;args&gt;[[br]]
+	    Dieser Datei kann man entnehmen, dass der Dienst &uuml;ber einen bestimmten Benutzer l&auml;uft. Richten Sie daraufhin einen besonderen httpd Benutzer ein und benutzen diesen wie folgt: [[br]]
+	    http stream tcp nowait httpd /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf
+	    [[br]][[br]]
+	    Daraufhin sollten Sie in der Datei /etc/services zus&auml;tzlich folgende Zeile eintragen:[[br]]
+	    httpd 80/tcp httpd[[br]][[br]]
+	    Dies legt fest, dass dieser Dienst httpd auf Port 80 laufen soll.
+	    Daraufhin sollten Sie den inetd Prozess neu starten.
+	    Die hierf&uuml;r notwendige Prozess ID k&ouml;nnen Sie mit dem Befehl 
+	    Ps ausw | grep inetd 
+	    Herausfinden
+	    [[br]][[br]]
+	    Diesen Prozess k&ouml;nnen Sie mit folgenden Befehl wieder stoppen:
+	    Kill -HUP &lt;PID von inetd&gt;
+	    Achten Sie darauf &lt;PID von inetd&gt; durch die Prozess ID zuerstetzen
+      </HELP>
+      <HELP language="English">
+	    [[b]]inetd[[/b]] [[br]]
+	    The server will be run from the system process inetd; the command to start the server is added to /etc/inetd.conf [[br]][[br]]
+	    [[b]]standalone[[/b]][[br]] 
+	    The server will run as a daemon process; the command to start the server is added to the system startup scripts. (/etc/rc.local or /etc/rc3.d/....)[[br]][[br]]
+	    Inetd is the lesser used of the two options. For each http connection received, a new copy of the server is started from scratch; after the connection is complete, this program exits. There is a high price to pay per connection, but for security reasons, some admins prefer this option. Inetd mode is no longer recommended and does not always work properly. Avoid it if at all possible. 
+	    Standalone is the most common setting for ServerType since
+	    it is far more efficient. The server is started once, and
+	    services all subsequent connections. If you intend running
+	    Apache to serve a busy site, standalone will probably be
+	    your only option.
+      </HELP>
+      <TYPE kind="standard" input="selectable" number="1" default="standalone" key="ServerType">
+	    <SELECT value="standalone">Standalone</SELECT>
+	    <SELECT value="inetd">INETD</SELECT>
+	    </TYPE>	
+      </STEP>
+
+<STEP id="2" group="1">
+      <NAME language="Deutsch">Server Root</NAME>
+      <NAME language="English">Server Root</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.robert-web.de/httpdconf.shtml" target="_blank"]]http://www.robert-web.de/httpdconf.shtml[[/a]][[br]][[br]]
+	    "ServerRoot" bezeichnet die Spitze des Verzeichnisbaums, unter dem die Server-Konfiguration, Fehleranzeigen und Protokolle zu finden sind. Am Ende dieser Zeile darf kein Slash stehen. 
+      </HELP>
+      <HELP language="English">
+	    From: http.conf[[br]][[br]]
+	    ServerRoot: The top of the directory tree under which the server's configuration, error, and log files are kept.
+	    [[br]][[br]]
+	    NOTE!  If you intend to place this on an NFS (or otherwise network) mounted filesystem then please read the LockFile documentation
+	    (available at [[a href="http://www.apache.org/docs/mod/core.html#lockfile" target="_blank"]]http://www.apache.org/docs/mod/core.html#lockfile[[/a]]); you will save yourself a lot of trouble.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="&quot;/usr/local/httpd&quot;" quote="&quot;" validation="existpath" key="ServerRoot">
+      </TYPE>	
+</STEP>
+
+<STEP id="3" group="1">
+      <NAME language="Deutsch">Lock File</NAME>
+      <NAME language="English">Lock File</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#lockfile" target="_blank"]]http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#lockfile[[/a]][[br]][[br]]
+	    Die Direktive LockFile legt den Pfad zur Lock-Datei fest, die verwendet wird, wenn der Apache mit einer der AcceptMutex-Einstellungen fcntl oder flock 
+	    verwendet wird. Die Anweisung sollte normalerweise bei der Voreinstellung belassen werden. Der Hauptgrund, sie zu &auml;ndern, ist, wenn das logs-Verzeichnis 
+	    auf einem per NFS-eingebundenen Laufwerk liegt, da die Lock-Datei auf einer lokalen Platte abgelegt sein muss. Die PID (Prozess-ID) des Hauptserverprozesses 
+	    wird automatisch an den Dateinamen angeh&auml;ngt.[[br]][[br]]
+	    [[b]]Sicherheit:[[/b]][[br]]
+	    Es ist am besten, die Ablage in einem allgemein (fuer jederman)
+	    beschreibbaren Verzeichnis wie /var/tmp zu vermeiden, da ein
+	    Denial-of-Servide-Angriff gestartet werden k&ouml;nnte und der Server am Start gehindert
+	    werden k&ouml;nnte, indem eine Lock-Datei mit dem gleichen Namen
+	    erstellt wird, wie der Server sie zu erstellen versuchen wuerde.
+      </HELP>
+      <HELP language="English">
+	    From: http.conf[[br]][[br]]
+
+	    The LockFile directive sets the path to the lockfile used when Apache
+	    is compiled with either USE_FCNTL_SERIALIZED_ACCEPT or USE_FLOCK_SERIALIZED_ACCEPT. This directive should normally be left at
+	    its default value. The main reason for changing it is if the logs directory is NFS mounted, since the lockfile MUST BE STORED ON A LOCAL
+	    DISK. The PID of the main server process is automatically
+	    appended to the filename.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="/var/lock/subsys/httpd/httpd.accept.lock" key="LockFile">
+      </TYPE>	
+</STEP>
+
+<STEP id="4" group="1">
+      <NAME language="Deutsch">Pid File</NAME>
+      <NAME language="English">Pid File</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html##pidfile" target="_blank"]]http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#pidfile[[/a]][[br]][[br]]
+
+	    Die Direktive PidFile bestimmt die Datei, in welcher der Server die
+	    Prozess-ID des Daemons ablegt. Wenn der Dateiname nicht absolut
+	    angegeben wird, wird er relativ zu ServerRoot interpretiert.[[br]][[br]]
+
+	    [[b]]Beispiel[[/b]][[br]][[br]]
+
+	    PidFile /var/run/apache.pid[[br]][[br]]
+
+	    Es ist oft hilfreich, dem Server ein Signal senden zu k&ouml;nnen,
+	    damit er seine ErrorLogs und TransferLogs schlie&szlig;t und dann neu
+	    &ouml;ffnet und seine Konfigurationsdateien neu einliest. 
+	    Dies kann durch Senden eines SIGHUP-Signals (kill -1) an die Prozess-ID geschehen, die im PidFile eingetragen ist.
+
+	    Die PidFile-Datei unterliegt den gleichen Warnungen &uuml;ber die
+	    Ablage von Protokolldateien und Sicherheit.[[br]][[br]]
+
+	    [[b]]Anmerkung[[/b]][[br]][[br]]
+
+	    Ab Apache 2 wird empfohlen, nur das Skript apachectl zum (Neu-)Starten und Stoppen des Servers zu verwenden.
+      </HELP>
+
+      <HELP language="English">
+	    From: http.conf[[br]][[br]]
+
+	    PidFile: The file in which the server should record its process
+	    identification number when it starts.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="/var/run/httpd.pid" validation="file" key="PidFile">
+</TYPE>	
+</STEP>
+
+<STEP id="6" group="1">
+      <NAME language="Deutsch">Score Board File</NAME>
+      <NAME language="English">Score Board File</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#scoreboardfile" target="_blank"]]http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#scoreboardfile[[/a]][[br]][[br]]
+
+	    Apache verwendet ein Scoreboard zur Kommunikation zwischen
+	    seinen Eltern- und Kindprozessen. Einige Architekturen
+	    erfordern eine Datei zur Unterst&uuml;tzung der
+	    Kommunikation. Wenn die Datei undefiniert bleibt, versucht
+	    der Apache zuerst, das Scoreboard im Arbeitsspeicher zu
+	    erstellen (Verwendung von anonymem Shared-Memory), und
+	    versucht bei einem Fehlschlag anschlie&szlig;end die Datei
+	    auf der Festplatte zu erstellen (Verwendung von
+	    Datei-basiertem Shared-Memory). Die Angabe dieser
+	    Direktive veranla&szlig;t den Apache stets, die Datei auf
+	    der Festplatte zu erstellen.[[br]][[br]]
+	    [[b]]Beispiel[[/b]][[br]][[br]]
+
+	    ScoreBoardFile /var/run/apache_status[[br]][[br]]
+
+	    Datei-basiertes Shared-Memory ist f&uuml;r Applikationen
+	    von Drittanbietern hilfreich, die direkten Zugriff auf das Scoreboard ben&ouml;tigen.
+
+	    Wenn Sie eine ScoreBoardFile-Anweisung verwenden,
+	    erreichen Sie eventuell eine h&ouml;here Geschwindigkeit,
+	    wenn Sie die Datei auf einer RAM-Disk ablegen. Achten Sie
+	    darauf, die gleichen Warnungen wie &uuml;ber die Ablage von Protokolldateien und Sicherheit zu beherzigen.
+
+      </HELP>
+      <HELP language="English">
+	    From: http.conf[[br]][[br]]
+
+	    ScoreBoardFile: File used to store internal server process information.
+	    Not all architectures require this.  But if yours does (you'll know because
+	    this file will be  created when you run Apache) then you *must* ensure that
+	    no two invocations of Apache share the same scoreboard file.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" default="/var/run/httpd.scoreboard" validation="file" key="PidFile">
+      </TYPE>	
+</STEP>
+
+<STEP id="8" group="1">
+      <NAME language="Deutsch">ResourceConfig</NAME>
+      <NAME language="English">ResourceConfig</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#scoreboardfile" target="_blank"]]http://httpd.apache.org/docs-2.0/de/mod/mpm_common.html#scoreboardfile[[/a]][[br]][[br]]
+
+	    Apache verwendet ein Scoreboard zur Kommunikation zwischen
+	    seinen Eltern- und Kindprozessen. Einige Architekturen
+	    erfordern eine Datei zur Unterst&uuml;tzung der
+	    Kommunikation. Wenn die Datei undefiniert bleibt, versucht
+	    der Apache zuerst, das Scoreboard im Arbeitsspeicher zu
+	    erstellen (Verwendung von anonymem Shared-Memory), und
+	    versucht bei einem Fehlschlag anschlie&szlig;end die Datei
+	    auf der Festplatte zu erstellen (Verwendung von
+	    Datei-basiertem Shared-Memory). Die Angabe dieser
+	    Direktive veranla&szlig;t den Apache stets, die Datei auf
+	    der Festplatte zu erstellen.[[br]][[br]]
+	    [[b]]Beispiel[[/b]][[br]][[br]]
+
+	    ScoreBoardFile /var/run/apache_status[[br]][[br]]
+
+	    Datei-basiertes Shared-Memory ist f&uuml;r Applikationen
+	    von Drittanbietern hilfreich, die direkten Zugriff auf das Scoreboard ben&ouml;tigen.
+
+	    Wenn Sie eine ScoreBoardFile-Anweisung verwenden,
+	    erreichen Sie eventuell eine h&ouml;here Geschwindigkeit,
+	    wenn Sie die Datei auf einer RAM-Disk ablegen. Achten Sie
+	    darauf, die gleichen Warnungen wie &uuml;ber die Ablage von Protokolldateien und Sicherheit zu beherzigen.
+
+      </HELP>
+      <HELP language="English">
+	    From: http.conf[[br]][[br]]
+
+	    ScoreBoardFile: File used to store internal server process information.
+	    Not all architectures require this.  But if yours does (you'll know because
+	    this file will be  created when you run Apache) then you *must* ensure that
+	    no two invocations of Apache share the same scoreboard file.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1" canempty="1" validation="file" key="ResourceConfig">
+      </TYPE>	
+</STEP>
+<STEP id="10" group="1">
+      <NAME language="Deutsch">Timeout</NAME>
+      <NAME language="English">Timeout</NAME>
+      <HELP language="Deutsch">
+	    Von: [[a href="http://www.linux-praxis.de/linux3/apache1.html" target="_blank"]]http://www.linux-praxis.de/linux3/apache1.html[[/a]][[br]][[br]]
+	    
+	    Die Anzahl von Sekunden, die der Server beim Senden und
+	    Empfangen von Daten wartet, bis er aufgibt und einen 
+	    Timeout-Fehler ausgibt.
+
+
+      </HELP>
+      <HELP language="English">
+	    From: http.conf[[br]][[br]]
+
+	    Timeout: The number of seconds before receives and sends time out.
+      </HELP>
+      <TYPE kind="standard" input="textline" number="1"
+      validation="numbers" key="Timeout" default="300">
+      </TYPE>	
+</STEP>
+</WIZARD>
+
