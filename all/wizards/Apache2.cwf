@@ -23,8 +23,7 @@
       <SKILLDEF id="1" language="uk">Quickstart (required options)</SKILLDEF>
       <SKILLDEF id="2" language="de">Fortgeschrittene Einstellungen</SKILLDEF>
       <SKILLDEF id="2" language="uk">Advanced options</SKILLDEF>
-      <SUBSET id="1" language="de">Virtual Hosts</SUBSET>
-      <SUBSET id="1" language="uk">Virutal Hosts</SUBSET>
+      <SUBSET id="1">Virtual Hosts</SUBSET>
 </HEADER>
 
 <STEP id="1" group="1" skill="1">
