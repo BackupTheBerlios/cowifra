@@ -207,7 +207,7 @@ if ($CGIO->param('doexec') == 1) {
 	####################################################
 	# SAVE STANDARD VALUE ASSIGMENT START ##############
 	####################################################
-	if ((($CGIO->param('dosave') == 1) && ($finput[0])) || (($CGIO->param('dosave') == 1) && (! $finput[0]) && ($finputtmp[0] ne "#LEAVEUNSET#"))) {   ## Save option to configuration file
+	if (((($CGIO->param('dosave') == 1) && ($finput[0])) || (($CGIO->param('dosave') == 1) && (! $finput[0]) && ($finputtmp[0] ne "#LEAVEUNSET#"))) && (! $CGIO->param('fsubsectionid'))) {   ## Save option to configuration file
 	  #print "&gt;".$CGIO->param('finput')."&lt;";
 	  #print "&gt;".$CGIO->param('finput')
 	  if ((@finput) || (@finputtmp) || ($finput[0] eq "0") || ($finputtmp[0] eq "0") ) {
@@ -413,7 +413,7 @@ if ($CGIO->param('doexec') == 1) {
 			print "No value defined?!";
 		}
 	} # end dosave = 1 (save standard assignment value)
-	elsif (($CGIO->param('dosave') == 1) && ($finputtmp[0] eq "#LEAVEUNSET#")) {
+	elsif (($CGIO->param('dosave') == 1) && ($finputtmp[0] eq "#LEAVEUNSET#") && (! $CGIO->param('fsubsectionid'))) {
 	  if ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') < $SESSION{'WSTEPID'})) {
 	    # The next step ID is smaller then the current step ID, we must be at the end
 	    # if no cleanup, goto index
@@ -426,7 +426,210 @@ if ($CGIO->param('doexec') == 1) {
 	    ($sectionid > 0) && ($SESSION{'WSTEPID'} = $CWFO->get_tag_attribut_value ("STEP","STEP","id",$sectionid));
 	  } 
 	
-	}
+	} elsif (($CGIO->param('dosave') == 1) && ($CGIO->param('fsubsectionid') > 0)) {
+		## Es handelt sich um die Eingabe eines Unterschritts!
+		my $orgsectionid = $sectionid;
+		$sectionid = $CGIO->param('fsubsectionid');
+		my $S_conftype = $CWFO->get_tag_attribut_value ('STEP','TYPE','kind',$sectionid,0);	
+		my $S_validation = $CWFO->get_tag_attribut_value ('STEP','TYPE','validation',$sectionid,0);
+
+	  	if ((@finput) || (@finputtmp) || ($finput[0] eq "0") || ($finputtmp[0] eq "0") ) {
+	    	if ((uc($S_conftype) == "STANDARD") || ($S_conftype < 0)) {
+	    		## Looking for key in conf file
+	      		my $S_key = $CWFO->get_tag_attribut_value ('STEP','TYPE','key',$sectionid,0);
+	      		if ($S_key < 0) {
+	        	## No conf key but standard conf 
+	        	undef($S_key);
+	        	$saveerror .= &translate("- Fehler im Wizard-File",$lang).$nl;	
+	        	($debug_level == 1) && (print "Could not find key in wizard file for this step");
+	      	}
+	       
+	      	## Get number of times key can be defined
+	      	my $S_keynumber = $CWFO->get_tag_attribut_value ('STEP','TYPE','number',$sectionid,0);
+	      	($S_keynumber < 0) && ($S_keynumber = "1");
+	      
+	      	#print $S_keynumber.":";      
+	      	if (($S_keynumber > 1) || ($S_keynumber == 0)) { # multiply keys allowed, use select and input fields
+				#print "GANNZ".$S_keynumber;exit;
+	      		if (! $finput[0]) { # Set value to selected one 
+		  			$CGIO->param(-name=>'finput',-value=>@finputtmp);
+		  			@finput = @finputtmp;
+				} else {
+		  			foreach my $onein (@finputtmp) {
+	  	  	  		($finput[0] ne $onein) && (push (@finput,$onein));
+	       		}
+		  		$CGIO->param(-name=>'finput',-value=>@finput);
+	       		#print $S_keynumber.":"@finput;
+			}	
+	    } else { # only one value for key allowed
+	  		if (! $finput[0]) { # Set value to selected one 
+		  		$CGIO->param(-name=>'finput',-value=>@finputtmp);
+		  		@finput = @finputtmp;
+	 		}
+			#if (($finput[0] eq "##  ##") || ($finput[0] eq "#LEAVEUNSET#")) { # Set value empty 
+			#  $CGIO->param(-name=>'finput',-value=>'');
+			#  $finput[0] = '';
+			#}
+		} 
+
+		my $S_instart = $CWFO->get_tag_content ('STEP','START',$orgsectionid,0);
+	    ($S_instart < 0) && ($saveerror .= &translate("- Fehler im Wizard-File instart fehlt",$lang).$nl);
+	    
+		my $S_instop = $CWFO->get_tag_content ('STEP','STOP',$orgsectionid,0);
+	    ($S_instart < 0) && ($saveerror .= &translate("- Fehler im Wizard-File instop fehlt",$lang).$nl);
+
+      	if (($S_keynumber > 0) && ($S_keynumber < @finput)) {
+	        $saveerror .= "- ".&translate("Es wurden zuviele Werte f&uuml;r diese Option angegeben",$lang).$nl;
+	        ($debug_level == 1) && (print "Found ".@finput." values, allowed are ".$S_keynumber);
+	    }
+	
+	    #print $finput[0]."--------------";
+	    for (my $i=0; $i<@finput; $i++) {
+	    	my $value = $finput[$i];  # real value, if quote is used, then find value without quotes
+	        
+	        $value =~ s/^\s+//; # Remove leading spaces
+	        $value =~ s/\s+$//; # Remove spaces from the end
+	
+	        ## Handle empty value
+	        if (($S_canempty != 1) && ($value eq ""))  {
+	          	# Value must be defined but is not
+		  		$saveerror .= "- ".&translate("Bitte geben Sie einen Wert f&uuml;r diesen Schritt an",$lang);
+	        }
+	
+	        ## Looking for quotations
+	        if (($S_quote) && ($S_quote != -1)) {
+	          	## the input should be quoted
+	          	if ($value ne "") {
+	            	my $searchstring = '^\s*\\'.$S_quote.'\s*(.*)'.$S_quote.'\s*';
+	            	if (! ($value =~ m/$searchstring/i)) {
+		      			# input is not correct quoted
+	              		$saveerror .= "- ".&translate("Der Wert muss innerhalb bestimmter Zeichen stehen. Beispiel",$lang).": ".$S_quote.&translate("Wert",$lang).$S_quote.$nl;
+		    		} else {
+		     			$value = $1;
+		    		}
+		  		}	
+	 		}
+	
+	 	   	## Look for input validation rulez
+	 	   	if (($S_validation) && ($S_validation != -1) && ($value ne "##  ##")) {
+				if (uc($S_validation) eq "EXISTPATH") { 
+	 	    		# Input must be an existing path
+	 	           	(substr($value,0,1) ne "/") && ($saveerror .= "- ".&translate("Der Pfad muss absolut angegeben werden (beginnend mit /)",$lang).$nl);
+	 	           	(! -d $value)  && ($saveerror .= "- ".&translate("Das angegeben Verzeichnis existiert nicht",$lang).$nl);
+	 	       	} elsif (uc($S_validation) eq "EXISTFILE") {
+	 	       		# Input must be an existing file
+	 	           	(substr($value,0,1) ne "/") && ($saveerror .= "- ".&translate("Die Datei muss im absoluten Format angegeben werden (beginnend mit /)",$lang).$nl);
+			    	(! -f $value)  && ($saveerror .= "- ".&translate("Die angegebene Datei existiert nicht",$lang).$nl);
+	 	       	} elsif (uc($S_validation) eq "LETTERS") {
+	 	       	    # Input must be only letters
+	 	         	my $searchstring = '^[a-zA-ZäöüÄÖÜß]+$';
+	 	  			(! ($value =~ m/$searchstring/i)) && ($saveerror .= "- ".&translate("Die Eingabe darf nur aus Buchstaben bestehen",$lang).$nl);
+     	       	} elsif (uc($S_validation) eq "NUMBERS") {
+	 	           	# Input must be only numbers
+	 	           	my $searchstring = '^\d+$';
+	 	           	(! ($value =~ m/$searchstring/i)) && ($saveerror .= "- ".&translate("Die Eingabe darf nur aus Ziffern bestehen",$lang).$nl);
+	 	       	} elsif (uc($S_validation) eq "NUMLETTERS") {
+	 	           	# Input must be numbers and/or letters
+	 	           	my $searchstring = '^\w+$';
+	 	           	(! ($value =~ m/$searchstring/i)) && ($saveerror .= "- ".&translate("Die Eingabe darf nur aus Ziffern, Buchstaben oder Unterstrichen bestehen",$lang).$nl);
+	        	} elsif (uc($S_validation) eq "IP") {
+	            	# Input must be in ip format
+	            	my $searchstring = '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$';
+	            	(! ($value =~ m/$searchstring/i)) && ($saveerror .= "- ".&translate("Die Eingabe muss eine IP sein (Format: 123.123.123.123)",$lang).$nl);
+	        	} elsif (uc($S_validation) eq "EMAIL") {
+	            	# Input must be in email format
+	            	my $searchstring = '^[-a-z0-9_.]+@([-a-z0-9]+\.)+[a-z]{2,6}$';
+	            	(! ($value =~ m/$searchstring/i)) && ($saveerror .= "- ".&translate("Die Eingabe muss eine E-Mail Adresse sein",$lang).$nl);
+	        	}
+	 		} 
+		} # end check entered values (for)
+	
+	    my $CFO;
+	    # Check for configuration file and create object
+	    if (! $saveerror) {
+	        $CFO = new CWFFile ($SESSION{'WCONFFILE'});
+	        if ($CFO->is_error()) {
+	          	$saveerror .= "- ".&translate("Kann Konfigurationsdatei nicht finden",$lang).' ('.$SESSION{'WCONFFILE'}.')'.$nl;
+	          	($debug_level == 1) && (print $CFO->get_error_msg());
+	        }
+	    } 
+	
+	    # Load configuration from file
+	    if (! $saveerror) {
+	    	$CFO->load_file();
+	        if ($CFO->is_error()) {
+	          	$saveerror .= "- ".&translate("Kann Konfigurationsdatei nicht lesen",$lang).$nl;
+	          	($debug_level == 1) && (print $CFO->get_error_msg());
+	        }  
+	   	}
+	
+	    # Set new value for key
+	    if (! $saveerror) {
+			(! $W_commentchar) && ($W_commentchar = "NOCOMMENT");
+			my $lineschanged;
+			################################################################ STAND
+	  		$lineschanged = $CFO->set_key_values_within_section ($S_key,$W_assignchar,$W_commentchar,\@finput, &myhtml2txt($S_instart),&myhtml2txt($S_instop));
+			if ($CFO->is_error()) {
+	   			$saveerror .= "- ".&translate("Einstellung konnte nicht ge&auml;ndert werden",$lang).$nl;
+		 		($debug_level == 1) && (print $CFO->get_error_msg());
+	  		} 
+	  		if (($S_keynumber > 0) && ($S_keynumber < $lineschanged)) {
+	  			$saveerror .= "- ".&translate("Fehler im Konfigurationsfile, Einstellung zu oft vorhanden",$lang).$nl;
+	    		($debug_level == 1) && (print "Option found: ".$lineschanged." times, should be max ".$S_keynumber);
+		  	}
+	  	}
+	
+	
+		# Save configuration to file
+				if (! $saveerror) {
+					$CFO->save_file();
+					if ($CFO->is_error()) {
+					  $saveerror .= "- ".&translate("Einstellung konnte nicht gespeichert werden",$lang).$nl;
+				    ($debug_level == 1) && (print $CFO->get_error_msg());
+				  } 
+				}
+		
+				# Load next step
+				if ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') <= $SESSION{'WSTEPID'})) {
+					# The next step ID is smaller then the current step ID, we must be at the end
+					# if no cleanup, goto index
+					# if cleanup, do cleanup
+					$goindex = 1;
+					print '<meta http-equiv="refresh" content="0; URL=site_startwizard.cgi?1=1'.$URLADD.'">';
+					return 1;	
+				} elsif ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') != $SESSION{'WSTEPID'})) {
+					$sectionid = $CWFO->get_sectionnr_by_stepid ($CGIO->param('fnextstepid'));
+					($sectionid > 0) && ($SESSION{'WSTEPID'} = $CWFO->get_tag_attribut_value ("STEP","STEP","id",$sectionid));
+				} else {
+					#print $saveerror;
+				}
+		
+				# Success message
+				if (! $saveerror) {
+					$msg = &translate("Einstellung gespeichert",$lang).$nl;
+				}
+	
+			} # End configuration is type STANDARD
+		} else {
+			print "No value defined?!";
+		}
+	} # end dosave = 1 (save standard assignment value)
+	elsif (($CGIO->param('dosave') == 1) && ($finputtmp[0] eq "#LEAVEUNSET#") && (! $CGIO->param('fsubsectionid'))) {
+	  if ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') < $SESSION{'WSTEPID'})) {
+	    # The next step ID is smaller then the current step ID, we must be at the end
+	    # if no cleanup, goto index
+	    # if cleanup, do cleanup
+	    $goindex = 1;
+	    print '<meta http-equiv="refresh" content="0; URL=site_startwizard.cgi?1=1'.$URLADD.'">';
+	    return 1;	
+	  } elsif ((! $saveerror) && ($CGIO->param('fnextstepid')) && ($CGIO->param('fnextstepid') != $SESSION{'WSTEPID'})) {
+	    $sectionid = $CWFO->get_sectionnr_by_stepid ($CGIO->param('fnextstepid'));
+	    ($sectionid > 0) && ($SESSION{'WSTEPID'} = $CWFO->get_tag_attribut_value ("STEP","STEP","id",$sectionid));
+	  } 
+	
+	}		
+		
+	
 	
 	############################################
 	## MULTILINE SAVING
@@ -657,7 +860,8 @@ sub printform {
 		$S_StopCode = $CWFO->get_tag_content ("STEP","STOP",$oldsectionid);
 		$S_keynumber = $CWFO->get_tag_attribut_value ('STEP','TYPE','number',$sectionid,0);
 		($S_keynumber < 0) && ($S_keynumber = "1");
-		
+		print '<input type="hidden" name="fsubsectionid" value="'.$subsectionid.'">'."\n";
+		print '<input type="hidden" name="fsubstepid" value="'.$SESSION{'WSUBSTEPID'}.'">'."\n";		
 	}
 	#print $S_keynumber;
 	if ((uc($S_conftype) eq "STANDARD") || ($S_conftype < 0)) {
@@ -715,7 +919,11 @@ sub printform {
 			my @altprevalues;
 			my $altprevalcount = 0;
 			if ($error == 0) {
-				@altprevalues = $CFO->get_alt_key_values ($S_key,$W_assignchar,$W_commentchar,&myhtml2txt($S_notinstart), &myhtml2txt($S_notinstop));
+				if ($subsectionid > 0) {
+					@altprevalues = $CFO->get_alt_key_values_within_section ($S_key,$W_assignchar,$W_commentchar,&myhtml2txt($S_StartCode), &myhtml2txt($S_StopCode), $secnr);
+				} else {
+					@altprevalues = $CFO->get_alt_key_values ($S_key,$W_assignchar,$W_commentchar,&myhtml2txt($S_notinstart), &myhtml2txt($S_notinstop));
+				}
 				$altprevalcount = @altprevalues;
 				if ($altprevalcount > 0) {
 					$sysinfo .= "Alt. value found for key: ".$altprevalcount;

@@ -257,26 +257,42 @@ sub get_alt_key_values_within_section {
 	my $assignchars = shift;
   	my $commentchar = shift;
 	my $instart = shift;
-	my $instop = shift;      
+	my $instop = shift;    
+	my $sectionnr = shift;
 	my $isin = 0;
 	
 	if (! $key) {
-		$self->{error} .= "- Need first argument key Method: get_alt_key_values() (pm:CWFFile[".__LINE__."], $0)";
+		$self->{error} .= "- Need first argument key Method: get_alt_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
 		return -1;
 	}
 
 	if (! $assignchars) {
-		$self->{error} .= "- Need second argument assign char Method: get_alt_key_values() (pm:CWFFile[".__LINE__."], $0)";
+		$self->{error} .= "- Need second argument assign char Method: get_alt_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
 		return -1;
 	}
 	
 	if (! $commentchar) {
-		$self->{error} .= "- Need third argument comment char Method: get_alt_key_values() (pm:CWFFile[".__LINE__."], $0)";
+		$self->{error} .= "- Need third argument comment char Method: get_alt_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
 		return -1;
 	}
 
+	if (! $instart) {
+		$self->{error} .= "- Need fourth argument instart Method: get_alt_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	if (! $instop) {
+		$self->{error} .= "- Need fifth argument instop Method: get_alt_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	if (! $sectionnr) {
+		$self->{warning} .= "- Sixth argument not given using 1 as value  Method: get_alt_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		$sectionnr = 1;
+	}
+
 	if ((! $self->{cfile}) || (! $self->{fcontent})) {
-		$self->{error} .= "- File not loaded use load_file first Method: get_alt_key_values() (pm:CWFFile[".__LINE__."], $0)";
+		$self->{error} .= "- File not loaded use load_file first Method: get_alt_key_values_within_section() (pm:CWFFile[".__LINE__."], $0)";
 		return -1;
 	}
 	my $fcontent = $self->{fcontent};
@@ -285,13 +301,17 @@ sub get_alt_key_values_within_section {
 	my $searchstring = '^\s*'.&addslashes($commentchar).'+\s*'.&addslashes($key);   # before key should only by commentchars and spaces	
 	#print $searchstring."<br>";	
 	#my $found = 0;
+	my $seccount = 0;
 	my @prealtvalues;
 	foreach $oneline (@fcontenta) {
 		$oneline =~ s/\t/ /g; # remove tabs
-		($instart) && ($oneline =~ m/$instart/i) && ($isin++);
+		if (($instart) && ($oneline =~ m/$instart/i)) {
+			$isin++;
+			$seccount++;
+		}
     	($instop) && ($oneline =~ m/$instop/i) && ($isin--);
     	($isin < 0) && ($isin = 0);
-    	($isin == 0) && next;  # if we are in the not section skip line
+    	($seccount != $sectionnr) && next;  # if we are in the not section skip line
 		if (($oneline =~ m/$searchstring/i)) {
 			#$found++;
 			#print $oneline."<br>";

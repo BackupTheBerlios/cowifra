@@ -873,7 +873,7 @@
       </TYPE>	
 </STEP>
 
-<STEP id="42" group="2" skill="1">
+<STEP id="42" group="2" skill="1" subsetid="1">
       <NAME language="de">Admin E-Mail</NAME>
       <NAME language="uk">Admin E-Mail</NAME>
       <HELP language="de">
