@@ -923,7 +923,7 @@
 
 
       </HELP>
-      <TYPE kind="standard" input="textline" key="ServerName" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
+      <TYPE kind="standard" ignorealtvalues="1" input="textline" key="ServerName" notinstart="^\s*&lt;\s*\w.+?&gt;" notinstop="^\s*&lt;/.+?&gt;">
       </TYPE>	
 </STEP>
 

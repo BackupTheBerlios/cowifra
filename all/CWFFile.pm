@@ -8,6 +8,7 @@ use strict;
 # load_file
 # find_key
 # get_key_values
+# get_key_values_within_section
 # get_alt_key_values
 # set_key_values
 # get_section
@@ -142,6 +143,62 @@ sub get_key_values {
 	return @valuesfound;
 }
 
+sub get_key_values_within_section {
+	my $self = shift;
+	my $key = shift;
+	my $assignchars = shift;
+	my $instart = shift;
+	my $instop = shift;
+	my $secnr = shift; 
+	my $actsec = 0;
+	my $isin = 0;
+	
+	if (! $key) {
+		$self->{error} .= "- Need first argument key Method: get_key_value_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+	if (! $assignchars) {
+		$self->{error} .= "- Need second argument assign chars Method: get_key_value_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+	if (! $instart) {
+		$self->{error} .= "- Need third argument - start section definition Method: get_key_value_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+	if (! $instop) {
+		$self->{error} .= "- Need second argument - stop section definition Method: get_key_value_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}	
+	if ((! $self->{cfile}) || (! $self->{fcontent})) {
+		$self->{error} .= "- File not loaded use load_file first Method: get_key_value_within_section() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+	my $fcontent = $self->{fcontent};
+	my @fcontenta = @$fcontent;
+	my $oneline;
+	my $searchstring = '^\s*'.&addslashes($key).'\s*?'.&addslashes($assignchars).'\s*';
+	my @valuesfound;
+	foreach $oneline (@fcontenta) {
+		if (($instart) && ($oneline =~ m/$instart/i)) {
+			$isin++;
+			$actsec++;
+		}
+    	($instart) && ($oneline =~ m/$instop/i) && ($isin--);
+	  	($isin < 0) && ($isin = 0);
+    	#print $actsec."--";
+    	(($actsec != $secnr) || ($isin == 0)) && next;  # if we are in the section skip line	
+		$oneline =~ s/\t/ /g; # remove tabs
+		if (($oneline =~ m/$searchstring/i)) {
+	  		my $subsearch = '^\s*'.&addslashes($key).'\s*'.&addslashes($assignchars).'\s*(.*)';
+	      	if (($oneline =~ m/$subsearch/i)) {
+	        	(($1) || ($1 eq "0")) && (push(@valuesfound, $1));
+	      	}
+	  	} 
+   	} #for 
+	return @valuesfound;
+}
+
+
 sub get_alt_key_values {
 	my $self = shift;
 	my $key = shift;
@@ -183,6 +240,58 @@ sub get_alt_key_values {
     ($notinstop) && ($oneline =~ m/$notinstop/i) && ($innot--);
     ($innot < 0) && ($innot = 0);
     ($innot > 0) && next;  # if we are in the not section skip line
+		if (($oneline =~ m/$searchstring/i)) {
+			#$found++;
+			#print $oneline."<br>";
+			my $subsearch = '^\s*'.&addslashes($commentchar).'+\s*?'.&addslashes($key).'\s*?'.&addslashes($assignchars).'\s*(.*)';
+			#print $subsearch;
+			($oneline =~ m/$subsearch/i) && (push (@prealtvalues, $1));      
+		} 
+	}
+	return @prealtvalues;
+}
+
+sub get_alt_key_values_within_section {
+	my $self = shift;
+	my $key = shift;
+	my $assignchars = shift;
+  	my $commentchar = shift;
+	my $instart = shift;
+	my $instop = shift;      
+	my $isin = 0;
+	
+	if (! $key) {
+		$self->{error} .= "- Need first argument key Method: get_alt_key_values() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	if (! $assignchars) {
+		$self->{error} .= "- Need second argument assign char Method: get_alt_key_values() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+	
+	if (! $commentchar) {
+		$self->{error} .= "- Need third argument comment char Method: get_alt_key_values() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+
+	if ((! $self->{cfile}) || (! $self->{fcontent})) {
+		$self->{error} .= "- File not loaded use load_file first Method: get_alt_key_values() (pm:CWFFile[".__LINE__."], $0)";
+		return -1;
+	}
+	my $fcontent = $self->{fcontent};
+	my @fcontenta = @$fcontent;
+	my $oneline;
+	my $searchstring = '^\s*'.&addslashes($commentchar).'+\s*'.&addslashes($key);   # before key should only by commentchars and spaces	
+	#print $searchstring."<br>";	
+	#my $found = 0;
+	my @prealtvalues;
+	foreach $oneline (@fcontenta) {
+		$oneline =~ s/\t/ /g; # remove tabs
+		($instart) && ($oneline =~ m/$instart/i) && ($isin++);
+    	($instop) && ($oneline =~ m/$instop/i) && ($isin--);
+    	($isin < 0) && ($isin = 0);
+    	($isin == 0) && next;  # if we are in the not section skip line
 		if (($oneline =~ m/$searchstring/i)) {
 			#$found++;
 			#print $oneline."<br>";

@@ -642,16 +642,24 @@ $S_quote =  $CWFO->get_tag_attribut_value ('STEP','TYPE','quote',$sectionid,0);
 sub printform {
 	my $subsectionid = shift;
 	my $S_subconftype = shift;
+	my $secnr = shift;
 	
 	my $oldsectionid = 0;
 	my $oldconftype = "";
+	my $S_StartCode;
+	my $S_StopCode;
 	if ($subsectionid > 0) {
 		$oldsectionid = $sectionid;
 		$sectionid = $subsectionid;
 		$oldconftype = $S_conftype;
 		$S_conftype = $S_subconftype;
+		$S_StartCode = $CWFO->get_tag_content ("STEP","START",$oldsectionid);
+		$S_StopCode = $CWFO->get_tag_content ("STEP","STOP",$oldsectionid);
+		$S_keynumber = $CWFO->get_tag_attribut_value ('STEP','TYPE','number',$sectionid,0);
+		($S_keynumber < 0) && ($S_keynumber = "1");
+		
 	}
-	
+	#print $S_keynumber;
 	if ((uc($S_conftype) eq "STANDARD") || ($S_conftype < 0)) {
 		print '<input type="hidden" name="dosave" value="1">'."\n";
 		# this step uses a standard value assignment
@@ -686,7 +694,11 @@ sub printform {
 			my @prevalues;
 			my $prefound=0;
 			if ($error == 0) {
-				@prevalues = $CFO->get_key_values ($S_key,$W_assignchar,&myhtml2txt($S_notinstart), &myhtml2txt($S_notinstop));
+				if ($subsectionid > 0) {
+					@prevalues = $CFO->get_key_values_within_section ($S_key,$W_assignchar,&myhtml2txt($S_StartCode), &myhtml2txt($S_StopCode),$secnr);
+				} else {
+					@prevalues = $CFO->get_key_values ($S_key,$W_assignchar,&myhtml2txt($S_notinstart), &myhtml2txt($S_notinstop));
+				}
 				$prefound = @prevalues;
 				if ($prefound > 0) {
 					$sysinfo .= $prefound." values for key found, 1st: ".$prevalues[0];
@@ -992,7 +1004,7 @@ if (($conftypef == -1) || ($conftypef eq "configfile")) {
 				print '<hr><span id="norbold">'.&translate("Unterschritt").'</span><hr><br>';
 				#print "---Assumend Subsctionid:".$subsectionid;
 				my $S_subconftype = $CWFO->get_tag_attribut_value ('STEP','TYPE','kind',$subsectionid,0);
-				&printform ($subsectionid,$S_subconftype);
+				&printform ($subsectionid,$S_subconftype, $secnr);
 			}			
 			print '</table>';
 			if (@sectionlines == 0) {
