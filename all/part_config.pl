@@ -218,7 +218,7 @@ if (($usemode == 3) && ($SELFNAME ne "help")) {
 } else {
     $nl = "\n";
 }
-##################################### End Header na vielleicht solltest Du Steiner noch einmal direkt mit deinen Gedanken konfrontieren... 
+##################################### End Header 
 
 
 if ($SESSION{'WFILE'}) {
