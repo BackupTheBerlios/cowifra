@@ -179,6 +179,10 @@ if ($CGIO->param('stepid')) {
 	$SESSION{'WSTEPID'} = $CGIO->param('stepid');
 }
 
+if ($CGIO->param('substepid')) {
+	$SESSION{'WSUBSTEPID'} = $CGIO->param('substepid');
+}
+
 if ($CGIO->param('skillid')) {
 	$SESSION{'WSKILLID'} = $CGIO->param('skillid');
 }

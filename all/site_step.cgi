@@ -908,19 +908,59 @@ if (($conftypef == -1) || ($conftypef eq "configfile")) {
 			if ($sectionsfound > 1) {
 				print '<span id="norbold">'.&translate("F&uuml;r diesen Schritt existieren bereits mehrere Abschnitte.",$lang)." ".&translate("Sie k&ouml;nnen zwischen den einzelnen Abschnitten, mit Hilfe der Links neben dem Textfeld, w&auml;hlen",$lang).'</span><br><br>';
 			}
-			print '<table width="100%" border="0" cellpadding="10" cellspacing="0" '.$table_body2.'><tr><td width="1%" id="sml" valign="top">'.&translate("Ausschnitt",$lang).'<hr><pre>';
-			for (my $i=0;$i<10;$i++) {
+			print '<table width="100%" border="0" cellpadding="10" cellspacing="0" '.$table_body2.'><tr><td width="1%" id="nor" valign="top"><hr><span id="norbold">'.&translate("Ausschnitt",$lang).'</span><hr><pre>';
+			my $maxline = 10;
+			my $i;
+			if (!($SESSION{'WSUBSTEPID'} > 0)) { $maxline = 20; }
+			for ($i=0;$i<$maxline;$i++) {
 				print $sectionlines[$i];
 			}
-			print '...</pre><hr>'.&translate("Unterschritte").'</td>';			
+			if (@sectionlines > $maxline) { print '...'; }
+			print '</pre>';
+			if ($SESSION{'WSUBSTEPID'} > 0) {
+				print '<hr><span id="norbold">'.&translate("Unterschritt").'</span><hr><br>';
+			}
+			print '</td>';			
 			#</td>';
 			print '<td align="left" nowrap valign="top">';
 			if ($sectionsfound > 1) {
 				for (my $i=1; $i<=$sectionsfound; $i++) {
 					if ($i == $secnr) {
-					  print '&nbsp; <span id="norbold">'.&translate("Abschnitt",$lang).' '.$i.'</span><br>';
+					  print '&nbsp; <span id="norbold12">'.&translate("Abschnitt",$lang).' '.$i.'</span><br>';
+					  my $si;
+					  my $substepid = 0;
+					  my $sallcounter = 0;
+					  my $substepname;
+					  do {
+						$si = $CWFO->get_next_subset_step($substepid,1);
+						if ($si > 0) {
+							$sallcounter++;
+							(exists($SESSION{'WLANG'})) && ($substepname = $CWFO->get_tag_content_with_attribut ('STEP','NAME','language',$SESSION{'WLANG'},$si));
+							(($substepname < 0) || (! defined($substepname))) && ($substepname = $CWFO->get_tag_content ('STEP','NAME',$si,0));
+							($substepname < 0) && ($substepname = &translate('Schritt',$lang).' '.$sallcounter);				
+							$substepid = $CWFO->get_tag_attribut_value ('STEP','STEP','id',$si,0);
+							print '<table width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td width="1%" nowrap>&nbsp;&nbsp;&nbsp;&nbsp;';
+							if ($SESSION{'WSUBSTEPID'} != $substepid) {
+								print '<a HREF="site_step.cgi?stepid='.$SESSION{'WSTEPID'}.'&substepid='.$substepid.$URLADD.'&secnr='.$i.'#secedit" class="nor10">';
+								($userlevel == 1) && print '<img src="images/cwf_step_50x50.gif" align="absmiddle" border="0" hspace="5" vspace="5" alt="'.ucfirst($substepname).'">';
+								($userlevel == 2) && print '<img src="images/cwf_step_25x25.gif" align="absmiddle" border="0" hspace="5" vspace="5" alt="'.ucfirst($substepname).'">';
+								($SESSION{'WSUBSTEPID'} != $substepid) && (print '</a>');
+								#($foundact == 0) && ($stepnr++);
+							} else {
+								($userlevel == 1) && print '<img src="images/cwf_step_current_50x50.gif" align="absmiddle" border="0" hspace="5" vspace="5" alt="'.ucfirst($substepname).'">';
+								($userlevel == 2) && print '<img src="images/cwf_step_current_25x25.gif" align="absmiddle" border="0" hspace="5" vspace="5" alt="'.ucfirst($substepname).'">';
+								#$foundact = 1;
+								#$stepnr++;
+							}
+							print '</td><td id="nor">';
+							($SESSION{'WSUBSTEPID'} != $substepid) && (print '<a HREF="site_step.cgi?stepid='.$SESSION{'WSTEPID'}.'&substepid='.$substepid.$URLADD.'&secnr='.$i.'#secedit" class="nor10">');
+							print ucfirst($substepname);
+							($SESSION{'WSUBSTEPID'} != $substepid) && (print '</a>');
+							print '</td></tr></table>';
+						}
+					  } until ($si == 0);					  
 					} else {
-						print '&nbsp; <a href="site_step.cgi?stepid='.$SESSION{'WSTEPID'}.$URLADD.'&secnr='.$i.'#secedit" class="nor10">'.&translate("Abschnitt",$lang).' '.$i.'</a><br>';
+						print '&nbsp; <a href="site_step.cgi?stepid='.$SESSION{'WSTEPID'}.$URLADD.'&substepid=0&secnr='.$i.'#secedit" class="nor10">'.&translate("Abschnitt",$lang).' '.$i.'</a><br>';
 					}	
 				}
 			}

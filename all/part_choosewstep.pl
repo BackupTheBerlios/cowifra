@@ -42,7 +42,7 @@
 						print '<a HREF="site_step.cgi?stepid='.$stepid.$URLADD.'" class="nor10">';
 	     		                        ($userlevel == 1) && print '<img src="images/cwf_step_50x50.gif" align="absmiddle" border="0" hspace="5" vspace="5" alt="'.ucfirst($stepname).'">';
 	          		                ($userlevel == 2) && print '<img src="images/cwf_step_25x25.gif" align="absmiddle" border="0" hspace="5" vspace="5" alt="'.ucfirst($stepname).'">';
-						($SESSION{'WSTEPID'} != $srtepid) && (print '</a>');
+						($SESSION{'WSTEPID'} != $stepid) && (print '</a>');
 						($foundact == 0) && ($stepnr++);
 					} else {
 	     		                        ($userlevel == 1) && print '<img src="images/cwf_step_current_50x50.gif" align="absmiddle" border="0" hspace="5" vspace="5" alt="'.ucfirst($stepname).'">';

@@ -19,6 +19,9 @@ use Data::Dumper;
 # get_tag_attributs
 # get_tag_attribut_value
 # get_tag_attribut_value_with_attribut_value
+# get_next_step
+# get_next_subset_step
+# get_previous_step
 # count_steps
 # get_sectionnr_by_stepid
 # get_nr_steps
