@@ -118,7 +118,7 @@ sub new_xml_parser {
 
 ##############################################################################################
 sub start_xml_parser {
-        my $self = shift;
+    my $self = shift;
 	my %sectionnr = ("STEP",0,"HEADER",0,"CLEANUP",0);
 	my $actualsection;                                                              # which section we're in
 	my $lasttag = "";                                                               # is needed to define the content of a tag
@@ -141,41 +141,41 @@ sub start_xml_parser {
             # da Tags mehrmals vorkommen können, ist dies ein Array. 
 
 	    if (($tagname eq "STEP") || ($tagname eq "HEADER") || ($tagname eq "CLEANUP")) {
-		$actualsection = $tagname;
-		$sectionnr{$tagname}++;
+			$actualsection = $tagname;
+			$sectionnr{$tagname}++;
 	    }
 	    if ($actualsection) {
-		$i = 0;
-		while (defined($self->{$actualsection}[$sectionnr{$actualsection}]{$tagname}[$i])) {
-		   $i++;
-		}
+			$i = 0;
+			while (defined($self->{$actualsection}[$sectionnr{$actualsection}]{$tagname}[$i])) {
+			   $i++;
+			}
 
-		# Key und Werte des XML-Tags einlesen
-		while (my $key = shift) {
-		    $val = shift;
-		    $self->{$actualsection}[$sectionnr{$actualsection}]{$tagname}[$i]{$key} = $val;
-		}
+			# Key und Werte des XML-Tags einlesen
+			while (my $key = shift) {
+			    $val = shift;
+			    $self->{$actualsection}[$sectionnr{$actualsection}]{$tagname}[$i]{$key} = $val;
+			}
 	    }
 	    $lasttagnr = $i;
 	    return 1;
 	}
 
-        #######################
-        sub handle_default () {
+    #######################
+    sub handle_default () {
 	    my $p = shift;
 	    my $somethin = shift;
 	    use vars qw($self $lasttag $actualsection %sectionnr $lasttagnr);
 	    if ($somethin eq "\n") { return 1;  }
 	    if ($lasttag && $actualsection && ($sectionnr{$actualsection} >0)) {
-		$self->{$actualsection}[$sectionnr{$actualsection}]{$lasttag}[$lasttagnr]{"tagcontent"} .= $somethin;
-		#print $actualsection ." -> ".$lasttag." -> ".$lasttagnr." -> ".$somethin."\n";
+			$self->{$actualsection}[$sectionnr{$actualsection}]{$lasttag}[$lasttagnr]{"tagcontent"} .= $somethin;
+			#print $actualsection ." -> ".$lasttag." -> ".$lasttagnr." -> ".$somethin."\n";
 	    } else {
-		#$self->{error} .= "- XML-file (".$self->{xmlfile}.") found content that should not be there [\"$somethin\"] (pm:CWF[".__LINE__."], $0)".$self->{nl}; 
+			#$self->{error} .= "- XML-file (".$self->{xmlfile}.") found content that should not be there [\"$somethin\"] (pm:CWF[".__LINE__."], $0)".$self->{nl}; 
 	    }
 	    return 1;
 	}
 
-        #######################
+    #######################
 	sub handle_comment () {
 	    # This handler only to skips comments
 	    # my $p = shift;
@@ -183,13 +183,13 @@ sub start_xml_parser {
 	    return 1;
 	}
 
-        ####################
+    #######################
 	sub handle_stop () {								# handler for tag end event from xml-parser
 	    my $p = shift; 								# Pointer
 	    my $tagname = shift; 							# Tag Name
 	    use vars qw ($lasttag $actualsection);
 	    if (($tagname eq "HEADER") || ($tagname eq "STEP") || ($tagname eq "CLEANUP")) {
-		$actualsection = "";
+			$actualsection = "";
 	    }
 	    $lasttag = "";
 	    return 1;
@@ -197,9 +197,10 @@ sub start_xml_parser {
 
 
 	$self->{xmlparser}->parsefile ($self->{xmlfile});
-
 	return 1;
 }
+
+
 ##############################################################################################
 sub is_defined_tag {
 	my $self = shift;
@@ -212,13 +213,15 @@ sub is_defined_tag {
         (! $nr) && ($self->{warning} .= "- Missing number, using step number 1 (pm:CWF[".__LINE__."], $0)".$self->{nl}) && ($nr = 1);
 	if (($section eq "STEP") || ($section eq "HEADER") || ($section eq "CLEANUP")) {
 	    if (! $self->{$section}[$nr]{$tagname}) {
-		return 0;
+			return 0;
 	    } else {
-		return 1;
+			return 1;
 	    }
-        }
+    }
 	return 0;
 }
+
+
 ###############################################################################################
 sub count_tag_appearance {
         # Liefert die Anzahl, wie oft das tag in der angegebenen section vorkommt.
@@ -239,6 +242,8 @@ sub count_tag_appearance {
         }
 	return 0;
 }
+
+
 ###############################################################################################
 sub count_section_appearence {
         # Returns number of apperance of given section in current XML-file
@@ -257,6 +262,8 @@ sub count_section_appearence {
 	}
 	return --$i;
 }
+
+
 ##############################################################################################
 sub get_tag_content {
 	# Returns content of a tag (0 if tag does'nt exists, -1 if tag empty)

@@ -10,8 +10,8 @@
       <PATH distribution="Suse">/etc/httpd/</PATH>
       <PATH>/etc/</PATH>
       <FILE>httpd.conf</FILE>
-      <AUTHOR>Author des Wizard Files</AUTHOR>
-      <EMAIL>author@email.com</EMAIL>
+      <AUTHOR>Christian Schmidt</AUTHOR>
+      <EMAIL>smt@fokus.fraunhofer.de</EMAIL>
       <URL>http://www.myadress.com/mywizardfile.lwf</URL>
       <DATE>01.01.1901</DATE>	
       <COMMENTCHAR>#</COMMENTCHAR>
@@ -23,6 +23,8 @@
       <SKILLDEF id="1" language="uk">Quickstart (required options)</SKILLDEF>
       <SKILLDEF id="2" language="de">Fortgeschrittene Einstellungen</SKILLDEF>
       <SKILLDEF id="2" language="uk">Advanced options</SKILLDEF>
+      <SUBSET id="1" language="de">Virtual Hosts</SUBSET>
+      <SUBSET id="1" language="uk">Virutal Hosts</SUBSET>
 </HEADER>
 
 <STEP id="1" group="1" skill="1">
