@@ -54,17 +54,18 @@
           <!ATTLIST HELP language CDATA #IMPLIED> 
 
           <!ELEMENT TYPE (SELECT*,(START, STOP)?, DEFAULT?) > 
-          <!ATTLIST TYPE number CDATA #REQUIRED 
-	                 kind CDATA #REQUIRED 
-                         input CDATA #REQUIRED 
-                         key CDATA #IMPLIED 
-                         validation CDATA #IMPLIED
-			 default CDATA #IMPLIED 
-                         section CDATA #IMPLIED
-                         exec CDATA #IMPLIED
-			 notinstart CDATA #IMPLIED
-			 notinstop  CDATA #IMPLIED
-			 ignorealtvalues CDATA #IMPLIED
+          <!ATTLIST TYPE number 		CDATA #REQUIRED 
+	                 kind 			CDATA #REQUIRED 
+                         input			CDATA #REQUIRED 
+                         key 			CDATA #IMPLIED 
+                         validation 		CDATA #IMPLIED
+			 default 		CDATA #IMPLIED 
+                         section 		CDATA #IMPLIED
+                         exec 			CDATA #IMPLIED
+			 notinstart 		CDATA #IMPLIED
+			 notinstop  		CDATA #IMPLIED
+			 ignorealtvalues 	CDATA #IMPLIED
+			 subsetid		CDATA #IMPLIED
 			 > 
 
 			 <!ELEMENT SELECT (#PCDATA)> 

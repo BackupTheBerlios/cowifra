@@ -927,7 +927,7 @@
       </TYPE>	
 </STEP>
 
-<STEP id="46" group="2" skill="1">
+<STEP id="46" group="2" skill="1" subsetid="1">
       <NAME language="de">Document Root</NAME>
       <NAME language="uk">Document Root</NAME>
       <HELP language="de">
@@ -1770,7 +1770,7 @@
 	    NOTE: The use of &lt;VirtualHost&gt; does not affect what addresses Apache listens on. You may 
 	    need to ensure that Apache is listening on the correct addresses using either BindAddress or Listen.
       </HELP>
-      <TYPE kind="user" input="multiline" number="0">
+      <TYPE kind="user" input="subset" number="0" subsetid="1">
       	<START>^\s*&lt;VirtualHost.*?&gt;</START>
       	<STOP>&lt;/VirtualHost&gt;</STOP>
       </TYPE>	
